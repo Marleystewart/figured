@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HoopAbroad</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <button class="brand" data-page="home" aria-label="HoopAbroad home">
+          <span class="brand-mark">H</span>
+          <span>HOOPABROAD</span>
+        </button>
+        <nav class="nav-list" aria-label="Main navigation">
+          <button class="nav-item active" data-page="home"><span>⌂</span>Home</button>
+          <button class="nav-item" data-page="discover"><span>◇</span>Discover</button>
+          <button class="nav-item" data-page="opportunities"><span>◎</span>Opportunities</button>
+          <button class="nav-item" data-page="messages"><span>✉</span>Messages</button>
+          <button class="nav-item" data-page="network"><span>◌</span>Network</button>
+          <button class="nav-item" data-page="bookmarks"><span>☆</span>Bookmarks</button>
+          <button class="nav-item" data-page="analytics"><span>▥</span>Analytics</button>
+          <button class="nav-item" data-page="settings"><span>⚙</span>Settings</button>
+        </nav>
+        <div class="sidebar-card">
+          <p>Recruiting score</p>
+          <strong>92</strong>
+          <span>Profile is trending with scouts</span>
+        </div>
+      </aside>
+
+      <main class="main">
+        <header class="topbar">
+          <label class="global-search">
+            <span>⌕</span>
+            <input id="globalSearch" type="search" placeholder="Search players, teams, or opportunities..." />
+          </label>
+          <button class="icon-button" aria-label="Notifications">◔</button>
+          <button class="user-chip" data-page="profile">
+            <img src="./assets/basketball-highlight.png" alt="Jalen Wilson" />
+            <span>Jalen Wilson</span>
+            <small>⌄</small>
+          </button>
+        </header>
+
+        <section class="page active" id="home" aria-label="Home">
+          <div class="page-title">
+            <div>
+              <p class="eyebrow">Home feed</p>
+              <h1>Welcome back, Jalen 👋</h1>
+              <p>Connect. Compete. Get Recruited.</p>
+            </div>
+            <button class="primary-button" id="openComposer">Post highlight</button>
+          </div>
+
+          <div class="home-grid">
+            <section class="feed-column">
+              <div class="tabs" role="tablist" aria-label="Feed filters">
+                <button class="pill active" data-filter="all">For You</button>
+                <button class="pill" data-filter="following">Following</button>
+                <button class="pill" data-filter="opportunity">Opportunities</button>
+                <button class="pill" data-filter="highlight">Highlights</button>
+              </div>
+
+              <article class="post-card" data-feed-card="highlight following">
+                <div class="post-head">
+                  <img class="avatar" src="./assets/basketball-highlight.png" alt="Marcus De'Ath" />
+                  <div>
+                    <h3>Marcus De’Ath <span class="verified">✓</span></h3>
+                    <p>Point Guard · 6’2” · Class of 2025</p>
+                  </div>
+                  <button class="outline-button">Connect</button>
+                </div>
+                <p class="post-copy">Ready for the next chapter. Looking to compete overseas and make an impact. Let’s work.</p>
+                <div class="video-card">
+                  <img src="./assets/basketball-highlight.png" alt="Basketball highlight" />
+                  <button class="play-button" aria-label="Play highlight">▶</button>
+                  <span>Senior season mixtape</span>
+                </div>
+                <div class="tags"><span>#PointGuard</span><span>#D1Experience</span><span>#WorkEthic</span></div>
+                <div class="engagement">
+                  <button data-toggle-label="♡ Like|♥ Liked">♡ Like</button>
+                  <button>◌ Comment</button>
+                  <button>↻ Repost</button>
+                  <button data-toggle-label="☆ Save|★ Saved">☆ Save</button>
+                </div>
+              </article>
+
+              <article class="post-card compact" data-feed-card="opportunity">
+                <div class="post-head">
+                  <span class="league-logo">ES</span>
+                  <div>
+                    <h3>Pro League — Spain</h3>
+                    <p>Madrid club seeking a defensive-minded guard</p>
+                  </div>
+                  <button class="outline-button" data-page="opportunities">View</button>
+                </div>
+                <p class="post-copy">Roster window closes in 18 days. Best fit: PG / SG with pro-ready film and passport available.</p>
+              </article>
+            </section>
+
+            <aside class="right-rail">
+              <section class="panel">
+                <div class="panel-head">
+                  <h3>Opportunities for You</h3>
+                  <button class="text-button" data-page="opportunities">See all</button>
+                </div>
+                <div class="mini-list">
+                  <button class="mini-row" data-page="opportunities"><span>🇪🇸</span><div><strong>Pro League — Spain</strong><small>PG fit · Madrid</small></div></button>
+                  <button class="mini-row" data-page="opportunities"><span>🇦🇺</span><div><strong>NBL1 — Australia</strong><small>Guard fit · Melbourne</small></div></button>
+                  <button class="mini-row" data-page="opportunities"><span>🇩🇪</span><div><strong>Basketball Bundesliga</strong><small>Wing fit · Berlin</small></div></button>
+                </div>
+              </section>
+
+              <section class="panel">
+                <h3>Trending Players</h3>
+                <div class="player-list">
+                  <button data-page="profile"><img src="./assets/basketball-highlight.png" alt="" /><span><strong>Andre Miles</strong><small>SG · 6’5” · 2025</small></span></button>
+                  <button data-page="profile"><img src="./assets/basketball-highlight.png" alt="" /><span><strong>Darius King</strong><small>SF · 6’7” · 2026</small></span></button>
+                  <button data-page="profile"><img src="./assets/basketball-highlight.png" alt="" /><span><strong>Noah Carter</strong><small>PG · 6’1” · 2025</small></span></button>
+                </div>
+              </section>
+            </aside>
+          </div>
+        </section>
+
+        <section class="page" id="discover" aria-label="Discover">
+          <div class="page-title">
+            <div>
+              <p class="eyebrow">Discover</p>
+              <h1>Find players, scouts, and clubs</h1>
+              <p>Explore rising athletes, verified agents, and teams looking for talent.</p>
+            </div>
+          </div>
+          <div class="card-grid">
+            <article class="profile-card"><img src="./assets/basketball-highlight.png" alt="" /><h3>Jalen Wilson <span class="verified">✓</span></h3><p>Shooting Guard · 6’4” · California</p><button class="primary-button" data-page="profile">View profile</button></article>
+            <article class="profile-card"><img src="./assets/basketball-highlight.png" alt="" /><h3>Marcus De’Ath <span class="verified">✓</span></h3><p>Point Guard · 6’2” · Class of 2025</p><button class="primary-button">Connect</button></article>
+            <article class="profile-card"><span class="badge-icon">SC</span><h3>Euro Hoops Scout</h3><p>Verified overseas scout · Germany</p><button class="primary-button">Follow</button></article>
+            <article class="profile-card"><span class="badge-icon">AG</span><h3>Apex Sports Group</h3><p>Agent network · Europe / Asia</p><button class="primary-button">Follow</button></article>
+          </div>
+        </section>
+
+        <section class="page" id="opportunities" aria-label="Opportunities">
+          <div class="page-title">
+            <div>
+              <p class="eyebrow">Opportunities</p>
+              <h1>Overseas roster openings</h1>
+              <p>Filter active basketball opportunities by region, position, and start date.</p>
+            </div>
+            <button class="primary-button">Upload player packet</button>
+          </div>
+          <div class="toolbar">
+            <label class="global-search compact-search"><span>⌕</span><input id="opportunitySearch" type="search" placeholder="Search leagues, cities, or positions" /></label>
+            <div class="tabs"><button class="pill active" data-region="all">All</button><button class="pill" data-region="Europe">Europe</button><button class="pill" data-region="Asia">Asia</button><button class="pill" data-region="Australia">Australia</button><button class="pill" data-region="Americas">Americas</button></div>
+          </div>
+          <div class="opportunity-grid" id="opportunityGrid">
+            <article class="opportunity-card" data-region="Europe" data-search="spain madrid point guard shooting guard"><span class="flag">🇪🇸</span><div><h3>Pro League — Spain</h3><p>Madrid · PG, SG · Starts Aug 12</p><div class="tags"><span>Point Guard</span><span>Passport ready</span></div></div><button data-toggle-label="☆ Save|★ Saved">☆ Save</button></article>
+            <article class="opportunity-card" data-region="Australia" data-search="australia melbourne nbl1 guard"><span class="flag">🇦🇺</span><div><h3>NBL1 — Australia</h3><p>Melbourne · Guard · Starts Jul 01</p><div class="tags"><span>Combo Guard</span><span>Film needed</span></div></div><button data-toggle-label="☆ Save|★ Saved">☆ Save</button></article>
+            <article class="opportunity-card" data-region="Europe" data-search="germany berlin basketball bundesliga wing guard"><span class="flag">🇩🇪</span><div><h3>Basketball Bundesliga</h3><p>Berlin · PG, Wing · Starts Sep 03</p><div class="tags"><span>Wing</span><span>EU interest</span></div></div><button data-toggle-label="☆ Save|★ Saved">☆ Save</button></article>
+            <article class="opportunity-card" data-region="Europe" data-search="portugal lisbon primeira liga shooting guard"><span class="flag">🇵🇹</span><div><h3>Primeira Liga — Portugal</h3><p>Lisbon · SG · Starts Aug 28</p><div class="tags"><span>Shooting Guard</span><span>Open tryout</span></div></div><button data-toggle-label="☆ Save|★ Saved">☆ Save</button></article>
+          </div>
+        </section>
+
+        <section class="page" id="messages" aria-label="Messages">
+          <div class="page-title"><div><p class="eyebrow">Messages</p><h1>Recruiting inbox</h1><p>Keep scout, agent, and team conversations in one place.</p></div></div>
+          <div class="messages-layout">
+            <aside class="thread-list">
+              <button class="thread active"><span class="badge-icon">SC</span><div><strong>Euro Hoops Scout</strong><small>Can you send full-game film?</small></div></button>
+              <button class="thread"><span class="badge-icon">AG</span><div><strong>Apex Sports Group</strong><small>Portugal roster opening</small></div></button>
+              <button class="thread"><span class="badge-icon">BC</span><div><strong>Lisbon Lions BC</strong><small>Workout availability</small></div></button>
+            </aside>
+            <section class="chat-panel">
+              <div class="message received">Your latest highlight package is strong. Do you have full-game film from this season?</div>
+              <div class="message sent">Yes, I can send two full games plus my stat sheet today.</div>
+              <div class="message received">Perfect. Spain and Portugal both need guards with your profile.</div>
+              <label class="compose"><input type="text" placeholder="Write a message..." /><button>Send</button></label>
+            </section>
+          </div>
+        </section>
+
+        <section class="page" id="network" aria-label="Network">
+          <div class="page-title"><div><p class="eyebrow">Network</p><h1>Your recruiting connections</h1><p>Manage athletes, coaches, scouts, agents, and clubs.</p></div></div>
+          <div class="card-grid">
+            <article class="profile-card"><span class="badge-icon">SC</span><h3>Euro Hoops Scout</h3><p>Scout · Germany · Following you</p><button class="primary-button">Message</button></article>
+            <article class="profile-card"><span class="badge-icon">AG</span><h3>Apex Sports Group</h3><p>Agent · Europe / Asia</p><button class="primary-button">Message</button></article>
+            <article class="profile-card"><span class="badge-icon">BC</span><h3>Lisbon Lions BC</h3><p>Club · Portugal</p><button class="primary-button">View club</button></article>
+          </div>
+        </section>
+
+        <section class="page" id="bookmarks" aria-label="Bookmarks">
+          <div class="page-title"><div><p class="eyebrow">Bookmarks</p><h1>Saved film and opportunities</h1><p>Everything you want to revisit before making your next move.</p></div></div>
+          <div class="card-grid">
+            <article class="saved-card"><h3>Pro League — Spain</h3><p>Saved roster opening · Madrid · PG / SG</p><button class="outline-button" data-page="opportunities">Open</button></article>
+            <article class="saved-card"><h3>Marcus De’Ath highlight</h3><p>Saved player film · Point Guard · Class of 2025</p><button class="outline-button">Watch</button></article>
+          </div>
+        </section>
+
+        <section class="page" id="analytics" aria-label="Analytics">
+          <div class="page-title"><div><p class="eyebrow">Analytics</p><h1>Recruiting momentum</h1><p>Track profile views, scout engagement, and opportunity fit.</p></div></div>
+          <div class="analytics-grid">
+            <article class="metric"><span>Profile views</span><strong>8.4K</strong><p>+18% this week</p></article>
+            <article class="metric"><span>Scout saves</span><strong>136</strong><p>Spain, Germany, Australia trending</p></article>
+            <article class="metric"><span>Film plays</span><strong>2.1K</strong><p>68% watched past 45 seconds</p></article>
+            <article class="chart-card"><h3>Weekly engagement</h3><div class="bar-chart"><span style="height:42%"></span><span style="height:60%"></span><span style="height:54%"></span><span style="height:74%"></span><span style="height:68%"></span><span style="height:88%"></span><span style="height:80%"></span></div></article>
+          </div>
+        </section>
+
+        <section class="page" id="settings" aria-label="Settings">
+          <div class="page-title"><div><p class="eyebrow">Settings</p><h1>Profile and recruiting preferences</h1><p>Control who sees your profile and what opportunities match you.</p></div></div>
+          <div class="settings-grid">
+            <label class="setting"><span>Open to overseas opportunities</span><input type="checkbox" checked /></label>
+            <label class="setting"><span>Allow verified agents to message me</span><input type="checkbox" checked /></label>
+            <label class="setting"><span>Show height, class year, and location publicly</span><input type="checkbox" checked /></label>
+            <label class="setting"><span>Send weekly opportunity digest</span><input type="checkbox" /></label>
+          </div>
+        </section>
+
+        <section class="page" id="profile" aria-label="Profile">
+          <div class="profile-hero">
+            <div class="profile-cover"></div>
+            <div class="profile-info">
+              <img src="./assets/basketball-highlight.png" alt="Jalen Wilson" />
+              <div>
+                <h1>Jalen Wilson <span class="verified">✓</span></h1>
+                <p>Shooting Guard · 6’4” · Class of 2025 · California, USA</p>
+                <div class="profile-stats"><span><strong>24</strong>Posts</span><span><strong>1.2K</strong>Followers</span><span><strong>578</strong>Following</span></div>
+              </div>
+              <button class="primary-button">Edit Profile</button>
+            </div>
+          </div>
+          <div class="home-grid">
+            <section class="post-card">
+              <h3>Highlight Reel</h3>
+              <div class="video-card"><img src="./assets/basketball-highlight.png" alt="Jalen Wilson highlight" /><button class="play-button">▶</button><span>Jalen Wilson 2025 reel</span></div>
+            </section>
+            <aside class="panel">
+              <h3>About Me</h3>
+              <p>High motor. Team first. Always working. Looking for overseas opportunities to compete and grow.</p>
+            </aside>
+          </div>
+        </section>
+      </main>
+    </div>
+    <div class="toast" id="toast">Saved</div>
+
+    <div class="modal-backdrop" id="composerModal">
+      <div class="modal">
+        <div class="modal-head">
+          <h3>Post a highlight</h3>
+          <button class="icon-button" id="composerClose" aria-label="Close">✕</button>
+        </div>
+        <textarea class="composer-textarea" placeholder="What's your highlight about? Describe the game, the play, the moment..." rows="4"></textarea>
+        <div class="composer-actions">
+          <div class="composer-tags">
+            <span class="pill active">Video</span>
+            <span class="pill">Stats</span>
+            <span class="pill">Game recap</span>
+          </div>
+          <button class="primary-button" id="composerPost">Post highlight</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="./script.js"></script>
+  </body>
+</html>
