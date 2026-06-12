@@ -112,8 +112,20 @@ const FigAI = (() => {
           additionalProperties: false,
         },
       },
+      timeline: {
+        type: 'array',
+        items: {
+          type: 'object',
+          properties: {
+            when: { type: 'string' },
+            text: { type: 'string' },
+          },
+          required: ['when', 'text'],
+          additionalProperties: false,
+        },
+      },
     },
-    required: ['headline', 'body', 'tracks', 'gaps', 'actions', 'plan', 'bridge', 'focus'],
+    required: ['headline', 'body', 'tracks', 'gaps', 'actions', 'plan', 'bridge', 'focus', 'timeline'],
     additionalProperties: false,
   };
 
@@ -132,7 +144,8 @@ Hard rules:
 10. plan: exactly 3 items per period (d30/d60/d90), concrete and doable for a college student with classes. Build on each other.
 11. bridge: "now" = one honest sentence about where they are today using their real details. "destination" = one sentence about where they want to go. "bridge" = one sentence naming what connects the two.
 12. focus: exactly 4 items, one per area, with area named exactly "Academic Progress", "Relevant Experience", "In-Demand Skills", and "Network Strength". status is a PRIORITY, never a grade: "focus" = highest-leverage area to work on next, "building" = in progress, keep going, "strength" = already working for them. At least one area must be "focus" so there is always a next move; do not mark everything a strength. note = one short, specific sentence (max 8 words) on why it has that status for THIS student. This replaces any numeric score — never imply a number or rating.
-13. US college context. Plain language. No emoji, no markdown.`;
+13. timeline: 4-5 entries tracing their real arc, oldest to newest. "when" = a short phase label, NOT a fabricated date (e.g. "The start", "What you've built", "Right now", "This term", "By graduation"). "text" = one sentence per phase using their actual major, school, activities, experience, and goal. The earliest entries reflect what they have genuinely done; the later ones are forward-looking. Never invent specific events or months they didn't tell you.
+14. US college context. Plain language. No emoji, no markdown.`;
 
   async function generateInsights(profile) {
     const body = {

@@ -320,8 +320,13 @@
         <!-- Timeline -->
         <section class="product-section" id="product-timeline">
           <div class="product-card full-product-card">
-            <span>Progress timeline</span>
-            <h2>Your path over time.</h2>
+            <div class="timeline-head">
+              <div>
+                <span>Progress timeline</span>
+                <h2>Your path over time.</h2>
+              </div>
+              <button class="primary-button log-win-btn" type="button" data-log-win>+ Log a win</button>
+            </div>
             <div class="growth-timeline" id="growthTimeline">
               <p><strong>The start</strong> Where your path began.</p>
               <p><strong>Right now</strong> Moving from exploration into positioning.</p>
@@ -363,6 +368,19 @@
         <div class="modal-secondary">
           <button class="modal-link" id="keyRegenerate" type="button" hidden>Regenerate insights</button>
           <button class="modal-link danger" id="keyDisconnect" type="button" hidden>Disconnect AI</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Log a win modal -->
+    <div class="modal-overlay" id="winModal" hidden>
+      <div class="modal-card">
+        <h3>Log a win</h3>
+        <p>Something move forward? Capture it — every win goes on your timeline and shows your trajectory actually moving.</p>
+        <textarea class="ob-input ob-textarea" id="winInput" rows="2" placeholder="Reached out to 3 alumni · Landed the internship · Learned SQL"></textarea>
+        <div class="modal-actions">
+          <button class="ghost-button" id="winCancel" type="button">Cancel</button>
+          <button class="primary-button" id="winSave" type="button">Add to timeline</button>
         </div>
       </div>
     </div>

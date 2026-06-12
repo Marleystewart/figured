@@ -531,12 +531,50 @@ function renderGapCards(gaps) {
   });
 }
 
+// --- Over-time loop: persistent progress + logged wins ---
+function loadChecked() {
+  try { return new Set(JSON.parse(localStorage.getItem('figuredChecked')) || []); } catch { return new Set(); }
+}
+function saveChecked(set) {
+  localStorage.setItem('figuredChecked', JSON.stringify([...set]));
+}
+function loadWins() {
+  try { return JSON.parse(localStorage.getItem('figuredWins')) || []; } catch { return []; }
+}
+function saveWins(wins) {
+  localStorage.setItem('figuredWins', JSON.stringify(wins));
+}
+
 function renderActions(actions) {
   const el = document.getElementById('actionQueue');
   if (!el || !actions) return;
-  el.innerHTML = '<span>Highest-impact next actions</span>' + actions.map((a) => `
-    <label><input type="checkbox" /> ${esc(a)}</label>
-  `).join('');
+  const checked = loadChecked();
+  const done = actions.filter((a) => checked.has(a)).length;
+  const pct = actions.length ? Math.round((done / actions.length) * 100) : 0;
+  el.innerHTML = `
+    <div class="action-head">
+      <span>Highest-impact next actions</span>
+      <em class="action-count">${done}/${actions.length} done</em>
+    </div>
+    <div class="action-progress"><i style="width:${pct}%"></i></div>
+    ${actions.map((a) => `
+      <label class="action-item${checked.has(a) ? ' done' : ''}">
+        <input type="checkbox" data-action="${esc(a)}"${checked.has(a) ? ' checked' : ''} /> ${esc(a)}
+      </label>`).join('')}
+    <button class="mini-button action-log" type="button" data-log-win>+ Log a win</button>
+  `;
+  el.querySelectorAll('input[type="checkbox"]').forEach((cb) => {
+    cb.addEventListener('change', () => {
+      const set = loadChecked();
+      const label = cb.getAttribute('data-action');
+      if (cb.checked) set.add(label); else set.delete(label);
+      saveChecked(set);
+      cb.closest('.action-item').classList.toggle('done', cb.checked);
+      const d = actions.filter((a) => set.has(a)).length;
+      el.querySelector('.action-count').textContent = `${d}/${actions.length} done`;
+      el.querySelector('.action-progress i').style.width = (actions.length ? Math.round((d / actions.length) * 100) : 0) + '%';
+    });
+  });
 }
 
 function renderAppPlan(plan) {
@@ -578,12 +616,24 @@ function renderFocus(focus) {
   }).join('');
 }
 
+let activeTimeline = [];
+
 function renderTimeline(timeline) {
   const el = document.getElementById('growthTimeline');
-  if (!el || !timeline || !timeline.length) return;
-  el.innerHTML = timeline.map((t) => `
-    <p><strong>${esc(t.when)}</strong> ${esc(t.text)}</p>
-  `).join('');
+  if (!el) return;
+  if (timeline) activeTimeline = timeline;
+  const wins = loadWins();
+  if (!wins.length && !activeTimeline.length) return; // keep static fallback
+  let html = '';
+  if (wins.length) {
+    html += wins.map((w) => `
+      <p class="timeline-win"><strong>${esc(w.date)}</strong> ${esc(w.text)}</p>`).join('');
+  }
+  if (activeTimeline.length) {
+    html += activeTimeline.map((t) => `
+      <p><strong>${esc(t.when)}</strong> ${esc(t.text)}</p>`).join('');
+  }
+  el.innerHTML = html || '<p><strong>Right now</strong> Your path starts here. Log your first win to begin the record.</p>';
 }
 
 function applyContent(c) {
@@ -1040,6 +1090,41 @@ connTabs.forEach(tab => {
   });
 });
 
+function initWinModal() {
+  const modal = document.getElementById('winModal');
+  if (!modal) return;
+  const input = document.getElementById('winInput');
+  const open = () => { input.value = ''; modal.hidden = false; setTimeout(() => input.focus(), 20); };
+  const close = () => { modal.hidden = true; };
+
+  // Delegated so it works for every "Log a win" button, including re-rendered ones
+  document.addEventListener('click', (e) => {
+    if (e.target.closest('[data-log-win]')) open();
+  });
+  document.getElementById('winCancel').addEventListener('click', close);
+  modal.addEventListener('click', (e) => { if (e.target === modal) close(); });
+
+  document.getElementById('winSave').addEventListener('click', () => {
+    const text = input.value.trim();
+    if (!text) { input.focus(); return; }
+    const wins = loadWins();
+    const date = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    wins.unshift({ date, text });
+    saveWins(wins);
+    close();
+    renderTimeline(null);
+    // Take them to the Timeline so they see it land
+    const tab = document.querySelector('[data-product-section="timeline"]');
+    if (tab) { tab.click(); tab.scrollIntoView({ inline: 'center', block: 'nearest' }); }
+    const first = document.querySelector('#growthTimeline .timeline-win');
+    if (first) first.classList.add('just-added');
+  });
+
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) document.getElementById('winSave').click();
+  });
+}
+
 if (document.querySelector('.product-main')) {
   const dateEl = document.getElementById('topbarDate');
   if (dateEl) {
@@ -1048,6 +1133,8 @@ if (document.querySelector('.product-main')) {
 
   initKeyModal();
   initChat();
+  initWinModal();
+  renderTimeline(null);
 
   const profile = loadProfile();
   currentProfile = profile || DEMO_PROFILE;

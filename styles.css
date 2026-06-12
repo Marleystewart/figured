@@ -2477,3 +2477,102 @@ h1 {
   text-decoration: underline;
   text-underline-offset: 3px;
 }
+
+/* --- Over-time loop: action progress + logged wins --- */
+.action-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.action-count {
+  font-style: normal;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--sage-deep);
+  background: var(--teal-soft);
+  padding: 3px 10px;
+  border-radius: 999px;
+}
+
+.action-progress {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--paper-soft);
+  overflow: hidden;
+  margin: 12px 0 4px;
+}
+
+.action-progress i {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--sage-deep);
+  transition: width 360ms cubic-bezier(0.32, 0.72, 0.25, 1);
+}
+
+.action-item {
+  transition: opacity 160ms ease;
+}
+
+.action-item input {
+  accent-color: var(--sage-deep);
+}
+
+.action-item.done {
+  opacity: 0.55;
+  text-decoration: line-through;
+  text-decoration-color: var(--sage);
+}
+
+.action-log {
+  margin-top: 6px;
+  align-self: flex-start;
+}
+
+.timeline-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.log-win-btn {
+  flex-shrink: 0;
+  min-height: 40px;
+  font-size: 14px;
+}
+
+.timeline-win {
+  position: relative;
+}
+
+.timeline-win strong {
+  color: var(--sage-deep);
+}
+
+.timeline-win::before {
+  content: "✓";
+  display: inline-grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  margin-right: 8px;
+  border-radius: 999px;
+  background: #cfe6d6;
+  color: #2f5a4f;
+  font-size: 11px;
+  font-weight: 800;
+  vertical-align: middle;
+}
+
+.timeline-win.just-added {
+  animation: winPop 520ms cubic-bezier(0.32, 0.72, 0.25, 1);
+}
+
+@keyframes winPop {
+  0% { opacity: 0; transform: translateY(-6px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
