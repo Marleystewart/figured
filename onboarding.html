@@ -32,9 +32,9 @@
       <main class="onboarding-main">
         <!-- Step 1 -->
         <div class="ob-step active" data-step="1">
-          <p class="eyebrow">Step 1 of 4</p>
-          <h2>Start with you.</h2>
-          <p class="ob-desc">No fluff. Just the basics to build your real profile.</p>
+          <p class="eyebrow" id="eyebrow1">Step 1 of 4</p>
+          <h2>Let's start with you.</h2>
+          <p class="ob-desc">No fluff — just enough to build your real profile.</p>
           <div class="ob-fields">
             <label class="ob-label">
               First name
@@ -65,9 +65,9 @@
 
         <!-- Step 2 -->
         <div class="ob-step" data-step="2">
-          <p class="eyebrow">Step 2 of 4</p>
-          <h2>Your record.</h2>
-          <p class="ob-desc">Honest inputs mean honest outputs.</p>
+          <p class="eyebrow" id="eyebrow2">Step 2 of 4</p>
+          <h2 id="heading2">Now, your record.</h2>
+          <p class="ob-desc">Honest inputs mean honest outputs — this stays between us.</p>
           <div class="ob-fields">
             <label class="ob-label">
               GPA
@@ -93,8 +93,8 @@
 
         <!-- Step 3 -->
         <div class="ob-step" data-step="3">
-          <p class="eyebrow">Step 3 of 4</p>
-          <h2>Your experience.</h2>
+          <p class="eyebrow" id="eyebrow3">Step 3 of 4</p>
+          <h2>What you've done so far.</h2>
           <p class="ob-desc">Internships, jobs, research, freelance — anything real. No experience yet? Leave it blank.</p>
 
           <div class="resume-drop" id="resumeDrop">
@@ -128,7 +128,7 @@
 
         <!-- Step 4 -->
         <div class="ob-step" data-step="4">
-          <p class="eyebrow">Step 4 of 4</p>
+          <p class="eyebrow" id="eyebrow4">Step 4 of 4</p>
           <h2>Where you want to go.</h2>
           <p class="ob-desc">Be specific. "Something in business" doesn't build a trajectory.</p>
           <div class="ob-fields">
@@ -151,7 +151,18 @@
         </div>
       </main>
     </div>
+    <div class="building-overlay" id="buildingOverlay" hidden>
+      <div class="building-mark" aria-hidden="true">
+        <svg viewBox="0 0 32 32">
+          <path d="M26.8 5.3C16.5 7 9.1 12.9 6.5 23.2c6.2-.9 11.7-4.1 15.7-9.5-2.8 1.1-5.5 2.7-8 4.9 2.5-4.7 6.6-8.2 12.6-13.3Z" />
+          <path d="M7 24.2c2.4-3.3 5.2-5.9 8.6-7.7" />
+        </svg>
+      </div>
+      <h2 id="buildingHeadline">Building your trajectory…</h2>
+      <p id="buildingSub">Reading where you are and where you're headed.</p>
+    </div>
+
     <script src="./ai.js?v=2"></script>
-    <script src="./onboarding.js?v=2"></script>
+    <script src="./onboarding.js?v=3"></script>
   </body>
 </html>

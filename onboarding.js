@@ -4,10 +4,29 @@ const backBtn = document.getElementById('obBack');
 const nextBtn = document.getElementById('obNext');
 let current = 1;
 
+function firstName() {
+  const v = (document.getElementById('firstName').value || '').trim();
+  return v ? v.split(/\s+/)[0] : '';
+}
+
+// Personalize the eyebrows once we know their name — feels like a conversation
+function personalize() {
+  const name = firstName();
+  const set = (id, text) => { const el = document.getElementById(id); if (el) el.textContent = text; };
+  set('eyebrow2', name ? `Nice to meet you, ${name}` : 'Step 2 of 4');
+  set('eyebrow3', name ? `You're doing great, ${name}` : 'Step 3 of 4');
+  set('eyebrow4', name ? `Last one, ${name}` : 'Step 4 of 4');
+}
+
 function goTo(n) {
-  steps.forEach(s => s.classList.remove('active'));
+  personalize();
+  steps.forEach(s => { s.classList.remove('active'); s.classList.remove('entering'); });
   dots.forEach(d => d.classList.remove('active'));
-  steps[n - 1].classList.add('active');
+  const step = steps[n - 1];
+  step.classList.add('active');
+  // retrigger the enter animation
+  void step.offsetWidth;
+  step.classList.add('entering');
   dots[n - 1].classList.add('active');
   backBtn.style.visibility = n > 1 ? 'visible' : 'hidden';
   nextBtn.textContent = n === steps.length ? 'Build my trajectory' : 'Continue';
@@ -54,7 +73,19 @@ nextBtn.addEventListener('click', () => {
   localStorage.setItem('figuredProfile', JSON.stringify(profile));
   // A changed profile means stale insights — clear so the app regenerates.
   localStorage.removeItem('figuredAiContent');
-  window.location.href = './app.html';
+
+  // A short, personal "building your trajectory" moment before the handoff
+  const overlay = document.getElementById('buildingOverlay');
+  const name = profile.firstName === 'You' ? '' : profile.firstName;
+  const head = document.getElementById('buildingHeadline');
+  if (head) head.textContent = name ? `Building your trajectory, ${name}…` : 'Building your trajectory…';
+  if (overlay) {
+    overlay.hidden = false;
+    requestAnimationFrame(() => overlay.classList.add('show'));
+    setTimeout(() => { window.location.href = './app.html'; }, 1700);
+  } else {
+    window.location.href = './app.html';
+  }
 });
 
 goTo(1);
