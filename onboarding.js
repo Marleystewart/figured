@@ -33,8 +33,11 @@ function goTo(n) {
   current = n;
 }
 
-// Prefill if the student is editing an existing profile
+// "Edit profile" prefills the form; "Build My Path" (?fresh=1) starts blank.
+const ONBOARD_MODE = new URLSearchParams(location.search).get('edit') === '1' ? 'edit' : 'fresh';
+
 (function prefill() {
+  if (ONBOARD_MODE !== 'edit') return; // fresh start — leave the form blank
   const read = (k) => { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } };
   const existing = read('figuredProfile') || read('pathlineProfile');
   if (!existing) return;
@@ -73,6 +76,13 @@ nextBtn.addEventListener('click', () => {
   localStorage.setItem('figuredProfile', JSON.stringify(profile));
   // A changed profile means stale insights — clear so the app regenerates.
   localStorage.removeItem('figuredAiContent');
+  // A fresh "Build My Path" is a clean slate — don't inherit the last
+  // person's logged wins, checked actions, or résumé feedback.
+  if (ONBOARD_MODE !== 'edit') {
+    localStorage.removeItem('figuredWins');
+    localStorage.removeItem('figuredChecked');
+    localStorage.removeItem('figuredResumeFeedback');
+  }
 
   // A short, personal "building your trajectory" moment before the handoff
   const overlay = document.getElementById('buildingOverlay');
