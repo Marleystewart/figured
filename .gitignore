@@ -1,0 +1,11 @@
+# macOS
+.DS_Store
+**/.DS_Store
+
+# Local tooling / preview config
+.claude/
+
+# Unrelated project files that live in this folder
+HoopAbroad.pptx
+HoopAbroad-12Month-Plan.pdf
+assets/

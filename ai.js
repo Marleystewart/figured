@@ -1,0 +1,202 @@
+// Figured — Claude AI layer
+// Prototype-only: the API key is pasted by the user and stored in their own
+// browser (localStorage). A production build would proxy through a backend.
+
+const FigAI = (() => {
+  const KEY_STORE = 'figuredApiKey';
+  const API_URL = 'https://api.anthropic.com/v1/messages';
+  const MODEL = 'claude-opus-4-8';
+
+  const getKey = () => localStorage.getItem(KEY_STORE) || '';
+  const setKey = (k) => {
+    if (k && k.trim()) localStorage.setItem(KEY_STORE, k.trim());
+    else localStorage.removeItem(KEY_STORE);
+  };
+  const hasKey = () => Boolean(getKey());
+
+  const headers = () => ({
+    'x-api-key': getKey(),
+    'anthropic-version': '2023-06-01',
+    'content-type': 'application/json',
+    'anthropic-dangerous-direct-browser-access': 'true',
+  });
+
+  async function apiError(res) {
+    let msg = `Request failed (${res.status})`;
+    try {
+      const data = await res.json();
+      if (data.error && data.error.message) msg = data.error.message;
+    } catch { /* keep default */ }
+    if (res.status === 401) msg = 'That API key was rejected. Check it and reconnect.';
+    const err = new Error(msg);
+    err.status = res.status;
+    return err;
+  }
+
+  const IMPACT = { type: 'string', enum: ['High impact', 'Medium impact', 'Foundational'] };
+  const gapItems = {
+    type: 'array',
+    items: {
+      type: 'object',
+      properties: { item: { type: 'string' }, impact: IMPACT },
+      required: ['item', 'impact'],
+      additionalProperties: false,
+    },
+  };
+  const planItems = {
+    type: 'array',
+    items: {
+      type: 'object',
+      properties: { title: { type: 'string' }, detail: { type: 'string' }, impact: IMPACT },
+      required: ['title', 'detail', 'impact'],
+      additionalProperties: false,
+    },
+  };
+
+  const INSIGHTS_SCHEMA = {
+    type: 'object',
+    properties: {
+      headline: { type: 'string' },
+      body: { type: 'string' },
+      tracks: {
+        type: 'array',
+        items: {
+          type: 'object',
+          properties: {
+            label: { type: 'string' },
+            role: { type: 'string' },
+            reason: { type: 'string' },
+          },
+          required: ['label', 'role', 'reason'],
+          additionalProperties: false,
+        },
+      },
+      gaps: {
+        type: 'object',
+        properties: {
+          skills: gapItems,
+          experience: gapItems,
+          exposure: gapItems,
+          mindset: gapItems,
+        },
+        required: ['skills', 'experience', 'exposure', 'mindset'],
+        additionalProperties: false,
+      },
+      actions: { type: 'array', items: { type: 'string' } },
+      plan: {
+        type: 'object',
+        properties: { d30: planItems, d60: planItems, d90: planItems },
+        required: ['d30', 'd60', 'd90'],
+        additionalProperties: false,
+      },
+      bridge: {
+        type: 'object',
+        properties: {
+          now: { type: 'string' },
+          destination: { type: 'string' },
+          bridge: { type: 'string' },
+        },
+        required: ['now', 'destination', 'bridge'],
+        additionalProperties: false,
+      },
+      focus: {
+        type: 'array',
+        items: {
+          type: 'object',
+          properties: {
+            area: { type: 'string' },
+            status: { type: 'string', enum: ['focus', 'building', 'strength'] },
+            note: { type: 'string' },
+          },
+          required: ['area', 'status', 'note'],
+          additionalProperties: false,
+        },
+      },
+    },
+    required: ['headline', 'body', 'tracks', 'gaps', 'actions', 'plan', 'bridge', 'focus'],
+    additionalProperties: false,
+  };
+
+  const INSIGHTS_SYSTEM = `You are Figured, a personal trajectory tool for college students. You take an honest look at where a student is headed based on what they are actually doing right now, and tell them the truth about the path: what it takes, what is possible, and exactly what to do next. Voice: honest without being brutal. Mentor, not machine.
+
+Hard rules:
+1. Never suggest a path less ambitious than the student's stated goal. Adjacent tracks must be equal or upward moves that genuinely fit their profile.
+2. Frame every gap as "here's what it takes", never "here's what you're missing". No judgment language, no scores, no verdicts.
+3. Every section ends pointed at action.
+4. Be specific to THIS student. Reference their actual major, school, experience, activities, and goal. Generic advice is failure.
+5. headline: max 70 characters, punchy, no student name, forward-looking.
+6. body: 2-3 sentences. Name their real strengths first, then the single highest-leverage move.
+7. tracks: exactly 3. First one: label "Your goal", role = their goal cleaned into a crisp role/field title (max 40 chars), reason tied to their real strengths. Then one "Adjacent path" and one "Also worth exploring" — both genuinely reachable from their profile.
+8. gaps: 3-4 items per category. skills = what to learn, experience = what to do, exposure = what to see/who to meet, mindset = how to think. Each specific to their goal and current profile.
+9. actions: exactly 4 short checkbox-style actions they could start this week.
+10. plan: exactly 3 items per period (d30/d60/d90), concrete and doable for a college student with classes. Build on each other.
+11. bridge: "now" = one honest sentence about where they are today using their real details. "destination" = one sentence about where they want to go. "bridge" = one sentence naming what connects the two.
+12. focus: exactly 4 items, one per area, with area named exactly "Academic Progress", "Relevant Experience", "In-Demand Skills", and "Network Strength". status is a PRIORITY, never a grade: "focus" = highest-leverage area to work on next, "building" = in progress, keep going, "strength" = already working for them. At least one area must be "focus" so there is always a next move; do not mark everything a strength. note = one short, specific sentence (max 8 words) on why it has that status for THIS student. This replaces any numeric score — never imply a number or rating.
+13. US college context. Plain language. No emoji, no markdown.`;
+
+  async function generateInsights(profile) {
+    const body = {
+      model: MODEL,
+      max_tokens: 8000,
+      thinking: { type: 'adaptive' },
+      system: INSIGHTS_SYSTEM,
+      messages: [{
+        role: 'user',
+        content: 'Student profile:\n' + JSON.stringify(profile, null, 2) +
+          '\n\nGenerate this student\'s trajectory insights as JSON.',
+      }],
+      output_config: { format: { type: 'json_schema', schema: INSIGHTS_SCHEMA } },
+    };
+    const res = await fetch(API_URL, { method: 'POST', headers: headers(), body: JSON.stringify(body) });
+    if (!res.ok) throw await apiError(res);
+    const msg = await res.json();
+    const textBlock = (msg.content || []).find((b) => b.type === 'text');
+    if (!textBlock) throw new Error('No content returned.');
+    return JSON.parse(textBlock.text);
+  }
+
+  // Streaming chat. onDelta receives the full accumulated text on each chunk.
+  async function chatStream(system, messages, onDelta) {
+    const body = {
+      model: MODEL,
+      max_tokens: 1024,
+      stream: true,
+      thinking: { type: 'adaptive' },
+      output_config: { effort: 'medium' },
+      system,
+      messages,
+    };
+    const res = await fetch(API_URL, { method: 'POST', headers: headers(), body: JSON.stringify(body) });
+    if (!res.ok) throw await apiError(res);
+
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+    let full = '';
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split('\n');
+      buffer = lines.pop();
+      for (const line of lines) {
+        if (!line.startsWith('data:')) continue;
+        const payload = line.slice(5).trim();
+        if (!payload) continue;
+        let ev;
+        try { ev = JSON.parse(payload); } catch { continue; }
+        if (ev.type === 'content_block_delta' && ev.delta && ev.delta.type === 'text_delta') {
+          full += ev.delta.text;
+          onDelta(full);
+        }
+        if (ev.type === 'error') {
+          throw new Error((ev.error && ev.error.message) || 'Stream error.');
+        }
+      }
+    }
+    return full;
+  }
+
+  return { getKey, setKey, hasKey, generateInsights, chatStream };
+})();

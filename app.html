@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Figured | Alex Rivera</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body class="product-body">
+    <div class="product-shell">
+      <aside class="product-sidebar">
+        <a class="brand product-brand" href="./index.html">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 32 32">
+              <path d="M26.8 5.3C16.5 7 9.1 12.9 6.5 23.2c6.2-.9 11.7-4.1 15.7-9.5-2.8 1.1-5.5 2.7-8 4.9 2.5-4.7 6.6-8.2 12.6-13.3Z" />
+              <path d="M7 24.2c2.4-3.3 5.2-5.9 8.6-7.7" />
+            </svg>
+          </span>
+          <span>Figured</span>
+        </a>
+
+        <nav class="product-nav" aria-label="Product navigation">
+          <button class="product-nav-item active" data-product-section="overview">Overview</button>
+          <button class="product-nav-item" data-product-section="trajectory">Trajectory</button>
+          <button class="product-nav-item" data-product-section="gaps">Gap Analyzer</button>
+          <button class="product-nav-item" data-product-section="plan">Action Plan</button>
+          <button class="product-nav-item" data-product-section="opportunities">Opportunities</button>
+          <button class="product-nav-item" data-product-section="connections">Connections</button>
+          <button class="product-nav-item" data-product-section="timeline">Timeline</button>
+        </nav>
+
+        <button class="ask-figured-btn" id="askFiguredBtn" type="button">
+          <span class="ask-dot" id="aiDot" aria-hidden="true"></span>
+          Ask Figured
+        </button>
+
+        <section class="profile-pocket">
+          <div class="student-avatar">AR</div>
+          <strong>Alex Rivera</strong>
+          <p class="profile-school">State University</p>
+          <p class="profile-meta">Business Admin · Junior</p>
+          <span>Goal: Product Manager</span>
+          <a class="profile-edit" href="./onboarding.html">Edit profile →</a>
+        </section>
+      </aside>
+
+      <main class="product-main">
+        <header class="product-topbar">
+          <div>
+            <p id="topbarDate">Tuesday, June 9</p>
+            <h1>Good morning, Alex.</h1>
+          </div>
+          <div class="product-actions">
+            <button class="secondary-button ai-status-btn" id="aiStatusBtn" type="button">Connect AI</button>
+            <a class="secondary-button" href="./onboarding.html">Edit profile</a>
+            <button class="primary-button" id="askFiguredTop" type="button">Ask Figured</button>
+          </div>
+        </header>
+
+        <div class="onboarding-nudge" id="onboardingNudge" style="display:none">
+          This is demo data. <a href="./onboarding.html">Build your real trajectory →</a>
+        </div>
+
+        <!-- Overview -->
+        <section class="product-section active" id="product-overview">
+          <div class="product-grid">
+            <article class="product-card snapshot-wide">
+              <span>Honest snapshot</span>
+              <h2>You're on a promising path toward product management.</h2>
+              <p>Your academics and leadership signals are strong. The current limiting factors are product-specific proof, hands-on experience, and a network that is still too small for your goal.</p>
+            </article>
+
+            <article class="product-card tracks-card">
+              <span>Paths that fit your profile</span>
+              <div class="tracks-list" id="tracksList">
+                <div class="track-item primary">
+                  <div class="track-label">Your goal</div>
+                  <h4>Product Manager</h4>
+                  <p>Your business foundation and problem-solving interest are real assets here.</p>
+                </div>
+                <div class="track-item">
+                  <div class="track-label">Adjacent path</div>
+                  <h4>Strategy &amp; Operations</h4>
+                  <p>Your analytical mindset crosses over directly. Many PMs come from ops.</p>
+                </div>
+                <div class="track-item">
+                  <div class="track-label">Also worth exploring</div>
+                  <h4>Technical Program Manager</h4>
+                  <p>If you build any technical fluency, this path opens up immediately.</p>
+                </div>
+              </div>
+            </article>
+
+            <article class="product-card current-path-card">
+              <span>Current path</span>
+              <div class="mini-map">
+                <i></i><i></i><i></i><i></i>
+              </div>
+              <h3>Exploration → Positioning</h3>
+              <p>You are moving from general business exposure into product-specific evidence.</p>
+            </article>
+
+            <article class="product-card action-queue" id="actionQueue">
+              <span>Highest-impact next actions</span>
+              <label><input type="checkbox" /> Reach out to 3 alumni in product roles</label>
+              <label><input type="checkbox" checked /> Choose a product for your case study</label>
+              <label><input type="checkbox" /> Apply to 10 targeted internships</label>
+              <label><input type="checkbox" /> Join one product or tech community</label>
+            </article>
+
+            <article class="product-card gap-panel">
+              <span>Where to focus</span>
+              <div class="focus-list" id="focusList">
+                <div class="focus-row"><div><p>In-Demand Skills</p><small>Highest-leverage area right now.</small></div><em class="focus-pill focus">Focus here first</em></div>
+                <div class="focus-row"><div><p>Network Strength</p><small>Highest-leverage area right now.</small></div><em class="focus-pill focus">Focus here first</em></div>
+                <div class="focus-row"><div><p>Relevant Experience</p><small>In motion — keep stacking reps.</small></div><em class="focus-pill building">Building</em></div>
+                <div class="focus-row"><div><p>Academic Progress</p><small>Already working for you. Maintain it.</small></div><em class="focus-pill strength">Strength</em></div>
+              </div>
+            </article>
+
+            <article class="product-card feed-panel">
+              <span>Recommended today</span>
+              <div class="feed-row"><strong>Product Intern</strong><em>90% match</em></div>
+              <div class="feed-row"><strong>Taylor M., PM at Spotify</strong><em>mentor</em></div>
+              <div class="feed-row"><strong>Product Strategy Basics</strong><em>course</em></div>
+            </article>
+          </div>
+        </section>
+
+        <!-- Trajectory -->
+        <section class="product-section" id="product-trajectory">
+          <div class="product-card full-product-card">
+            <span>Trajectory workspace</span>
+            <h2>Where you are now → where you want to go.</h2>
+            <div class="app-roadmap">
+              <div class="app-road active"><strong>Foundations</strong><small>Complete</small></div>
+              <div class="app-road active"><strong>Exploration</strong><small>In progress</small></div>
+              <div class="app-road"><strong>Positioning</strong><small>Next up</small></div>
+              <div class="app-road"><strong>Impact</strong><small>Long term</small></div>
+            </div>
+            <div class="compare-columns">
+              <article>
+                <h3>Where you are now</h3>
+                <p id="bridgeNow">Business major, 3.45 GPA, marketing internship, case competitions, early product interest.</p>
+              </article>
+              <article>
+                <h3>Where you want to go</h3>
+                <p id="bridgeGoal">Product manager role where you lead useful products, work with technical teams, and solve customer problems.</p>
+              </article>
+              <article>
+                <h3>The bridge</h3>
+                <p id="bridgeHow">Build product proof, learn core metrics, strengthen outreach, and apply to roles that value business and customer thinking.</p>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <!-- Gap Analyzer -->
+        <section class="product-section" id="product-gaps">
+          <div class="gap-category-grid">
+            <article class="product-card gap-cat-card">
+              <span>Skills</span>
+              <h3>What to learn</h3>
+              <div class="gap-cat-items" id="gapSkills">
+                <div class="gap-cat-row"><p>Product Strategy</p><em>High impact</em></div>
+                <div class="gap-cat-row"><p>Data &amp; Metrics</p><em>High impact</em></div>
+                <div class="gap-cat-row"><p>User Research</p><em>Medium impact</em></div>
+                <div class="gap-cat-row"><p>Prioritization Frameworks</p><em>Medium impact</em></div>
+              </div>
+            </article>
+            <article class="product-card gap-cat-card">
+              <span>Experience</span>
+              <h3>What to do</h3>
+              <div class="gap-cat-items" id="gapExperience">
+                <div class="gap-cat-row"><p>Internship in target role or adjacent</p><em>High impact</em></div>
+                <div class="gap-cat-row"><p>Build and publish a real project</p><em>High impact</em></div>
+                <div class="gap-cat-row"><p>Lead a team initiative end-to-end</p><em>Medium impact</em></div>
+              </div>
+            </article>
+            <article class="product-card gap-cat-card">
+              <span>Exposure</span>
+              <h3>What to see</h3>
+              <div class="gap-cat-items" id="gapExposure">
+                <div class="gap-cat-row"><p>Shadow a PM for a day</p><em>High impact</em></div>
+                <div class="gap-cat-row"><p>Attend product community events</p><em>Medium impact</em></div>
+                <div class="gap-cat-row"><p>Read product teardowns weekly</p><em>Medium impact</em></div>
+              </div>
+            </article>
+            <article class="product-card gap-cat-card">
+              <span>Mindset</span>
+              <h3>How to think</h3>
+              <div class="gap-cat-items" id="gapMindset">
+                <div class="gap-cat-row"><p>Think in user problems, not features</p><em>Foundational</em></div>
+                <div class="gap-cat-row"><p>Get comfortable with ambiguity</p><em>Foundational</em></div>
+                <div class="gap-cat-row"><p>Build a bias toward shipping</p><em>Foundational</em></div>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <!-- Action Plan -->
+        <section class="product-section" id="product-plan">
+          <div class="product-card full-product-card">
+            <span>Personalized action plan</span>
+            <h2>30, 60, and 90-day roadmap.</h2>
+            <div class="product-plan-columns">
+              <article>
+                <strong>30 days</strong>
+                <div class="plan-col-items" id="plan30">
+                  <p>Reach out to alumni, choose case study topic, learn product metrics.</p>
+                </div>
+              </article>
+              <article>
+                <strong>60 days</strong>
+                <div class="plan-col-items" id="plan60">
+                  <p>Publish portfolio project, apply to targeted internships, join product community.</p>
+                </div>
+              </article>
+              <article>
+                <strong>90 days</strong>
+                <div class="plan-col-items" id="plan90">
+                  <p>Run mock interviews, refresh profile, apply with stronger proof.</p>
+                </div>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <!-- Opportunities -->
+        <section class="product-section" id="product-opportunities">
+          <div class="opportunity-app-grid">
+            <article class="product-card opportunity-app-card">
+              <span>Internship</span>
+              <h3 id="oppTitle1">Product Intern</h3>
+              <p id="oppSub1">Search live postings · United States</p>
+              <strong>Internships</strong>
+              <div class="opp-links">
+                <a class="opp-link" id="oppLink1" href="#" target="_blank" rel="noopener">LinkedIn Jobs →</a>
+                <a class="opp-link" id="oppLink1b" href="#" target="_blank" rel="noopener">Indeed →</a>
+              </div>
+            </article>
+            <article class="product-card opportunity-app-card">
+              <span>Entry-level</span>
+              <h3 id="oppTitle2">Associate Product Manager</h3>
+              <p id="oppSub2">Search live postings · United States</p>
+              <strong>Entry roles</strong>
+              <div class="opp-links">
+                <a class="opp-link" id="oppLink2" href="#" target="_blank" rel="noopener">LinkedIn Jobs →</a>
+                <a class="opp-link" id="oppLink2b" href="#" target="_blank" rel="noopener">Indeed →</a>
+              </div>
+            </article>
+            <article class="product-card opportunity-app-card">
+              <span>Fellowship</span>
+              <h3 id="oppTitle3">Student Fellowships</h3>
+              <p id="oppSub3">Programs for students · United States</p>
+              <strong>Programs</strong>
+              <div class="opp-links">
+                <a class="opp-link" id="oppLink3" href="#" target="_blank" rel="noopener">LinkedIn Jobs →</a>
+                <a class="opp-link" id="oppLink3b" href="#" target="_blank" rel="noopener">Indeed →</a>
+              </div>
+            </article>
+            <article class="product-card opportunity-app-card">
+              <span>Networking</span>
+              <h3 id="oppTitle4">Alumni in your field</h3>
+              <p id="oppSub4">People to learn from · LinkedIn</p>
+              <strong>Mentors</strong>
+              <div class="opp-links">
+                <a class="opp-link" id="oppLink4" href="#" target="_blank" rel="noopener">Find on LinkedIn →</a>
+                <a class="opp-link" id="oppHandshake4" href="#" target="_blank" rel="noopener">Open Handshake →</a>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <!-- Connections -->
+        <section class="product-section" id="product-connections">
+          <div class="connections-header">
+            <div class="conn-tabs">
+              <button class="conn-tab active" data-conn="mentors">Mentors</button>
+              <button class="conn-tab" data-conn="peers">Peers</button>
+            </div>
+            <a class="secondary-button" id="connLinkedinLink" href="https://www.linkedin.com/search/results/people/?keywords=Product+Manager" target="_blank" rel="noopener">Find more on LinkedIn →</a>
+          </div>
+
+          <div class="conn-panel active" id="conn-mentors">
+            <p class="conn-note">Mentors who join Figured link straight to their profile. Everyone else, tap to find them on LinkedIn. <a class="conn-join" href="./mentor.html">Are you a mentor? Join →</a></p>
+            <div class="opportunity-app-grid" id="mentorGrid"></div>
+          </div>
+
+          <div class="conn-panel" id="conn-peers">
+            <div class="opportunity-app-grid">
+              <article class="product-card mentor-app-card">
+                <div class="mentor-avatar">SM</div>
+                <h3>Students in PM roles</h3>
+                <p>Undergrad · Product intern</p>
+                <small>Peers building product experience at companies actively recruiting students right now.</small>
+                <a class="opp-link" id="peerLinkedinLink" href="https://www.linkedin.com/search/results/people/?keywords=undergraduate+product+intern" target="_blank" rel="noopener">Find peers on LinkedIn →</a>
+              </article>
+              <article class="product-card mentor-app-card">
+                <div class="mentor-avatar">HS</div>
+                <h3>Handshake communities</h3>
+                <p>Student network · Product &amp; tech</p>
+                <small>Connect with students pursuing the same path at companies actively recruiting now.</small>
+                <a class="opp-link" id="peerHandshakeLink" href="https://joinhandshake.com/search?query=Product+Manager&category=JOB" target="_blank" rel="noopener">Explore on Handshake →</a>
+              </article>
+              <article class="product-card mentor-app-card">
+                <div class="mentor-avatar">PM</div>
+                <h3>Product communities</h3>
+                <p>Slack &amp; Discord groups</p>
+                <small>Lenny's Newsletter, Product School, and Mind the Product all have active student groups.</small>
+                <a class="opp-link" href="https://www.lennysnewsletter.com/p/community" target="_blank" rel="noopener">Explore communities →</a>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <!-- Timeline -->
+        <section class="product-section" id="product-timeline">
+          <div class="product-card full-product-card">
+            <span>Progress timeline</span>
+            <h2>Your path over time.</h2>
+            <div class="growth-timeline" id="growthTimeline">
+              <p><strong>The start</strong> Where your path began.</p>
+              <p><strong>Right now</strong> Moving from exploration into positioning.</p>
+              <p><strong>Next</strong> Turn momentum into proof and conversations.</p>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <!-- Ask Figured chat -->
+    <div class="chat-overlay" id="chatOverlay"></div>
+    <aside class="chat-panel" id="chatPanel" aria-label="Ask Figured">
+      <header class="chat-head">
+        <div>
+          <strong>Ask Figured</strong>
+          <p id="chatStatus">Knows your full profile. Only talks about your path.</p>
+        </div>
+        <button class="chat-close" id="chatClose" type="button" aria-label="Close chat">&times;</button>
+      </header>
+      <div class="chat-messages" id="chatMessages"></div>
+      <div class="chat-chips" id="chatChips"></div>
+      <form class="chat-inputbar" id="chatForm">
+        <input id="chatInput" type="text" placeholder="Ask about your path…" autocomplete="off" />
+        <button class="primary-button chat-send" id="chatSend" type="submit">Send</button>
+      </form>
+    </aside>
+
+    <!-- Connect Claude modal -->
+    <div class="modal-overlay" id="keyModal" hidden>
+      <div class="modal-card">
+        <h3>Connect Claude</h3>
+        <p>Paste an Anthropic API key to turn on personalized AI insights and the Ask Figured chat. The key is stored only in this browser — nothing leaves your machine except your own requests to Claude.</p>
+        <input class="ob-input" id="keyInput" type="password" placeholder="sk-ant-…" autocomplete="off" />
+        <div class="modal-actions">
+          <button class="ghost-button" id="keyCancel" type="button">Not now</button>
+          <button class="primary-button" id="keySave" type="button">Connect</button>
+        </div>
+        <div class="modal-secondary">
+          <button class="modal-link" id="keyRegenerate" type="button" hidden>Regenerate insights</button>
+          <button class="modal-link danger" id="keyDisconnect" type="button" hidden>Disconnect AI</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="./ai.js"></script>
+    <script src="./script.js"></script>
+  </body>
+</html>

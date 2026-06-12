@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Figured | Build Your Path</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="onboarding-shell">
+      <header class="onboarding-header">
+        <a class="brand" href="./index.html">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 32 32">
+              <path d="M26.8 5.3C16.5 7 9.1 12.9 6.5 23.2c6.2-.9 11.7-4.1 15.7-9.5-2.8 1.1-5.5 2.7-8 4.9 2.5-4.7 6.6-8.2 12.6-13.3Z" />
+              <path d="M7 24.2c2.4-3.3 5.2-5.9 8.6-7.7" />
+            </svg>
+          </span>
+          <span>Figured</span>
+        </a>
+        <div class="ob-progress" aria-label="Step progress">
+          <span class="ob-dot active" aria-hidden="true"></span>
+          <span class="ob-dot" aria-hidden="true"></span>
+          <span class="ob-dot" aria-hidden="true"></span>
+          <span class="ob-dot" aria-hidden="true"></span>
+        </div>
+      </header>
+
+      <main class="onboarding-main">
+        <!-- Step 1 -->
+        <div class="ob-step active" data-step="1">
+          <p class="eyebrow">Step 1 of 4</p>
+          <h2>Start with you.</h2>
+          <p class="ob-desc">No fluff. Just the basics to build your real profile.</p>
+          <div class="ob-fields">
+            <label class="ob-label">
+              First name
+              <input class="ob-input" type="text" id="firstName" placeholder="Alex" autocomplete="given-name" />
+            </label>
+            <div class="ob-row">
+              <label class="ob-label">
+                Year
+                <select class="ob-input" id="year">
+                  <option value="">Select</option>
+                  <option>Freshman</option>
+                  <option>Sophomore</option>
+                  <option>Junior</option>
+                  <option>Senior</option>
+                </select>
+              </label>
+              <label class="ob-label">
+                Major
+                <input class="ob-input" type="text" id="major" placeholder="Business Administration" />
+              </label>
+            </div>
+            <label class="ob-label">
+              School
+              <input class="ob-input" type="text" id="school" placeholder="University of Michigan" autocomplete="organization" />
+            </label>
+          </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="ob-step" data-step="2">
+          <p class="eyebrow">Step 2 of 4</p>
+          <h2>Your record.</h2>
+          <p class="ob-desc">Honest inputs mean honest outputs.</p>
+          <div class="ob-fields">
+            <label class="ob-label">
+              GPA
+              <input class="ob-input ob-gpa" type="number" id="gpa" min="0" max="4.0" step="0.01" placeholder="3.45" />
+            </label>
+            <label class="ob-label">
+              Time left in school
+              <select class="ob-input ob-select-half" id="timeLeft">
+                <option value="">Select</option>
+                <option value="1 semester">1 semester</option>
+                <option value="2 semesters">2 semesters</option>
+                <option value="3 semesters">3 semesters</option>
+                <option value="4+ semesters">4+ semesters</option>
+              </select>
+            </label>
+            <label class="ob-label">
+              Activities &amp; clubs
+              <span class="ob-hint">One per line</span>
+              <textarea class="ob-input ob-textarea" id="activities" placeholder="Marketing Club&#10;Case Competition Team&#10;Student Government" rows="4"></textarea>
+            </label>
+          </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="ob-step" data-step="3">
+          <p class="eyebrow">Step 3 of 4</p>
+          <h2>Your experience.</h2>
+          <p class="ob-desc">Internships, jobs, research, freelance — anything real. No experience yet? Leave it blank.</p>
+          <div class="ob-fields">
+            <label class="ob-label">
+              Work &amp; internship experience
+              <span class="ob-hint">One per line</span>
+              <textarea class="ob-input ob-textarea ob-tall" id="experience" placeholder="Marketing intern, Acme Co. (Summer 2024)&#10;Part-time barista, 2023–present" rows="6"></textarea>
+            </label>
+          </div>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="ob-step" data-step="4">
+          <p class="eyebrow">Step 4 of 4</p>
+          <h2>Where you want to go.</h2>
+          <p class="ob-desc">Be specific. "Something in business" doesn't build a trajectory.</p>
+          <div class="ob-fields">
+            <label class="ob-label">
+              Career goal
+              <input class="ob-input" type="text" id="goal" placeholder="Product Manager, Investment Analyst, UX Designer..." maxlength="60" />
+              <span class="ob-hint">Keep it to a role or field — you can get specific inside the app</span>
+            </label>
+            <label class="ob-label">
+              Skills you already have
+              <span class="ob-hint">One per line</span>
+              <textarea class="ob-input ob-textarea" id="skills" placeholder="Excel&#10;Public speaking&#10;Project management&#10;Python" rows="4"></textarea>
+            </label>
+          </div>
+        </div>
+
+        <div class="ob-actions">
+          <button class="ghost-button ob-back" id="obBack">Back</button>
+          <button class="primary-button ob-next" id="obNext">Continue</button>
+        </div>
+      </main>
+    </div>
+    <script src="./onboarding.js"></script>
+  </body>
+</html>

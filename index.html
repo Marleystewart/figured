@@ -1,1616 +1,324 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>HoopAbroad — Basketball Recruiting Network</title>
-  <link rel="stylesheet" href="./styles.css" />
-</head>
-<body>
-<div class="app-shell">
-
-  <!-- SIDEBAR -->
-  <aside class="sidebar">
-    <button class="brand" data-page="home">
-      <span class="brand-mark">H</span>
-      <span class="brand-label">HOOPABROAD</span>
-    </button>
-
-    <div class="role-switcher">
-      <button class="role-btn active" data-role="player">Player</button>
-      <button class="role-btn" data-role="coach">Coach</button>
-      <button class="role-btn" data-role="agent">Agent</button>
-    </div>
-
-    <nav class="nav-list" aria-label="Main navigation">
-      <button class="nav-item active" data-page="home">
-        <span class="nav-icon ni-home"></span><span class="nav-label">Home</span>
-      </button>
-      <button class="nav-item" data-page="discover">
-        <span class="nav-icon ni-discover"></span><span class="nav-label">Discover</span>
-      </button>
-      <button class="nav-item" data-page="opportunities">
-        <span class="nav-icon ni-opp"></span><span class="nav-label">Opportunities</span>
-      </button>
-      <button class="nav-item" data-page="pipeline">
-        <span class="nav-icon ni-pipeline"></span><span class="nav-label">Pipeline</span>
-      </button>
-      <button class="nav-item" data-page="financial">
-        <span class="nav-icon ni-fin"></span><span class="nav-label">Financial</span>
-      </button>
-      <button class="nav-item" data-page="messages">
-        <span class="nav-icon ni-msg"></span><span class="nav-label">Messages</span>
-        <span class="nav-badge">3</span>
-      </button>
-      <button class="nav-item" data-page="network">
-        <span class="nav-icon ni-net"></span><span class="nav-label">Network</span>
-      </button>
-      <button class="nav-item" data-page="analytics">
-        <span class="nav-icon ni-analytics"></span><span class="nav-label">Analytics</span>
-      </button>
-      <button class="nav-item" data-page="settings">
-        <span class="nav-icon ni-settings"></span><span class="nav-label">Settings</span>
-      </button>
-    </nav>
-
-    <div class="sidebar-card" data-role-show="player">
-      <div class="sidebar-card-head">
-        <span>Recruiting Score</span>
-        <span class="score-trend">+4 this week</span>
-      </div>
-      <strong>92</strong>
-      <div class="score-bar"><div class="score-fill" style="width:92%"></div></div>
-      <span>Trending with scouts in Spain &amp; Australia</span>
-    </div>
-
-    <div class="sidebar-card" data-role-show="coach" style="display:none">
-      <div class="sidebar-card-head">
-        <span>Roster Budget</span>
-        <span class="score-trend text-green">$420K</span>
-      </div>
-      <strong>3</strong>
-      <div class="score-bar"><div class="score-fill score-fill-green" style="width:60%"></div></div>
-      <span>Open spots — 2 guards, 1 wing</span>
-    </div>
-
-    <div class="sidebar-card" data-role-show="agent" style="display:none">
-      <div class="sidebar-card-head">
-        <span>Monthly Commission</span>
-        <span class="score-trend text-green">+12%</span>
-      </div>
-      <strong>$8.4K</strong>
-      <div class="score-bar"><div class="score-fill score-fill-gold" style="width:74%"></div></div>
-      <span>7 active clients — 2 deals closing</span>
-    </div>
-  </aside>
-
-  <!-- MAIN -->
-  <main class="main">
-
-    <!-- TOPBAR -->
-    <header class="topbar">
-      <label class="global-search">
-        <span class="search-icon">&#x2315;</span>
-        <input id="globalSearch" type="search" placeholder="Search players, teams, or opportunities..." />
-      </label>
-      <button class="icon-button notif-btn" aria-label="Notifications">
-        <span class="notif-icon"></span>
-        <span class="notif-dot"></span>
-      </button>
-      <button class="user-chip" data-page="profile">
-        <img src="./assets/basketball-highlight.png" alt="Jalen Wilson" />
-        <div class="user-chip-info">
-          <span id="topbarName">Jalen Wilson</span>
-          <small id="topbarRole">Player &middot; SG</small>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Figured | Personal Trajectory Platform</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="site-shell">
+      <header class="site-header">
+        <a class="brand" href="#top" aria-label="Figured home">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 32 32" role="img">
+              <path d="M26.8 5.3C16.5 7 9.1 12.9 6.5 23.2c6.2-.9 11.7-4.1 15.7-9.5-2.8 1.1-5.5 2.7-8 4.9 2.5-4.7 6.6-8.2 12.6-13.3Z" />
+              <path d="M7 24.2c2.4-3.3 5.2-5.9 8.6-7.7" />
+            </svg>
+          </span>
+          <span>Figured</span>
+        </a>
+        <nav class="desktop-nav" aria-label="Primary navigation">
+          <a href="#how">How it works</a>
+          <a href="#trajectory">Trajectory</a>
+          <a href="#dashboard">Dashboard</a>
+          <a href="#mentors">Mentors</a>
+        </nav>
+        <div class="header-actions">
+          <button class="ghost-button" data-scroll-target="dashboard">View Dashboard</button>
+          <a class="primary-button" href="./onboarding.html">Build My Path</a>
         </div>
-        <small class="chip-caret">&#x2304;</small>
-      </button>
-    </header>
+      </header>
 
-    <!-- HOME -->
-    <section class="page active" id="home" aria-label="Home">
-
-      <!-- PLAYER HOME -->
-      <div data-role-show="player">
-        <div class="page-title">
-          <div>
-            <p class="eyebrow">Home Feed</p>
-            <h1 id="homeGreeting">Welcome back, Jalen</h1>
-            <p class="muted-p">Connect. Compete. Get Recruited.</p>
-          </div>
-          <button class="primary-button" id="openComposer">Post Highlight</button>
-        </div>
-
-        <div class="quick-stats-bar">
-          <div class="quick-stat">
-            <span class="qs-value">8.4K</span>
-            <span class="qs-label">Profile Views</span>
-            <span class="qs-change positive">+18% this week</span>
-          </div>
-          <div class="quick-stat">
-            <span class="qs-value">136</span>
-            <span class="qs-label">Scout Saves</span>
-            <span class="qs-change positive">+7 new</span>
-          </div>
-          <div class="quick-stat">
-            <span class="qs-value">2.1K</span>
-            <span class="qs-label">Film Plays</span>
-            <span class="qs-change positive">+23% this week</span>
-          </div>
-          <div class="quick-stat">
-            <span class="qs-value">12</span>
-            <span class="qs-label">New Messages</span>
-            <span class="qs-change">3 from scouts</span>
-          </div>
-        </div>
-
-        <div class="home-grid">
-          <section class="feed-column">
-            <div class="tabs" role="tablist">
-              <button class="pill active" data-filter="all">For You</button>
-              <button class="pill" data-filter="following">Following</button>
-              <button class="pill" data-filter="opportunity">Opportunities</button>
-              <button class="pill" data-filter="highlight">Highlights</button>
+      <main id="top">
+        <section class="hero-section">
+          <div class="hero-copy">
+            <p class="eyebrow">Personal trajectory platform for students</p>
+            <h1>See where your path is actually leading.</h1>
+            <p class="hero-subtitle">Figured takes an honest look at where you stand today, where you want to go, and exactly what will move you closer.</p>
+            <div class="hero-actions">
+              <a class="primary-button large" href="./onboarding.html">Build My Path</a>
+              <button class="secondary-button large" data-scroll-target="trajectory">See Example Analysis</button>
             </div>
+            <div class="trust-row" aria-label="Figured principles">
+              <span>Clarity over pressure</span>
+              <span>Truth over motivation</span>
+              <span>Guidance over judgment</span>
+            </div>
+          </div>
 
-            <!-- Player post -->
-            <article class="post-card" data-feed-card="highlight following">
-              <div class="post-head">
-                <img class="avatar" src="./assets/basketball-highlight.png" alt="Marcus De'Ath" />
-                <div>
-                  <h3>Marcus De'Ath <span class="verified">&#x2713;</span></h3>
-                  <p>Point Guard &middot; 6'2" &middot; Class of 2025</p>
+          <div class="hero-product" aria-label="Figured dashboard preview">
+            <div class="preview-topbar">
+              <div>
+                <p>Good morning, Alex</p>
+                <strong>Trajectory snapshot</strong>
+              </div>
+              <button class="mini-button">Log an update</button>
+            </div>
+            <div class="hero-card-grid">
+              <article class="honest-card">
+                <div class="landscape" aria-hidden="true">
+                  <div class="sun"></div>
+                  <div class="mountain mountain-back"></div>
+                  <div class="mountain mountain-front"></div>
+                  <div class="path-line"></div>
                 </div>
-                <button class="outline-button">Connect</button>
-              </div>
-              <p class="post-copy">Ready for the next chapter. Looking to compete overseas and make an impact. Let's work.</p>
-              <div class="video-card">
-                <img src="./assets/basketball-highlight.png" alt="Basketball highlight reel" />
-                <button class="play-button" aria-label="Play highlight">&#x25B7;</button>
-                <div class="video-meta">
-                  <span class="video-label">Senior Season Mixtape &middot; 4:22</span>
-                  <span class="video-views">1.8K views</span>
+                <div class="honest-copy">
+                  <span>The honest take</span>
+                  <h2>You're on a solid path with real potential.</h2>
+                  <p>You're building a strong foundation, but to reach product management, you will need stronger product skills and more real-world exposure.</p>
                 </div>
-              </div>
-              <div class="player-mini-stats">
-                <span class="mini-stat"><strong>18.4</strong>PPG</span>
-                <span class="mini-stat"><strong>6.2</strong>APG</span>
-                <span class="mini-stat"><strong>4.1</strong>RPG</span>
-                <span class="mini-stat"><strong>1.8</strong>SPG</span>
-              </div>
-              <div class="tags">
-                <span>#PointGuard</span><span>#D1Experience</span><span>#WorkEthic</span>
-              </div>
-              <div class="engagement">
-                <button data-toggle-label="Like|Liked">Like</button>
-                <button>Comment</button>
-                <button>Repost</button>
-                <button data-toggle-label="Save|Saved">Save</button>
-              </div>
-            </article>
-
-            <!-- Opportunity in feed -->
-            <article class="post-card opp-feed-card" data-feed-card="opportunity">
-              <div class="opp-header">
-                <span class="cc cc-lg">ES</span>
-                <div>
-                  <h3>Pro League &mdash; Spain <span class="tier-badge tier-pro">PRO</span></h3>
-                  <p>Madrid &middot; PG / SG &middot; <span class="salary-inline">&euro;18K&ndash;&euro;26K / mo</span></p>
-                </div>
-                <button class="primary-button" data-page="opportunities">Apply</button>
-              </div>
-              <div class="opp-bullets">
-                <div class="bullet-row">
-                  <span class="blt">Deadline</span>
-                  <span>Roster window closes in <strong>18 days</strong> &mdash; act now</span>
-                </div>
-                <div class="bullet-row">
-                  <span class="blt">Benefits</span>
-                  <span>Housing provided &middot; &euro;45 / day per diem &middot; Flight covered</span>
-                </div>
-                <div class="bullet-row">
-                  <span class="blt">Contract</span>
-                  <span>10-month guaranteed &middot; Agent referrals accepted</span>
-                </div>
-                <div class="bullet-row match-highlight">
-                  <span class="match-badge">92% Match</span>
-                  <span class="match-text">Based on position, height, film quality, and experience</span>
-                </div>
-              </div>
-            </article>
-          </section>
-
-          <aside class="right-rail">
-            <section class="panel">
-              <div class="panel-head">
-                <h3>Opportunities for You</h3>
-                <button class="text-button" data-page="opportunities">See all</button>
-              </div>
-              <div class="mini-list">
-                <button class="mini-row" data-page="opportunities">
-                  <span class="cc">ES</span>
-                  <div>
-                    <strong>Pro League &mdash; Spain</strong>
-                    <small>PG fit &middot; Madrid &middot; &euro;18&ndash;26K / mo</small>
-                  </div>
-                  <span class="match-pill">92%</span>
-                </button>
-                <button class="mini-row" data-page="opportunities">
-                  <span class="cc">AU</span>
-                  <div>
-                    <strong>NBL1 &mdash; Australia</strong>
-                    <small>Guard &middot; Melbourne &middot; A$8&ndash;14K / mo</small>
-                  </div>
-                  <span class="match-pill">88%</span>
-                </button>
-                <button class="mini-row" data-page="opportunities">
-                  <span class="cc">DE</span>
-                  <div>
-                    <strong>Bundesliga &mdash; Germany</strong>
-                    <small>Wing &middot; Berlin &middot; &euro;14&ndash;22K / mo</small>
-                  </div>
-                  <span class="match-pill">81%</span>
-                </button>
-              </div>
-            </section>
-
-            <section class="panel">
-              <h3>Trending Players</h3>
-              <div class="player-list">
-                <button data-page="profile">
-                  <img src="./assets/basketball-highlight.png" alt="Andre Miles" />
-                  <span><strong>Andre Miles</strong><small>SG &middot; 6'5" &middot; 2025</small></span>
-                  <span class="trend-pill">#1</span>
-                </button>
-                <button data-page="profile">
-                  <img src="./assets/basketball-highlight.png" alt="Darius King" />
-                  <span><strong>Darius King</strong><small>SF &middot; 6'7" &middot; 2026</small></span>
-                  <span class="trend-pill">#2</span>
-                </button>
-                <button data-page="profile">
-                  <img src="./assets/basketball-highlight.png" alt="Noah Carter" />
-                  <span><strong>Noah Carter</strong><small>PG &middot; 6'1" &middot; 2025</small></span>
-                  <span class="trend-pill">#3</span>
-                </button>
-              </div>
-            </section>
-
-            <section class="panel">
-              <div class="panel-head"><h3>Who to Follow</h3></div>
-              <div class="follow-list">
-                <div class="follow-row">
-                  <span class="badge-icon">SC</span>
-                  <div>
-                    <strong>Euro Hoops Scout</strong>
-                    <small>Scout &middot; Germany &middot; Verified</small>
-                  </div>
-                  <button class="outline-button">Follow</button>
-                </div>
-                <div class="follow-row">
-                  <span class="badge-icon">AG</span>
-                  <div>
-                    <strong>Apex Sports Group</strong>
-                    <small>Agent &middot; Europe / Asia</small>
-                  </div>
-                  <button class="outline-button">Follow</button>
-                </div>
-              </div>
-            </section>
-          </aside>
-        </div>
-      </div><!-- /player home -->
-
-      <!-- COACH HOME -->
-      <div data-role-show="coach" style="display:none">
-        <div class="page-title">
-          <div>
-            <p class="eyebrow">Scout Dashboard</p>
-            <h1>Good day, Coach Rivera</h1>
-            <p class="muted-p">Find your next roster piece. Build your championship squad.</p>
-          </div>
-          <button class="primary-button">Search Players</button>
-        </div>
-
-        <div class="quick-stats-bar">
-          <div class="quick-stat">
-            <span class="qs-value">47</span>
-            <span class="qs-label">Players Shortlisted</span>
-            <span class="qs-change">+5 new</span>
-          </div>
-          <div class="quick-stat">
-            <span class="qs-value">3</span>
-            <span class="qs-label">Roster Openings</span>
-            <span class="qs-change">2 guards, 1 wing</span>
-          </div>
-          <div class="quick-stat">
-            <span class="qs-value">$420K</span>
-            <span class="qs-label">Budget Available</span>
-            <span class="qs-change positive">$140K avg per slot</span>
-          </div>
-          <div class="quick-stat">
-            <span class="qs-value">8</span>
-            <span class="qs-label">New Applications</span>
-            <span class="qs-change">4 reviewed</span>
-          </div>
-        </div>
-
-        <div class="home-grid">
-          <section class="feed-column">
-            <div class="tabs">
-              <button class="pill active">Top Prospects</button>
-              <button class="pill">New Applications</button>
-              <button class="pill">Shortlisted</button>
-              <button class="pill">Evaluated</button>
+              </article>
+              <article class="goal-card">
+                <span>Current goal</span>
+                <h3>Product Manager</h3>
+                <p>You love solving problems, leading projects, and working with people.</p>
+              </article>
             </div>
-
-            <article class="post-card">
-              <div class="post-head">
-                <img class="avatar" src="./assets/basketball-highlight.png" alt="Jalen Wilson" />
-                <div>
-                  <h3>Jalen Wilson <span class="verified">&#x2713;</span></h3>
-                  <p>Shooting Guard &middot; 6'4" &middot; Class of 2025 &middot; California, USA</p>
-                </div>
-                <button class="primary-button" data-toggle-label="Shortlist|Shortlisted">Shortlist</button>
-              </div>
-              <div class="player-mini-stats">
-                <span class="mini-stat"><strong>22.4</strong>PPG</span>
-                <span class="mini-stat"><strong>5.1</strong>RPG</span>
-                <span class="mini-stat"><strong>4.8</strong>APG</span>
-                <span class="mini-stat"><strong>2.1</strong>SPG</span>
-                <span class="mini-stat"><strong>44%</strong>3PT%</span>
-              </div>
-              <div class="eval-grid">
-                <div class="eval-item">
-                  <span class="eval-label">Athleticism</span>
-                  <div class="eval-bar"><div class="eval-fill" style="width:88%"></div></div>
-                  <span class="eval-num">88</span>
-                </div>
-                <div class="eval-item">
-                  <span class="eval-label">Basketball IQ</span>
-                  <div class="eval-bar"><div class="eval-fill" style="width:91%"></div></div>
-                  <span class="eval-num">91</span>
-                </div>
-                <div class="eval-item">
-                  <span class="eval-label">Film Quality</span>
-                  <div class="eval-bar"><div class="eval-fill" style="width:85%"></div></div>
-                  <span class="eval-num">85</span>
-                </div>
-              </div>
-              <div class="tags">
-                <span>#D1Experience</span><span>#PassportAvailable</span><span>#HighMotor</span>
-              </div>
-              <div class="engagement">
-                <button data-page="profile">View Profile</button>
-                <button>Request Film</button>
-                <button>Message</button>
-                <button data-toggle-label="Save|Saved">Save</button>
-              </div>
-            </article>
-          </section>
-
-          <aside class="right-rail">
-            <section class="panel">
-              <div class="panel-head"><h3>Position Needs</h3></div>
-              <div class="position-needs">
-                <div class="position-need-row">
-                  <span class="pos-badge">PG</span>
-                  <div>
-                    <strong>Point Guard</strong>
-                    <small>1 spot &middot; $130K budget &middot; 12 candidates</small>
-                  </div>
-                  <span class="urgency-dot urgent"></span>
-                </div>
-                <div class="position-need-row">
-                  <span class="pos-badge">SG</span>
-                  <div>
-                    <strong>Shooting Guard</strong>
-                    <small>1 spot &middot; $145K budget &middot; 8 candidates</small>
-                  </div>
-                  <span class="urgency-dot urgent"></span>
-                </div>
-                <div class="position-need-row">
-                  <span class="pos-badge">SF</span>
-                  <div>
-                    <strong>Small Forward</strong>
-                    <small>1 spot &middot; $145K budget &middot; 5 candidates</small>
-                  </div>
-                  <span class="urgency-dot medium"></span>
-                </div>
-              </div>
-            </section>
-
-            <section class="panel">
-              <div class="panel-head">
-                <h3>Recent Applicants</h3>
-                <button class="text-button">View all</button>
-              </div>
-              <div class="player-list">
-                <button>
-                  <img src="./assets/basketball-highlight.png" alt="Marcus De'Ath" />
-                  <span><strong>Marcus De'Ath</strong><small>PG &middot; 6'2" &middot; Applied today</small></span>
-                  <span class="match-pill">New</span>
-                </button>
-                <button>
-                  <img src="./assets/basketball-highlight.png" alt="Noah Carter" />
-                  <span><strong>Noah Carter</strong><small>PG &middot; 6'1" &middot; Applied 2d ago</small></span>
-                  <span class="match-pill">New</span>
-                </button>
-              </div>
-            </section>
-          </aside>
-        </div>
-      </div><!-- /coach home -->
-
-      <!-- AGENT HOME -->
-      <div data-role-show="agent" style="display:none">
-        <div class="page-title">
-          <div>
-            <p class="eyebrow">Deal Flow</p>
-            <h1>Good evening, Marcus Kline</h1>
-            <p class="muted-p">Your clients. Your deals. Your commission.</p>
-          </div>
-          <button class="primary-button">Add Client</button>
-        </div>
-
-        <div class="quick-stats-bar">
-          <div class="quick-stat">
-            <span class="qs-value">7</span>
-            <span class="qs-label">Active Clients</span>
-            <span class="qs-change">2 closing this month</span>
-          </div>
-          <div class="quick-stat">
-            <span class="qs-value">$2.1M</span>
-            <span class="qs-label">Pipeline Value</span>
-            <span class="qs-change positive">+$340K</span>
-          </div>
-          <div class="quick-stat">
-            <span class="qs-value">$8.4K</span>
-            <span class="qs-label">Monthly Commission</span>
-            <span class="qs-change positive">+12%</span>
-          </div>
-          <div class="quick-stat">
-            <span class="qs-value">4</span>
-            <span class="qs-label">Active Negotiations</span>
-            <span class="qs-change">Spain, AU, DE</span>
-          </div>
-        </div>
-
-        <div class="home-grid">
-          <section class="feed-column">
-            <div class="tabs">
-              <button class="pill active">Client Activity</button>
-              <button class="pill">Club Inquiries</button>
-              <button class="pill">New Opportunities</button>
-            </div>
-
-            <article class="post-card opp-feed-card">
-              <div class="opp-header">
-                <span class="cc cc-lg">ES</span>
-                <div>
-                  <h3>Pro League &mdash; Spain <span class="tier-badge tier-pro">PRO</span></h3>
-                  <p>Interested in Jalen Wilson &middot; <span class="salary-inline">&euro;20K / mo base &middot; 10-month contract</span></p>
-                </div>
-                <button class="primary-button">Negotiate</button>
-              </div>
-              <div class="opp-bullets">
-                <div class="bullet-row">
-                  <span class="blt">Salary</span>
-                  <span>Base &euro;20,000 / mo &middot; Signing bonus &euro;5,000 &middot; Housing included</span>
-                </div>
-                <div class="bullet-row">
-                  <span class="blt">Contract</span>
-                  <span>10 months guaranteed + 2-month club option</span>
-                </div>
-                <div class="bullet-row">
-                  <span class="blt">Travel</span>
-                  <span>Flights provided &middot; &euro;45 / day per diem &middot; Visa assistance</span>
-                </div>
-                <div class="bullet-row match-highlight">
-                  <span class="match-badge gold-badge">Your Cut</span>
-                  <span class="match-text">Estimated &sim;$12,000 commission at 10% on this deal</span>
-                </div>
-              </div>
-            </article>
-          </section>
-
-          <aside class="right-rail">
-            <section class="panel">
-              <div class="panel-head">
-                <h3>Client Pipeline</h3>
-                <button class="text-button" data-page="pipeline">Full view</button>
-              </div>
-              <div class="mini-list">
-                <div class="agent-client-row mini-row">
-                  <img class="avatar-sm" src="./assets/basketball-highlight.png" alt="" />
-                  <div>
-                    <strong>Jalen Wilson</strong>
-                    <small>Spain offer pending &middot; SG</small>
-                  </div>
-                  <span class="status-dot status-hot"></span>
-                </div>
-                <div class="agent-client-row mini-row">
-                  <img class="avatar-sm" src="./assets/basketball-highlight.png" alt="" />
-                  <div>
-                    <strong>Marcus De'Ath</strong>
-                    <small>Germany interview &middot; PG</small>
-                  </div>
-                  <span class="status-dot status-warm"></span>
-                </div>
-                <div class="agent-client-row mini-row">
-                  <img class="avatar-sm" src="./assets/basketball-highlight.png" alt="" />
-                  <div>
-                    <strong>Andre Miles</strong>
-                    <small>Australia shortlisted &middot; SG</small>
-                  </div>
-                  <span class="status-dot status-cool"></span>
-                </div>
-              </div>
-            </section>
-
-            <section class="panel">
-              <h3>Commission This Month</h3>
-              <div class="commission-breakdown">
-                <div class="commission-row">
-                  <span>Jalen Wilson &mdash; Spain</span>
-                  <strong>$12,000</strong>
-                </div>
-                <div class="commission-row muted-row">
-                  <span>Marcus De'Ath &mdash; Germany</span>
-                  <strong>Pending</strong>
-                </div>
-                <div class="commission-divider"></div>
-                <div class="commission-row total-row">
-                  <span>YTD Total</span>
-                  <strong class="text-green">$84,200</strong>
-                </div>
-              </div>
-            </section>
-          </aside>
-        </div>
-      </div><!-- /agent home -->
-
-    </section><!-- /home -->
-
-    <!-- DISCOVER -->
-    <section class="page" id="discover" aria-label="Discover">
-      <div class="page-title">
-        <div>
-          <p class="eyebrow">Discover</p>
-          <h1>Find players, scouts, and clubs</h1>
-          <p class="muted-p">Explore rising athletes, verified agents, and teams looking for talent.</p>
-        </div>
-      </div>
-      <div class="card-grid">
-        <article class="profile-card">
-          <img src="./assets/basketball-highlight.png" alt="Jalen Wilson" />
-          <h3>Jalen Wilson <span class="verified">&#x2713;</span></h3>
-          <p>Shooting Guard &middot; 6'4" &middot; California</p>
-          <div class="profile-card-stats">
-            <span><strong>22.4</strong>PPG</span>
-            <span><strong>5.1</strong>RPG</span>
-            <span><strong>4.8</strong>APG</span>
-          </div>
-          <button class="primary-button" data-page="profile">View Profile</button>
-        </article>
-        <article class="profile-card">
-          <img src="./assets/basketball-highlight.png" alt="Marcus De'Ath" />
-          <h3>Marcus De'Ath <span class="verified">&#x2713;</span></h3>
-          <p>Point Guard &middot; 6'2" &middot; Class of 2025</p>
-          <div class="profile-card-stats">
-            <span><strong>18.4</strong>PPG</span>
-            <span><strong>6.2</strong>APG</span>
-            <span><strong>4.1</strong>RPG</span>
-          </div>
-          <button class="primary-button">Connect</button>
-        </article>
-        <article class="profile-card">
-          <span class="badge-icon">SC</span>
-          <h3>Euro Hoops Scout <span class="verified">&#x2713;</span></h3>
-          <p>Verified Overseas Scout &middot; Germany &middot; 12 yrs exp</p>
-          <div class="profile-card-tags">
-            <span class="tag-pill">Germany</span>
-            <span class="tag-pill">Spain</span>
-            <span class="tag-pill">Portugal</span>
-          </div>
-          <button class="primary-button">Follow</button>
-        </article>
-        <article class="profile-card">
-          <span class="badge-icon">AG</span>
-          <h3>Apex Sports Group</h3>
-          <p>Agent Network &middot; Europe / Asia &middot; 40+ placements</p>
-          <div class="profile-card-tags">
-            <span class="tag-pill">Europe</span>
-            <span class="tag-pill">Asia</span>
-          </div>
-          <button class="primary-button">Follow</button>
-        </article>
-      </div>
-    </section>
-
-    <!-- OPPORTUNITIES -->
-    <section class="page" id="opportunities" aria-label="Opportunities">
-      <div class="page-title">
-        <div>
-          <p class="eyebrow">Opportunities</p>
-          <h1>Overseas roster openings</h1>
-          <p class="muted-p">Filter active basketball opportunities by region, position, and start date.</p>
-        </div>
-        <button class="primary-button">Upload Player Packet</button>
-      </div>
-      <div class="toolbar">
-        <label class="global-search compact-search">
-          <span>&#x2315;</span>
-          <input id="opportunitySearch" type="search" placeholder="Search leagues, cities, or positions" />
-        </label>
-        <div class="tabs">
-          <button class="pill active" data-region="all">All</button>
-          <button class="pill" data-region="Europe">Europe</button>
-          <button class="pill" data-region="Asia">Asia</button>
-          <button class="pill" data-region="Australia">Australia</button>
-          <button class="pill" data-region="Americas">Americas</button>
-        </div>
-      </div>
-
-      <div class="opportunity-grid" id="opportunityGrid">
-
-        <article class="opportunity-card" data-region="Europe" data-search="spain madrid point guard shooting guard">
-          <div class="opp-card-top">
-            <span class="cc cc-lg">ES</span>
-            <div class="opp-card-info">
-              <div class="opp-card-title-row">
-                <h3>Pro League &mdash; Spain</h3>
-                <span class="tier-badge tier-pro">PRO</span>
-                <span class="match-pill">92% Match</span>
-              </div>
-              <p>Madrid &middot; PG, SG &middot; Starts Aug 12 &middot; <strong class="salary-inline">&euro;18K&ndash;&euro;26K / mo</strong></p>
+            <div class="metric-strip">
+              <div><strong>Strength</strong><span>Academics</span></div>
+              <div><strong>Building</strong><span>Experience</span></div>
+              <div><strong>Focus first</strong><span>Skills</span></div>
+              <div><strong>Focus first</strong><span>Network</span></div>
             </div>
           </div>
-          <div class="opp-bullets">
-            <div class="bullet-row"><span class="blt">Salary</span><span>&euro;18,000&ndash;&euro;26,000 / month guaranteed</span></div>
-            <div class="bullet-row"><span class="blt">Housing</span><span>Furnished apartment + &euro;45 / day per diem</span></div>
-            <div class="bullet-row"><span class="blt">Travel</span><span>Round-trip flight + work visa assistance</span></div>
-            <div class="bullet-row"><span class="blt">Contract</span><span>10-month guaranteed &middot; Passport required</span></div>
-          </div>
-          <div class="opp-card-footer">
-            <div class="tags"><span>Point Guard</span><span>Passport ready</span></div>
-            <div class="opp-card-actions">
-              <button data-toggle-label="Save|Saved">Save</button>
-              <button class="primary-button">Apply Now</button>
-            </div>
-          </div>
-        </article>
-
-        <article class="opportunity-card" data-region="Australia" data-search="australia melbourne nbl1 guard">
-          <div class="opp-card-top">
-            <span class="cc cc-lg">AU</span>
-            <div class="opp-card-info">
-              <div class="opp-card-title-row">
-                <h3>NBL1 &mdash; Australia</h3>
-                <span class="tier-badge tier-semipro">SEMI-PRO</span>
-                <span class="match-pill">88% Match</span>
-              </div>
-              <p>Melbourne &middot; Guard &middot; Starts Jul 01 &middot; <strong class="salary-inline">A$8K&ndash;A$14K / mo</strong></p>
-            </div>
-          </div>
-          <div class="opp-bullets">
-            <div class="bullet-row"><span class="blt">Salary</span><span>A$8,000&ndash;A$14,000 / month</span></div>
-            <div class="bullet-row"><span class="blt">Housing</span><span>Allowance A$1,500 / month</span></div>
-            <div class="bullet-row"><span class="blt">Film</span><span>Full-game film required to apply</span></div>
-            <div class="bullet-row"><span class="blt">Contract</span><span>8-month season &middot; Open tryout available</span></div>
-          </div>
-          <div class="opp-card-footer">
-            <div class="tags"><span>Combo Guard</span><span>Film needed</span></div>
-            <div class="opp-card-actions">
-              <button data-toggle-label="Save|Saved">Save</button>
-              <button class="primary-button">Apply Now</button>
-            </div>
-          </div>
-        </article>
-
-        <article class="opportunity-card" data-region="Europe" data-search="germany berlin basketball bundesliga wing guard">
-          <div class="opp-card-top">
-            <span class="cc cc-lg">DE</span>
-            <div class="opp-card-info">
-              <div class="opp-card-title-row">
-                <h3>Basketball Bundesliga</h3>
-                <span class="tier-badge tier-pro">PRO</span>
-                <span class="match-pill">81% Match</span>
-              </div>
-              <p>Berlin &middot; PG, Wing &middot; Starts Sep 03 &middot; <strong class="salary-inline">&euro;14K&ndash;&euro;22K / mo</strong></p>
-            </div>
-          </div>
-          <div class="opp-bullets">
-            <div class="bullet-row"><span class="blt">Salary</span><span>&euro;14,000&ndash;&euro;22,000 / month</span></div>
-            <div class="bullet-row"><span class="blt">Passport</span><span>EU passport preferred but not required</span></div>
-            <div class="bullet-row"><span class="blt">Travel</span><span>Flight to Berlin covered &middot; Work permit arranged</span></div>
-            <div class="bullet-row"><span class="blt">Contract</span><span>10-month &middot; Extension possible</span></div>
-          </div>
-          <div class="opp-card-footer">
-            <div class="tags"><span>Wing</span><span>EU interest</span></div>
-            <div class="opp-card-actions">
-              <button data-toggle-label="Save|Saved">Save</button>
-              <button class="primary-button">Apply Now</button>
-            </div>
-          </div>
-        </article>
-
-        <article class="opportunity-card" data-region="Europe" data-search="portugal lisbon primeira liga shooting guard">
-          <div class="opp-card-top">
-            <span class="cc cc-lg">PT</span>
-            <div class="opp-card-info">
-              <div class="opp-card-title-row">
-                <h3>Primeira Liga &mdash; Portugal</h3>
-                <span class="tier-badge tier-semipro">SEMI-PRO</span>
-                <span class="match-pill">78% Match</span>
-              </div>
-              <p>Lisbon &middot; SG &middot; Starts Aug 28 &middot; <strong class="salary-inline">&euro;8K&ndash;&euro;14K / mo</strong></p>
-            </div>
-          </div>
-          <div class="opp-bullets">
-            <div class="bullet-row"><span class="blt">Salary</span><span>&euro;8,000&ndash;&euro;14,000 / month</span></div>
-            <div class="bullet-row"><span class="blt">Tryout</span><span>Open tryout &mdash; no agent required to apply</span></div>
-            <div class="bullet-row"><span class="blt">Housing</span><span>Housing assistance available on request</span></div>
-            <div class="bullet-row"><span class="blt">Contract</span><span>9-month &middot; Passport required</span></div>
-          </div>
-          <div class="opp-card-footer">
-            <div class="tags"><span>Shooting Guard</span><span>Open tryout</span></div>
-            <div class="opp-card-actions">
-              <button data-toggle-label="Save|Saved">Save</button>
-              <button class="primary-button">Apply Now</button>
-            </div>
-          </div>
-        </article>
-
-        <article class="opportunity-card" data-region="Asia" data-search="japan tokyo bleague guard">
-          <div class="opp-card-top">
-            <span class="cc cc-lg">JP</span>
-            <div class="opp-card-info">
-              <div class="opp-card-title-row">
-                <h3>B.League &mdash; Japan</h3>
-                <span class="tier-badge tier-pro">PRO</span>
-                <span class="match-pill">76% Match</span>
-              </div>
-              <p>Tokyo &middot; Guard &middot; Starts Oct 01 &middot; <strong class="salary-inline">&yen;300K&ndash;&yen;500K / mo</strong></p>
-            </div>
-          </div>
-          <div class="opp-bullets">
-            <div class="bullet-row"><span class="blt">Salary</span><span>&yen;300,000&ndash;&yen;500,000 / month (&sim;$2K&ndash;$3.3K USD)</span></div>
-            <div class="bullet-row"><span class="blt">Housing</span><span>Furnished apartment provided</span></div>
-            <div class="bullet-row"><span class="blt">Travel</span><span>International flight covered both ways</span></div>
-            <div class="bullet-row"><span class="blt">Contract</span><span>12-month &middot; Visa fully sponsored</span></div>
-          </div>
-          <div class="opp-card-footer">
-            <div class="tags"><span>Point Guard</span><span>Visa sponsored</span></div>
-            <div class="opp-card-actions">
-              <button data-toggle-label="Save|Saved">Save</button>
-              <button class="primary-button">Apply Now</button>
-            </div>
-          </div>
-        </article>
-
-        <article class="opportunity-card" data-region="Americas" data-search="canada nbl canada guard wing toronto">
-          <div class="opp-card-top">
-            <span class="cc cc-lg">CA</span>
-            <div class="opp-card-info">
-              <div class="opp-card-title-row">
-                <h3>NBL Canada</h3>
-                <span class="tier-badge tier-semipro">SEMI-PRO</span>
-                <span class="match-pill">74% Match</span>
-              </div>
-              <p>Toronto &middot; Guard / Wing &middot; Starts Nov 15 &middot; <strong class="salary-inline">C$5K&ndash;C$10K / mo</strong></p>
-            </div>
-          </div>
-          <div class="opp-bullets">
-            <div class="bullet-row"><span class="blt">Salary</span><span>C$5,000&ndash;C$10,000 / month</span></div>
-            <div class="bullet-row"><span class="blt">Housing</span><span>Allowance C$900 / month</span></div>
-            <div class="bullet-row"><span class="blt">Tryout</span><span>Tryout camp Aug 18 &mdash; no agent required</span></div>
-            <div class="bullet-row"><span class="blt">Note</span><span>US players welcome &middot; Close proximity to home</span></div>
-          </div>
-          <div class="opp-card-footer">
-            <div class="tags"><span>Wing</span><span>Tryout camp</span></div>
-            <div class="opp-card-actions">
-              <button data-toggle-label="Save|Saved">Save</button>
-              <button class="primary-button">Apply Now</button>
-            </div>
-          </div>
-        </article>
-
-      </div>
-    </section>
-
-    <!-- PIPELINE -->
-    <section class="page" id="pipeline" aria-label="Pipeline">
-      <div class="page-title">
-        <div>
-          <p class="eyebrow">Pipeline</p>
-          <h1 id="pipelineTitle">Your Recruiting Pipeline</h1>
-          <p class="muted-p" id="pipelineSubtitle">Track every opportunity from discovery to contract signing.</p>
-        </div>
-      </div>
-
-      <!-- Player pipeline -->
-      <div data-role-show="player">
-        <div class="pipeline-board">
-          <div class="pipeline-column">
-            <div class="pipeline-col-head">
-              <span class="pipeline-dot dot-gray"></span>Interested<span class="pipeline-count">2</span>
-            </div>
-            <div class="pipeline-cards">
-              <div class="pipeline-card">
-                <div class="pipeline-card-head">
-                  <span class="cc cc-sm">PT</span>
-                  <div><strong>Primeira Liga &mdash; Portugal</strong><small>&euro;8&ndash;14K / mo &middot; SG</small></div>
-                </div>
-                <div class="pipeline-card-meta"><span>Starts Aug 28</span><span class="tier-badge tier-semipro">SEMI</span></div>
-              </div>
-              <div class="pipeline-card">
-                <div class="pipeline-card-head">
-                  <span class="cc cc-sm">JP</span>
-                  <div><strong>B.League &mdash; Japan</strong><small>&yen;300&ndash;500K / mo &middot; Guard</small></div>
-                </div>
-                <div class="pipeline-card-meta"><span>Starts Oct 01</span><span class="tier-badge tier-pro">PRO</span></div>
-              </div>
-            </div>
-          </div>
-          <div class="pipeline-column">
-            <div class="pipeline-col-head">
-              <span class="pipeline-dot dot-blue"></span>Applied<span class="pipeline-count">1</span>
-            </div>
-            <div class="pipeline-cards">
-              <div class="pipeline-card">
-                <div class="pipeline-card-head">
-                  <span class="cc cc-sm">AU</span>
-                  <div><strong>NBL1 &mdash; Australia</strong><small>A$8&ndash;14K / mo &middot; Guard</small></div>
-                </div>
-                <div class="pipeline-card-meta"><span>Applied 3d ago</span><span class="tier-badge tier-semipro">SEMI</span></div>
-              </div>
-            </div>
-          </div>
-          <div class="pipeline-column">
-            <div class="pipeline-col-head">
-              <span class="pipeline-dot dot-yellow"></span>In Review<span class="pipeline-count">1</span>
-            </div>
-            <div class="pipeline-cards">
-              <div class="pipeline-card pipeline-card-active">
-                <div class="pipeline-card-head">
-                  <span class="cc cc-sm">DE</span>
-                  <div><strong>Bundesliga &mdash; Germany</strong><small>&euro;14&ndash;22K / mo &middot; Wing</small></div>
-                </div>
-                <div class="pipeline-card-meta"><span>Film requested</span><span class="tier-badge tier-pro">PRO</span></div>
-                <div class="pipeline-next-step">
-                  <span class="next-label">Next step</span>Send 2 full-game films by Friday
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="pipeline-column">
-            <div class="pipeline-col-head">
-              <span class="pipeline-dot dot-purple"></span>Interview<span class="pipeline-count">0</span>
-            </div>
-            <div class="pipeline-cards pipeline-empty">
-              <p>No interviews scheduled yet</p>
-            </div>
-          </div>
-          <div class="pipeline-column">
-            <div class="pipeline-col-head">
-              <span class="pipeline-dot dot-green"></span>Offer<span class="pipeline-count">1</span>
-            </div>
-            <div class="pipeline-cards">
-              <div class="pipeline-card pipeline-card-offer">
-                <div class="pipeline-card-head">
-                  <span class="cc cc-sm">ES</span>
-                  <div><strong>Pro League &mdash; Spain</strong><small>&euro;20K / mo guaranteed</small></div>
-                </div>
-                <div class="pipeline-card-meta"><span class="text-green">Offer received</span><span class="tier-badge tier-pro">PRO</span></div>
-                <div class="pipeline-card-actions">
-                  <button class="primary-button">Review Offer</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Coach pipeline -->
-      <div data-role-show="coach" style="display:none">
-        <div class="pipeline-board">
-          <div class="pipeline-column">
-            <div class="pipeline-col-head"><span class="pipeline-dot dot-gray"></span>Prospects<span class="pipeline-count">12</span></div>
-            <div class="pipeline-cards">
-              <div class="pipeline-card">
-                <div class="pipeline-card-head"><img class="avatar-sm" src="./assets/basketball-highlight.png" alt="" /><div><strong>Noah Carter</strong><small>PG &middot; 6'1" &middot; 2025</small></div></div>
-                <div class="pipeline-card-meta"><span>Score: 92</span><span class="match-pill">High fit</span></div>
-              </div>
-              <div class="pipeline-card">
-                <div class="pipeline-card-head"><img class="avatar-sm" src="./assets/basketball-highlight.png" alt="" /><div><strong>Darius King</strong><small>SF &middot; 6'7" &middot; 2026</small></div></div>
-                <div class="pipeline-card-meta"><span>Score: 88</span><span class="match-pill">Good fit</span></div>
-              </div>
-            </div>
-          </div>
-          <div class="pipeline-column">
-            <div class="pipeline-col-head"><span class="pipeline-dot dot-blue"></span>Shortlisted<span class="pipeline-count">7</span></div>
-            <div class="pipeline-cards">
-              <div class="pipeline-card">
-                <div class="pipeline-card-head"><img class="avatar-sm" src="./assets/basketball-highlight.png" alt="" /><div><strong>Jalen Wilson</strong><small>SG &middot; 6'4" &middot; 2025</small></div></div>
-                <div class="pipeline-card-meta"><span>Score: 96</span><span class="match-pill">Top fit</span></div>
-              </div>
-            </div>
-          </div>
-          <div class="pipeline-column">
-            <div class="pipeline-col-head"><span class="pipeline-dot dot-yellow"></span>Film Review<span class="pipeline-count">3</span></div>
-            <div class="pipeline-cards">
-              <div class="pipeline-card pipeline-card-active">
-                <div class="pipeline-card-head"><img class="avatar-sm" src="./assets/basketball-highlight.png" alt="" /><div><strong>Marcus De'Ath</strong><small>PG &middot; 6'2"</small></div></div>
-                <div class="pipeline-next-step"><span class="next-label">Next</span>Review 2 full-game films</div>
-              </div>
-            </div>
-          </div>
-          <div class="pipeline-column">
-            <div class="pipeline-col-head"><span class="pipeline-dot dot-purple"></span>Video Call<span class="pipeline-count">1</span></div>
-            <div class="pipeline-cards">
-              <div class="pipeline-card">
-                <div class="pipeline-card-head"><img class="avatar-sm" src="./assets/basketball-highlight.png" alt="" /><div><strong>Andre Miles</strong><small>SG &middot; 6'5"</small></div></div>
-                <div class="pipeline-card-meta"><span>Jun 8 &middot; 2pm PST</span></div>
-              </div>
-            </div>
-          </div>
-          <div class="pipeline-column">
-            <div class="pipeline-col-head"><span class="pipeline-dot dot-green"></span>Offer Sent<span class="pipeline-count">1</span></div>
-            <div class="pipeline-cards">
-              <div class="pipeline-card pipeline-card-offer">
-                <div class="pipeline-card-head"><img class="avatar-sm" src="./assets/basketball-highlight.png" alt="" /><div><strong>Jalen Wilson</strong><small>&euro;20K / mo offer</small></div></div>
-                <div class="pipeline-card-meta"><span>Awaiting response</span></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Agent pipeline -->
-      <div data-role-show="agent" style="display:none">
-        <div class="pipeline-board">
-          <div class="pipeline-column">
-            <div class="pipeline-col-head"><span class="pipeline-dot dot-gray"></span>Prospecting<span class="pipeline-count">4</span></div>
-            <div class="pipeline-cards">
-              <div class="pipeline-card">
-                <div class="pipeline-card-head"><img class="avatar-sm" src="./assets/basketball-highlight.png" alt="" /><div><strong>Jordan Lee</strong><small>SF &middot; 6'6" &middot; Free agent</small></div></div>
-                <div class="pipeline-card-meta"><span>Intro sent</span></div>
-              </div>
-            </div>
-          </div>
-          <div class="pipeline-column">
-            <div class="pipeline-col-head"><span class="pipeline-dot dot-blue"></span>In Discussion<span class="pipeline-count">3</span></div>
-            <div class="pipeline-cards">
-              <div class="pipeline-card">
-                <div class="pipeline-card-head"><img class="avatar-sm" src="./assets/basketball-highlight.png" alt="" /><div><strong>Andre Miles</strong><small>SG &middot; targeting Australia</small></div></div>
-                <div class="pipeline-card-meta"><span>2 clubs interested</span></div>
-              </div>
-            </div>
-          </div>
-          <div class="pipeline-column">
-            <div class="pipeline-col-head"><span class="pipeline-dot dot-yellow"></span>Negotiating<span class="pipeline-count">2</span></div>
-            <div class="pipeline-cards">
-              <div class="pipeline-card pipeline-card-active">
-                <div class="pipeline-card-head"><img class="avatar-sm" src="./assets/basketball-highlight.png" alt="" /><div><strong>Marcus De'Ath</strong><small>Germany &middot; &euro;14K offer on table</small></div></div>
-                <div class="pipeline-next-step"><span class="next-label">Next</span>Counter at &euro;17K by Thursday</div>
-              </div>
-            </div>
-          </div>
-          <div class="pipeline-column">
-            <div class="pipeline-col-head"><span class="pipeline-dot dot-purple"></span>Legal Review<span class="pipeline-count">1</span></div>
-            <div class="pipeline-cards">
-              <div class="pipeline-card">
-                <div class="pipeline-card-head"><img class="avatar-sm" src="./assets/basketball-highlight.png" alt="" /><div><strong>Jalen Wilson</strong><small>Spain &middot; &euro;20K / mo</small></div></div>
-                <div class="pipeline-card-meta"><span>Contract under review</span></div>
-              </div>
-            </div>
-          </div>
-          <div class="pipeline-column">
-            <div class="pipeline-col-head"><span class="pipeline-dot dot-green"></span>Signed<span class="pipeline-count">2</span></div>
-            <div class="pipeline-cards">
-              <div class="pipeline-card pipeline-card-offer">
-                <div class="pipeline-card-head"><span class="cc cc-sm">ES</span><div><strong>Jalen Wilson</strong><small>&euro;20K / mo &middot; Commission $12K</small></div></div>
-                <div class="pipeline-card-meta"><span class="text-green">Signed</span></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- FINANCIAL -->
-    <section class="page" id="financial" aria-label="Financial">
-      <div class="page-title">
-        <div>
-          <p class="eyebrow">Financial</p>
-          <h1>Salary &amp; Contract Guide</h1>
-          <p class="muted-p">Know your worth. Understand every contract line. Plan your career finances.</p>
-        </div>
-      </div>
-
-      <!-- Player financial -->
-      <div data-role-show="player">
-        <div class="financial-grid">
-          <div class="financial-summary">
-            <h3>Your Estimated Market Value</h3>
-            <p class="muted-p" style="margin-top:4px">Based on your position, stats, film quality, and experience level</p>
-            <div class="market-range">
-              <span class="market-low">&euro;12K / mo</span>
-              <div class="market-range-bar">
-                <div class="market-fill" style="width:68%"></div>
-                <div class="market-pointer" style="left:68%"><span>You</span></div>
-              </div>
-              <span class="market-high">&euro;30K / mo</span>
-            </div>
-            <p class="market-label">Your range: <strong>&euro;16K&ndash;&euro;22K / month</strong> based on your current profile</p>
-          </div>
-
-          <div class="financial-card">
-            <h3>League Salary Tiers</h3>
-            <div class="salary-tier-list">
-              <div class="salary-tier-row">
-                <span class="tier-badge tier-pro">PRO</span>
-                <span>Top EU leagues &mdash; Spain, Germany, Turkey, Italy</span>
-                <strong>&euro;15K&ndash;&euro;50K / mo</strong>
-              </div>
-              <div class="salary-tier-row">
-                <span class="tier-badge tier-semipro">SEMI-PRO</span>
-                <span>2nd division EU, NBL1 Australia, Korean BL</span>
-                <strong>&euro;5K&ndash;&euro;18K / mo</strong>
-              </div>
-              <div class="salary-tier-row">
-                <span class="tier-badge tier-dev">DEV</span>
-                <span>Development leagues, 3rd division EU, Asia regional</span>
-                <strong>&euro;2K&ndash;&euro;8K / mo</strong>
-              </div>
-            </div>
-          </div>
-
-          <div class="financial-card wide-card">
-            <h3>Contract Components &mdash; What to Negotiate</h3>
-            <div class="contract-bullets">
-              <div class="contract-bullet">
-                <span class="cb-label">Base Salary</span>
-                <p>Your guaranteed monthly pay. Know the league average before you sign &mdash; arriving uninformed costs you leverage. Always push upward from the opening offer.</p>
-              </div>
-              <div class="contract-bullet">
-                <span class="cb-label">Flight &amp; Travel</span>
-                <p>Round-trip flights home should be in every overseas contract. If not included, budget $1,500&ndash;$3,000 out of pocket per round trip.</p>
-              </div>
-              <div class="contract-bullet">
-                <span class="cb-label">Housing</span>
-                <p>Some clubs provide a furnished apartment; others give a monthly allowance. Confirm which applies and get it in writing before signing.</p>
-              </div>
-              <div class="contract-bullet">
-                <span class="cb-label">Per Diem</span>
-                <p>Daily meal allowance during games and road travel. Ranges &euro;25&ndash;&euro;80 / day. Over a 10-month season this can add &euro;3,000&ndash;&euro;10,000 to your total package.</p>
-              </div>
-              <div class="contract-bullet">
-                <span class="cb-label">Guarantee</span>
-                <p>Is the contract fully guaranteed or can the club release you early? Always push for a guaranteed deal or understand precisely what the cut clause says.</p>
-              </div>
-              <div class="contract-bullet">
-                <span class="cb-label">Agent Fee</span>
-                <p>Standard agent commission is 5&ndash;10% of total contract value. Clarify terms before signing with any agent &mdash; an unread clause can cost you thousands.</p>
-              </div>
-            </div>
-          </div>
-
-          <div class="financial-card">
-            <h3>Cost of Living by Market</h3>
-            <div class="cost-table">
-              <div class="cost-row cost-header">
-                <span>City</span><span>Housing / mo</span><span>Food / mo</span><span>Min net needed</span>
-              </div>
-              <div class="cost-row"><span>Madrid, Spain</span><span>&euro;900&ndash;1,500</span><span>&euro;400&ndash;600</span><span>&euro;3,000+</span></div>
-              <div class="cost-row"><span>Berlin, Germany</span><span>&euro;1,000&ndash;1,700</span><span>&euro;350&ndash;550</span><span>&euro;3,200+</span></div>
-              <div class="cost-row"><span>Melbourne, AU</span><span>A$1,500&ndash;2,200</span><span>A$400&ndash;700</span><span>A$5,000+</span></div>
-              <div class="cost-row"><span>Lisbon, Portugal</span><span>&euro;700&ndash;1,200</span><span>&euro;300&ndash;500</span><span>&euro;2,500+</span></div>
-              <div class="cost-row"><span>Tokyo, Japan</span><span>&yen;100K&ndash;180K</span><span>&yen;50K&ndash;80K</span><span>&yen;250K+</span></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Agent financial -->
-      <div data-role-show="agent" style="display:none">
-        <div class="financial-grid">
-          <div class="financial-card">
-            <h3>Commission Calculator</h3>
-            <div class="commission-calc">
-              <div class="calc-row">
-                <span>Monthly salary (&euro;)</span>
-                <input class="calc-input" id="calcMonthly" type="number" value="20000" />
-              </div>
-              <div class="calc-row">
-                <span>Contract length (months)</span>
-                <input class="calc-input" id="calcMonths" type="number" value="10" />
-              </div>
-              <div class="calc-row">
-                <span>Commission rate (%)</span>
-                <input class="calc-input" id="calcRate" type="number" value="10" />
-              </div>
-              <div class="calc-result">
-                <span>Estimated commission</span>
-                <strong class="text-green" id="calcOutput">$20,000</strong>
-              </div>
-            </div>
-          </div>
-          <div class="financial-card">
-            <h3>Client Portfolio Value</h3>
-            <div class="portfolio-list">
-              <div class="portfolio-row">
-                <span>Jalen Wilson</span>
-                <div class="portfolio-bar"><div class="portfolio-fill" style="width:85%"></div></div>
-                <strong>&euro;200K / yr</strong>
-              </div>
-              <div class="portfolio-row">
-                <span>Marcus De'Ath</span>
-                <div class="portfolio-bar"><div class="portfolio-fill" style="width:60%"></div></div>
-                <strong>&euro;150K / yr</strong>
-              </div>
-              <div class="portfolio-row">
-                <span>Andre Miles</span>
-                <div class="portfolio-bar"><div class="portfolio-fill" style="width:40%"></div></div>
-                <strong>&euro;96K / yr</strong>
-              </div>
-            </div>
-          </div>
-          <div class="financial-card wide-card">
-            <h3>Agent Fee Guidelines</h3>
-            <div class="contract-bullets">
-              <div class="contract-bullet">
-                <span class="cb-label">Standard Rate</span>
-                <p>Industry standard is 5&ndash;10% of total contract value. For overseas deals requiring full placement, visa, and negotiation services, 8&ndash;10% is common.</p>
-              </div>
-              <div class="contract-bullet">
-                <span class="cb-label">Fee Structure</span>
-                <p>Some agents charge a flat fee per placement; others take a percentage of each monthly payment. Percentage of monthly payments is the most common structure internationally.</p>
-              </div>
-              <div class="contract-bullet">
-                <span class="cb-label">FIBA Registration</span>
-                <p>Agents working in FIBA-affiliated leagues should be registered. Registration protects both agent and client in international deals and is required by some leagues.</p>
-              </div>
-              <div class="contract-bullet">
-                <span class="cb-label">Exclusivity</span>
-                <p>Most agent agreements include an exclusivity period of 1&ndash;2 years. Draft these carefully to protect your commissions on deals you initiate.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Coach financial -->
-      <div data-role-show="coach" style="display:none">
-        <div class="financial-grid">
-          <div class="financial-card wide-card">
-            <h3>Roster Budget Allocation</h3>
-            <div class="salary-tier-list">
-              <div class="salary-tier-row">
-                <span class="pos-badge">PG</span>
-                <div>
-                  <strong>Point Guard &mdash; 1 open slot</strong>
-                  <div class="portfolio-bar" style="margin-top:8px"><div class="portfolio-fill" style="width:65%"></div></div>
-                </div>
-                <strong>$130K allocated</strong>
-              </div>
-              <div class="salary-tier-row">
-                <span class="pos-badge">SG</span>
-                <div>
-                  <strong>Shooting Guard &mdash; 1 open slot</strong>
-                  <div class="portfolio-bar" style="margin-top:8px"><div class="portfolio-fill" style="width:72%"></div></div>
-                </div>
-                <strong>$145K allocated</strong>
-              </div>
-              <div class="salary-tier-row">
-                <span class="pos-badge">SF</span>
-                <div>
-                  <strong>Small Forward &mdash; 1 open slot</strong>
-                  <div class="portfolio-bar" style="margin-top:8px"><div class="portfolio-fill" style="width:72%"></div></div>
-                </div>
-                <strong>$145K allocated</strong>
-              </div>
-            </div>
-          </div>
-          <div class="financial-card">
-            <h3>Roster Cost Breakdown</h3>
-            <div class="contract-bullets">
-              <div class="contract-bullet">
-                <span class="cb-label">Total Signed</span>
-                <p>Current payroll across 12 signed players: $2.1M annual</p>
-              </div>
-              <div class="contract-bullet">
-                <span class="cb-label">Housing &amp; Per Diem</span>
-                <p>Budget approximately 15% of base salary for benefits per international player.</p>
-              </div>
-              <div class="contract-bullet">
-                <span class="cb-label">Travel</span>
-                <p>For international signings, budget $3,000&ndash;$6,000 per player for flights.</p>
-              </div>
-              <div class="contract-bullet">
-                <span class="cb-label">Agent Fees</span>
-                <p>Expect 8&ndash;10% above base salary for agent-represented international players.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- MESSAGES -->
-    <section class="page" id="messages" aria-label="Messages">
-      <div class="page-title">
-        <div>
-          <p class="eyebrow">Messages</p>
-          <h1>Recruiting Inbox</h1>
-          <p class="muted-p">Keep scout, agent, and team conversations in one place.</p>
-        </div>
-      </div>
-      <div class="messages-layout">
-        <aside class="thread-list">
-          <button class="thread active">
-            <span class="badge-icon">SC</span>
-            <div>
-              <div class="thread-name-row">
-                <strong>Euro Hoops Scout</strong>
-                <small class="thread-time">2h ago</small>
-              </div>
-              <small>Can you send full-game film?</small>
-            </div>
-          </button>
-          <button class="thread">
-            <span class="badge-icon">AG</span>
-            <div>
-              <div class="thread-name-row">
-                <strong>Apex Sports Group</strong>
-                <small class="thread-time">Yesterday</small>
-              </div>
-              <small>Portugal roster opening</small>
-            </div>
-          </button>
-          <button class="thread">
-            <span class="badge-icon">BC</span>
-            <div>
-              <div class="thread-name-row">
-                <strong>Lisbon Lions BC</strong>
-                <small class="thread-time">3d ago</small>
-              </div>
-              <small>Workout availability</small>
-            </div>
-          </button>
-        </aside>
-        <section class="chat-panel">
-          <div class="chat-header">
-            <span class="badge-icon">SC</span>
-            <div>
-              <strong>Euro Hoops Scout</strong>
-              <small>Verified Scout &middot; Germany &middot; Responds within 1 hour</small>
-            </div>
-          </div>
-          <div class="chat-messages">
-            <div class="message received">Your latest highlight package is strong. Do you have full-game film from this season?</div>
-            <div class="message sent">Yes, I can send two full games plus my stat sheet today.</div>
-            <div class="message received">Perfect. Spain and Portugal both need guards with your profile.</div>
-            <div class="message received">Please send the film by EOD and I will loop in the club contact in Madrid. &euro;20K base is their starting offer.</div>
-          </div>
-          <label class="compose">
-            <input type="text" placeholder="Write a message..." />
-            <button>Send</button>
-          </label>
         </section>
-      </div>
-    </section>
 
-    <!-- NETWORK -->
-    <section class="page" id="network" aria-label="Network">
-      <div class="page-title">
-        <div>
-          <p class="eyebrow">Network</p>
-          <h1>Your Recruiting Connections</h1>
-          <p class="muted-p">Manage athletes, coaches, scouts, agents, and clubs.</p>
-        </div>
-      </div>
-      <div class="card-grid">
-        <article class="profile-card">
-          <span class="badge-icon">SC</span>
-          <h3>Euro Hoops Scout <span class="verified">&#x2713;</span></h3>
-          <p>Scout &middot; Germany &middot; Following you</p>
-          <div class="profile-card-tags">
-            <span class="tag-pill">Germany</span><span class="tag-pill">Spain</span><span class="tag-pill">Portugal</span>
+        <section class="section-block" id="how">
+          <div class="section-heading">
+            <p class="eyebrow">How it works</p>
+            <h2>A calm way to understand what comes next.</h2>
           </div>
-          <button class="primary-button">Message</button>
-        </article>
-        <article class="profile-card">
-          <span class="badge-icon">AG</span>
-          <h3>Apex Sports Group</h3>
-          <p>Agent &middot; Europe / Asia &middot; 40+ placements</p>
-          <div class="profile-card-tags">
-            <span class="tag-pill">Europe</span><span class="tag-pill">Asia</span>
+          <div class="steps-grid">
+            <article><span>01</span><h3>Tell us about yourself</h3><p>Major, GPA, projects, clubs, work, skills, interests, and goals.</p></article>
+            <article><span>02</span><h3>Get an honest trajectory analysis</h3><p>See what your current choices are most likely preparing you for.</p></article>
+            <article><span>03</span><h3>Identify your biggest gaps</h3><p>Understand which missing pieces matter most for your chosen path.</p></article>
+            <article><span>04</span><h3>Follow a personalized action plan</h3><p>Use 30, 60, and 90-day steps that are practical and focused.</p></article>
+            <article><span>05</span><h3>Connect with opportunities and mentors</h3><p>Find internships, programs, alumni, and professionals aligned with your trajectory.</p></article>
           </div>
-          <button class="primary-button">Message</button>
-        </article>
-        <article class="profile-card">
-          <span class="badge-icon">BC</span>
-          <h3>Lisbon Lions BC</h3>
-          <p>Club &middot; Portugal &middot; Liga 1</p>
-          <div class="profile-card-tags">
-            <span class="tag-pill">Portugal</span><span class="tag-pill">Liga 1</span>
-          </div>
-          <button class="primary-button">View Club</button>
-        </article>
-      </div>
-    </section>
+        </section>
 
-    <!-- BOOKMARKS -->
-    <section class="page" id="bookmarks" aria-label="Bookmarks">
-      <div class="page-title">
-        <div>
-          <p class="eyebrow">Bookmarks</p>
-          <h1>Saved Film &amp; Opportunities</h1>
-          <p class="muted-p">Everything you want to revisit before making your next move.</p>
-        </div>
-      </div>
-      <div class="card-grid">
-        <article class="saved-card">
-          <div class="saved-card-head">
-            <span class="cc cc-lg">ES</span>
-            <div>
-              <h3>Pro League &mdash; Spain</h3>
-              <p>Saved opportunity &middot; Madrid &middot; PG / SG &middot; &euro;18&ndash;26K / mo</p>
+        <section class="trajectory-section" id="trajectory">
+          <div class="section-heading compact">
+            <p class="eyebrow">Trajectory preview</p>
+            <h2>From current position to career goal, without the noise.</h2>
+          </div>
+          <div class="roadmap-panel">
+            <div class="roadmap" aria-label="Trajectory stages">
+              <div class="road-step active"><span>Foundations</span></div>
+              <div class="road-step active"><span>Exploration</span></div>
+              <div class="road-step"><span>Positioning</span></div>
+              <div class="road-step"><span>Impact</span></div>
+            </div>
+            <div class="trajectory-cards">
+              <article>
+                <h3>Sample student profile</h3>
+                <ul>
+                  <li>Business Administration major</li>
+                  <li>GPA: 3.45</li>
+                  <li>Marketing Club, case competitions</li>
+                  <li>Marketing internship, summer 2024</li>
+                  <li>Goal: Product Manager</li>
+                </ul>
+              </article>
+              <article class="insight-card">
+                <h3>Generated insights</h3>
+                <p>Your academics and leadership signals are promising. The biggest constraints are product-specific proof, a thin network, and limited exposure to technical teams.</p>
+                <button class="secondary-button" data-scroll-target="gaps">See gap breakdown</button>
+              </article>
             </div>
           </div>
-          <button class="outline-button" data-page="opportunities">Open</button>
-        </article>
-        <article class="saved-card">
-          <div class="saved-card-head">
-            <span class="badge-icon">HL</span>
-            <div>
-              <h3>Marcus De'Ath Highlight</h3>
-              <p>Saved player film &middot; Point Guard &middot; Class of 2025</p>
+        </section>
+
+        <section class="section-block" id="gaps">
+          <div class="section-heading">
+            <p class="eyebrow">Gap analysis</p>
+            <h2>Specific, honest, and never harsh.</h2>
+          </div>
+          <div class="gap-grid">
+            <article class="gap-card">
+              <span>Academic Readiness</span>
+              <strong>Current: Strong</strong>
+              <p>Desired: Maintain above 3.3 while adding product-focused coursework.</p>
+              <small>Next: Take product strategy or analytics elective.</small>
+            </article>
+            <article class="gap-card">
+              <span>Relevant Experience</span>
+              <strong>Current: Building</strong>
+              <p>Desired: Show hands-on product thinking through internships or projects.</p>
+              <small>Next: Complete one product case study.</small>
+            </article>
+            <article class="gap-card">
+              <span>Networking Strength</span>
+              <strong>Current: Light</strong>
+              <p>Desired: Build relationships with PMs, alumni, and operators.</p>
+              <small>Next: Reach out to 3 alumni this month.</small>
+            </article>
+            <article class="gap-card">
+              <span>Industry Exposure</span>
+              <strong>Current: Early</strong>
+              <p>Desired: Understand product work across startup and larger company contexts.</p>
+              <small>Next: Attend one product community event.</small>
+            </article>
+            <article class="gap-card">
+              <span>Portfolio Quality</span>
+              <strong>Current: Missing</strong>
+              <p>Desired: Evidence of problem framing, research, metrics, and prioritization.</p>
+              <small>Next: Publish a concise portfolio project.</small>
+            </article>
+            <article class="gap-card">
+              <span>Leadership Experience</span>
+              <strong>Current: Promising</strong>
+              <p>Desired: Lead a project with measurable outcomes and cross-functional work.</p>
+              <small>Next: Own one club initiative end to end.</small>
+            </article>
+          </div>
+        </section>
+
+        <section class="action-section" id="actions">
+          <div class="section-heading compact">
+            <p class="eyebrow">Action plan</p>
+            <h2>High-impact steps for the next 90 days.</h2>
+          </div>
+          <div class="plan-panel">
+            <div class="plan-tabs" role="tablist" aria-label="Action plan timeline">
+              <button class="plan-tab active" data-plan="30">30 days</button>
+              <button class="plan-tab" data-plan="60">60 days</button>
+              <button class="plan-tab" data-plan="90">90 days</button>
+            </div>
+            <div class="plan-list" id="planList"></div>
+          </div>
+        </section>
+
+        <section class="opportunity-section" id="opportunities">
+          <div class="section-heading">
+            <p class="eyebrow">Opportunities</p>
+            <h2>Realistic options based on the student's trajectory.</h2>
+          </div>
+          <div class="opportunity-grid">
+            <article><div><span>Internship</span><h3>Product Intern</h3><p>Acme Corp · Remote</p></div><strong>90%</strong></article>
+            <article><div><span>Entry-level job</span><h3>Associate Product Manager</h3><p>Brightside Tech · New York</p></div><strong>85%</strong></article>
+            <article><div><span>Fellowship</span><h3>Student Product Fellows</h3><p>Fall cohort · Hybrid</p></div><strong>82%</strong></article>
+            <article><div><span>Student program</span><h3>UX Research Sprint</h3><p>6-week guided program</p></div><strong>78%</strong></article>
+            <article><div><span>Networking</span><h3>Alumni Product Roundtable</h3><p>Campus career center</p></div><strong>76%</strong></article>
+          </div>
+        </section>
+
+        <section class="mentor-section" id="mentors">
+          <div class="section-heading compact">
+            <p class="eyebrow">Mentor network</p>
+            <h2>People worth meeting, with a clear reason why.</h2>
+          </div>
+          <div class="mentor-grid">
+            <article class="mentor-card">
+              <div class="mentor-avatar">TM</div>
+              <h3>Taylor M.</h3>
+              <p>Product Manager · Spotify</p>
+              <span>Shared interests: consumer products, music, student mentoring</span>
+              <small>Relevant because Taylor moved from marketing internships into product.</small>
+            </article>
+            <article class="mentor-card">
+              <div class="mentor-avatar">JL</div>
+              <h3>Jordan L.</h3>
+              <p>Senior PM · Google</p>
+              <span>Shared interests: analytics, product strategy, case competitions</span>
+              <small>Relevant because Jordan reviews early PM portfolios.</small>
+            </article>
+            <article class="mentor-card">
+              <div class="mentor-avatar">RS</div>
+              <h3>Riley S.</h3>
+              <p>Product Lead · Notion</p>
+              <span>Shared interests: productivity tools, systems thinking, design</span>
+              <small>Relevant because Riley can explain product craft and interviews.</small>
+            </article>
+          </div>
+        </section>
+
+        <section class="dashboard-section" id="dashboard">
+          <div class="dashboard-shell">
+            <aside class="dashboard-nav" aria-label="Dashboard navigation">
+              <a class="brand mini" href="#top">
+                <span class="brand-mark" aria-hidden="true">
+                  <svg viewBox="0 0 32 32"><path d="M26.8 5.3C16.5 7 9.1 12.9 6.5 23.2c6.2-.9 11.7-4.1 15.7-9.5-2.8 1.1-5.5 2.7-8 4.9 2.5-4.7 6.6-8.2 12.6-13.3Z" /><path d="M7 24.2c2.4-3.3 5.2-5.9 8.6-7.7" /></svg>
+                </span>
+                <span>Figured</span>
+              </a>
+              <button class="dash-link active">Home</button>
+              <button class="dash-link">My Snapshot</button>
+              <button class="dash-link">Trajectory</button>
+              <button class="dash-link">Gap Analyzer</button>
+              <button class="dash-link">Opportunities</button>
+              <button class="dash-link">Connections</button>
+              <button class="dash-link">Action Plan</button>
+              <div class="nav-note">
+                <strong>Clarity over pressure.</strong>
+                <p>You're building something real.</p>
+              </div>
+            </aside>
+            <div class="dashboard-main">
+              <div class="dashboard-header" id="snapshot">
+                <div>
+                  <p>Here's your trajectory snapshot</p>
+                  <h2>Good morning, Alex</h2>
+                </div>
+                <button class="secondary-button">Log an update</button>
+              </div>
+              <div class="dashboard-grid">
+                <article class="snapshot-card">
+                  <span>Honest snapshot</span>
+                  <h3>You're on a promising path toward product management.</h3>
+                  <p>Your academics are strong, but your experience and network currently limit your competitiveness. The next best move is to build visible product proof and start thoughtful outreach.</p>
+                </article>
+                <article class="score-card">
+                  <span>Current stage</span>
+                  <div class="stage-chip">Exploration → Positioning</div>
+                  <p>Not a grade — a position on the path. Everyone moves through it.</p>
+                </article>
+                <article class="breakdown-card">
+                  <span>Where to focus</span>
+                  <div class="focus-row"><div><p>In-Demand Skills</p></div><em class="focus-pill focus">Focus here first</em></div>
+                  <div class="focus-row"><div><p>Network Strength</p></div><em class="focus-pill focus">Focus here first</em></div>
+                  <div class="focus-row"><div><p>Relevant Experience</p></div><em class="focus-pill building">Building</em></div>
+                  <div class="focus-row"><div><p>Academic Progress</p></div><em class="focus-pill strength">Strength</em></div>
+                </article>
+                <article class="next-card">
+                  <span>Highest-impact next actions</span>
+                  <ol>
+                    <li>Reach out to 3 alumni</li>
+                    <li>Complete a product case study</li>
+                    <li>Apply to 10 targeted internships</li>
+                  </ol>
+                </article>
+                <article class="feed-card">
+                  <span>Opportunities feed</span>
+                  <p><strong>Product Intern</strong><em>90% match</em></p>
+                  <p><strong>Student Product Fellows</strong><em>82% match</em></p>
+                  <p><strong>UX Research Sprint</strong><em>78% match</em></p>
+                </article>
+                <article class="feed-card">
+                  <span>Mentor recommendations</span>
+                  <p><strong>Taylor M.</strong><em>Consumer PM</em></p>
+                  <p><strong>Jordan L.</strong><em>Analytics PM</em></p>
+                  <p><strong>Riley S.</strong><em>Product lead</em></p>
+                </article>
+                <article class="timeline-card">
+                  <span>Progress timeline</span>
+                  <div class="timeline">
+                    <p><strong>Now</strong> Define target path and gaps</p>
+                    <p><strong>30 days</strong> Publish first case study</p>
+                    <p><strong>60 days</strong> Build mentor conversations</p>
+                    <p><strong>90 days</strong> Apply with stronger proof</p>
+                  </div>
+                </article>
+              </div>
             </div>
           </div>
-          <button class="outline-button">Watch</button>
-        </article>
-      </div>
-    </section>
-
-    <!-- ANALYTICS -->
-    <section class="page" id="analytics" aria-label="Analytics">
-      <div class="page-title">
-        <div>
-          <p class="eyebrow">Analytics</p>
-          <h1>Recruiting Momentum</h1>
-          <p class="muted-p">Track profile views, scout engagement, and opportunity fit.</p>
-        </div>
-      </div>
-
-      <div data-role-show="player">
-        <div class="analytics-grid">
-          <article class="metric">
-            <span>Profile Views</span>
-            <strong>8.4K</strong>
-            <div class="metric-breakdown">
-              <span class="metric-tag">Scouts 3.2K</span>
-              <span class="metric-tag">Agents 1.8K</span>
-              <span class="metric-tag">Clubs 2.1K</span>
-            </div>
-            <p class="metric-positive">+18% this week</p>
-          </article>
-          <article class="metric">
-            <span>Scout Saves</span>
-            <strong>136</strong>
-            <div class="metric-breakdown">
-              <span class="metric-tag">Spain 42</span>
-              <span class="metric-tag">Germany 38</span>
-              <span class="metric-tag">Australia 31</span>
-            </div>
-            <p class="metric-positive">Trending in 3 markets</p>
-          </article>
-          <article class="metric">
-            <span>Film Plays</span>
-            <strong>2.1K</strong>
-            <div class="metric-breakdown">
-              <span class="metric-tag">68% watched 45s+</span>
-              <span class="metric-tag">Avg 1:47</span>
-            </div>
-            <p class="metric-positive">+23% vs last week</p>
-          </article>
-          <article class="chart-card">
-            <h3>Weekly Engagement</h3>
-            <div class="bar-chart">
-              <span style="height:42%"></span><span style="height:60%"></span>
-              <span style="height:54%"></span><span style="height:74%"></span>
-              <span style="height:68%"></span><span style="height:88%"></span>
-              <span style="height:80%"></span>
-            </div>
-            <div class="chart-labels">
-              <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
-            </div>
-          </article>
-          <article class="metric">
-            <span>Recruiting Score</span>
-            <strong>92</strong>
-            <div class="score-bar" style="margin:10px 0"><div class="score-fill" style="width:92%"></div></div>
-            <p class="metric-positive">Top 8% of platform</p>
-          </article>
-          <article class="metric">
-            <span>Opportunity Matches</span>
-            <strong>14</strong>
-            <div class="metric-breakdown">
-              <span class="metric-tag">Pro 6</span>
-              <span class="metric-tag">Semi-Pro 5</span>
-              <span class="metric-tag">Dev 3</span>
-            </div>
-            <p class="metric-positive">New this month</p>
-          </article>
-        </div>
-      </div>
-
-      <div data-role-show="coach" style="display:none">
-        <div class="analytics-grid">
-          <article class="metric"><span>Players Scouted</span><strong>143</strong><p class="metric-positive">47 shortlisted</p></article>
-          <article class="metric"><span>Film Reviews</span><strong>89</strong><p class="metric-positive">+12 this week</p></article>
-          <article class="metric"><span>Placements Made</span><strong>7</strong><p class="metric-positive">This season</p></article>
-          <article class="chart-card">
-            <h3>Scouting Activity</h3>
-            <div class="bar-chart">
-              <span style="height:35%"></span><span style="height:48%"></span><span style="height:62%"></span>
-              <span style="height:70%"></span><span style="height:55%"></span><span style="height:82%"></span><span style="height:76%"></span>
-            </div>
-            <div class="chart-labels"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div>
-          </article>
-        </div>
-      </div>
-
-      <div data-role-show="agent" style="display:none">
-        <div class="analytics-grid">
-          <article class="metric"><span>Active Clients</span><strong>7</strong><p class="metric-positive">2 closing this month</p></article>
-          <article class="metric"><span>Total Placements</span><strong>34</strong><p class="metric-positive">This year: 12</p></article>
-          <article class="metric"><span>YTD Commission</span><strong>$84K</strong><p class="metric-positive">+28% vs last year</p></article>
-          <article class="chart-card">
-            <h3>Deal Flow Activity</h3>
-            <div class="bar-chart">
-              <span style="height:52%"></span><span style="height:66%"></span><span style="height:45%"></span>
-              <span style="height:80%"></span><span style="height:72%"></span><span style="height:91%"></span><span style="height:84%"></span>
-            </div>
-            <div class="chart-labels"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <!-- SETTINGS -->
-    <section class="page" id="settings" aria-label="Settings">
-      <div class="page-title">
-        <div>
-          <p class="eyebrow">Settings</p>
-          <h1>Profile &amp; Recruiting Preferences</h1>
-          <p class="muted-p">Control who sees your profile and what opportunities match you.</p>
-        </div>
-      </div>
-      <div class="settings-grid">
-        <label class="setting"><span>Open to overseas opportunities</span><input type="checkbox" checked /></label>
-        <label class="setting"><span>Allow verified agents to message me</span><input type="checkbox" checked /></label>
-        <label class="setting"><span>Show height, class year, and location publicly</span><input type="checkbox" checked /></label>
-        <label class="setting"><span>Send weekly opportunity digest</span><input type="checkbox" /></label>
-        <label class="setting"><span>Show salary expectations on profile</span><input type="checkbox" /></label>
-        <label class="setting"><span>Allow clubs to view contact info</span><input type="checkbox" checked /></label>
-        <label class="setting"><span>Enable direct scout messaging</span><input type="checkbox" checked /></label>
-        <label class="setting"><span>Receive contract offer notifications</span><input type="checkbox" checked /></label>
-      </div>
-    </section>
-
-    <!-- PROFILE -->
-    <section class="page" id="profile" aria-label="Profile">
-      <div class="profile-hero">
-        <div class="profile-cover"></div>
-        <div class="profile-info">
-          <img src="./assets/basketball-highlight.png" alt="Jalen Wilson" />
-          <div>
-            <h1>Jalen Wilson <span class="verified">&#x2713;</span></h1>
-            <p>Shooting Guard &middot; 6'4" &middot; Class of 2025 &middot; California, USA</p>
-            <div class="profile-stats">
-              <span><strong>24</strong>Posts</span>
-              <span><strong>1.2K</strong>Followers</span>
-              <span><strong>578</strong>Following</span>
-              <span><strong>92</strong>Rec. Score</span>
-            </div>
-          </div>
-          <button class="primary-button">Edit Profile</button>
-        </div>
-      </div>
-
-      <div class="profile-grid">
-        <div class="profile-main">
-          <section class="post-card">
-            <h3>Season Stats</h3>
-            <div class="player-big-stats">
-              <div class="big-stat"><strong>22.4</strong><span>PPG</span></div>
-              <div class="big-stat"><strong>5.1</strong><span>RPG</span></div>
-              <div class="big-stat"><strong>4.8</strong><span>APG</span></div>
-              <div class="big-stat"><strong>2.1</strong><span>SPG</span></div>
-              <div class="big-stat"><strong>44%</strong><span>3PT%</span></div>
-              <div class="big-stat"><strong>52%</strong><span>FG%</span></div>
-            </div>
-          </section>
-          <section class="post-card">
-            <h3>Highlight Reel</h3>
-            <div class="video-card">
-              <img src="./assets/basketball-highlight.png" alt="Jalen Wilson highlight reel" />
-              <button class="play-button">&#x25B7;</button>
-              <div class="video-meta">
-                <span class="video-label">Jalen Wilson 2025 Full Reel &middot; 6:14</span>
-                <span class="video-views">4.2K views</span>
-              </div>
-            </div>
-          </section>
-        </div>
-        <aside class="profile-sidebar">
-          <section class="panel">
-            <h3>About</h3>
-            <p class="muted-p">High motor. Team first. Always working. Looking for overseas opportunities to compete and grow at the highest level.</p>
-            <div class="about-bullets">
-              <div class="about-row">
-                <span class="about-label">Location</span>
-                <span>California, USA</span>
-              </div>
-              <div class="about-row">
-                <span class="about-label">Class</span>
-                <span>Class of 2025 &middot; Eligible now</span>
-              </div>
-              <div class="about-row">
-                <span class="about-label">Travel</span>
-                <span>Passport available &middot; Visa eligible</span>
-              </div>
-              <div class="about-row">
-                <span class="about-label">Salary</span>
-                <span>Seeking &euro;15K&ndash;&euro;22K / mo</span>
-              </div>
-              <div class="about-row">
-                <span class="about-label">Regions</span>
-                <span>Europe, Australia, Asia</span>
-              </div>
-            </div>
-          </section>
-          <section class="panel">
-            <h3>Position Fit by League</h3>
-            <div class="fit-list">
-              <div class="fit-row"><span>Spain &mdash; Pro Liga</span><span class="match-pill">92%</span></div>
-              <div class="fit-row"><span>NBL1 &mdash; Australia</span><span class="match-pill">88%</span></div>
-              <div class="fit-row"><span>Bundesliga &mdash; Germany</span><span class="match-pill">81%</span></div>
-              <div class="fit-row"><span>Primeira Liga &mdash; Portugal</span><span class="match-pill">78%</span></div>
-              <div class="fit-row"><span>B.League &mdash; Japan</span><span class="match-pill">76%</span></div>
-            </div>
-          </section>
-        </aside>
-      </div>
-    </section>
-
-  </main>
-</div>
-
-<!-- TOAST -->
-<div class="toast" id="toast">Saved</div>
-
-<!-- COMPOSER MODAL -->
-<div class="modal-backdrop" id="composerModal">
-  <div class="modal">
-    <div class="modal-head">
-      <h3>Post a Highlight</h3>
-      <button class="icon-button" id="composerClose" aria-label="Close">&#x2715;</button>
+        </section>
+      </main>
     </div>
-    <textarea class="composer-textarea" placeholder="Describe the game, the play, the moment..." rows="4"></textarea>
-    <div class="composer-actions">
-      <div class="composer-tags">
-        <span class="pill active">Video</span>
-        <span class="pill">Stats</span>
-        <span class="pill">Game Recap</span>
-      </div>
-      <button class="primary-button" id="composerPost">Post Highlight</button>
-    </div>
-  </div>
-</div>
-
-<script src="./script.js"></script>
-</body>
+    <script src="./script.js"></script>
+  </body>
 </html>

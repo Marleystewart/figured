@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Figured | Become a Mentor</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="onboarding-shell">
+      <header class="onboarding-header">
+        <a class="brand" href="./index.html">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 32 32">
+              <path d="M26.8 5.3C16.5 7 9.1 12.9 6.5 23.2c6.2-.9 11.7-4.1 15.7-9.5-2.8 1.1-5.5 2.7-8 4.9 2.5-4.7 6.6-8.2 12.6-13.3Z" />
+              <path d="M7 24.2c2.4-3.3 5.2-5.9 8.6-7.7" />
+            </svg>
+          </span>
+          <span>Figured</span>
+        </a>
+        <a class="ghost-button" href="./app.html">Back to app</a>
+      </header>
+
+      <main class="onboarding-main">
+        <!-- Form -->
+        <div class="ob-step active" id="mentorForm">
+          <p class="eyebrow">For mentors</p>
+          <h2>Help a student find their way.</h2>
+          <p class="ob-desc">Students see your card in their Connections and reach out on LinkedIn. Takes a minute. You decide what you share.</p>
+          <div class="ob-fields">
+            <label class="ob-label">
+              Full name
+              <input class="ob-input" type="text" id="mName" placeholder="Jordan Lee" autocomplete="name" />
+            </label>
+            <div class="ob-row">
+              <label class="ob-label">
+                Role &amp; company
+                <input class="ob-input" type="text" id="mRole" placeholder="Analyst · Goldman Sachs" />
+              </label>
+              <label class="ob-label">
+                Field
+                <input class="ob-input" type="text" id="mField" placeholder="Investment banking" />
+              </label>
+            </div>
+            <label class="ob-label">
+              LinkedIn profile URL
+              <input class="ob-input" type="url" id="mLinkedin" placeholder="https://www.linkedin.com/in/your-handle" autocomplete="url" />
+              <span class="ob-hint">This is what students tap to reach you. Copy it from your LinkedIn profile.</span>
+            </label>
+            <label class="ob-label">
+              Why a student should talk to you
+              <span class="ob-hint">One or two honest sentences.</span>
+              <textarea class="ob-input ob-textarea" id="mWhy" rows="3" placeholder="I broke into banking from a non-target school and review resumes for free."></textarea>
+            </label>
+            <label class="ob-consent">
+              <input type="checkbox" id="mConsent" />
+              <span>I agree that students on Figured can see my profile card and reach out to me on LinkedIn.</span>
+            </label>
+          </div>
+          <p class="form-error" id="mError" hidden></p>
+          <div class="ob-actions">
+            <a class="ghost-button" href="./app.html">Cancel</a>
+            <button class="primary-button" id="mSubmit" type="button">Join as a mentor</button>
+          </div>
+        </div>
+
+        <!-- Success -->
+        <div class="ob-step" id="mentorSuccess">
+          <p class="eyebrow">You're in</p>
+          <h2 id="successHeadline">You're on Figured.</h2>
+          <p class="ob-desc">Your card is live in students' Connections. Here's how it looks to them:</p>
+          <div class="mentor-preview" id="mentorPreview"></div>
+          <div class="ob-actions">
+            <button class="ghost-button" id="mAnother" type="button">Add another mentor</button>
+            <a class="primary-button" href="./app.html">See it in the app →</a>
+          </div>
+        </div>
+      </main>
+    </div>
+    <script src="./mentor.js"></script>
+  </body>
+</html>
