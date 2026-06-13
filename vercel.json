@@ -1,0 +1,14 @@
+{
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "rewrites": [
+    {
+      "source": "/",
+      "destination": "/vibra.html"
+    },
+    {
+      "source": "/vibra",
+      "destination": "/vibra.html"
+    }
+  ]
+}

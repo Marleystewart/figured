@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vibra | Social Dance Discovery App</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./vibra.css" />
+  </head>
+  <body>
+    <main class="showcase one-app-page" aria-label="Vibra working app prototype">
+      <section class="intro compact-intro">
+        <div class="brand-lockup">
+          <div class="brand-mark" aria-hidden="true">V</div>
+          <div>
+            <p>Vibra</p>
+            <span>Dance. Connect. Vibe.</span>
+          </div>
+        </div>
+        <div class="intro-copy">
+          <p class="eyebrow">Clickable prototype</p>
+          <h1>One community. All dances. All vibes.</h1>
+        </div>
+      </section>
+
+      <section class="live-prototype single-app" aria-label="Working Vibra prototype">
+        <div class="prototype-copy">
+          <p class="eyebrow">Working model</p>
+          <h2>Try the app in one phone.</h2>
+          <p>Use the bottom navigation, filters, event cards, map pins, likes, messages, and the “I'm Going” button.</p>
+          <div class="prototype-status" id="prototype-status">Showing events near New York, NY</div>
+        </div>
+
+        <article class="phone live-phone" aria-label="Working Vibra app">
+          <div class="screen app-shell">
+            <div id="app-root"></div>
+            <nav class="bottom-nav app-nav" aria-label="Vibra app navigation">
+              <button data-route="discover" class="active"><span></span>Discover</button>
+              <button data-route="events"><span></span>Events</button>
+              <button data-route="community"><span></span>Community</button>
+              <button data-route="messages"><span></span>Messages</button>
+              <button data-route="profile"><span></span>Profile</button>
+            </nav>
+          </div>
+        </article>
+      </section>
+    </main>
+    <script src="./vibra.js"></script>
+  </body>
+</html>

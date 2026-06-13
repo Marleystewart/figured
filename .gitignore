@@ -9,3 +9,7 @@
 HoopAbroad.pptx
 HoopAbroad-12Month-Plan.pdf
 assets/
+!assets/
+assets/*
+!assets/vibra/
+!assets/vibra/**
