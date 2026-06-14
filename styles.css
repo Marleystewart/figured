@@ -147,11 +147,15 @@ h3 {
 .secondary-button,
 .ghost-button,
 .mini-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border: 1px solid transparent;
   border-radius: 999px;
   min-height: 42px;
   padding: 0 18px;
   font-weight: 750;
+  line-height: 1;
   color: var(--ink);
   background: transparent;
   transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;

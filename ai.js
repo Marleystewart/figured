@@ -145,7 +145,8 @@ Hard rules:
 11. bridge: "now" = one honest sentence about where they are today using their real details. "destination" = one sentence about where they want to go. "bridge" = one sentence naming what connects the two.
 12. focus: exactly 4 items, one per area, with area named exactly "Academic Progress", "Relevant Experience", "In-Demand Skills", and "Network Strength". status is a PRIORITY, never a grade: "focus" = highest-leverage area to work on next, "building" = in progress, keep going, "strength" = already working for them. At least one area must be "focus" so there is always a next move; do not mark everything a strength. note = one short, specific sentence (max 8 words) on why it has that status for THIS student. This replaces any numeric score — never imply a number or rating.
 13. timeline: 4-5 entries tracing their real arc, oldest to newest. "when" = a short phase label, NOT a fabricated date (e.g. "The start", "What you've built", "Right now", "This term", "By graduation"). "text" = one sentence per phase using their actual major, school, activities, experience, and goal. The earliest entries reflect what they have genuinely done; the later ones are forward-looking. Never invent specific events or months they didn't tell you.
-14. US college context. Plain language. No emoji, no markdown.`;
+14. US college context. Plain language. No emoji, no markdown.
+15. Never use corporate jargon or generic filler: no "in today's competitive landscape", no "leverage your strengths", no "synergy", no "robust", no "holistic approach", no "fast-paced environment." Speak like a real mentor talking to a real student — direct, warm, specific to them.`;
 
   async function generateInsights(profile) {
     const body = {
@@ -172,7 +173,9 @@ Hard rules:
   async function chatStream(system, messages, onDelta) {
     const body = {
       model: MODEL,
-      max_tokens: 1024,
+      // Hard ceiling on chat reply length. 60–100 words ≈ ~80–135 tokens.
+      // 280 leaves room for adaptive thinking + a tight reply, never a wall of text.
+      max_tokens: 280,
       stream: true,
       thinking: { type: 'adaptive' },
       output_config: { effort: 'medium' },

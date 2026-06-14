@@ -123,8 +123,86 @@ function trimGoal(raw, max) {
   return (cut > 20 ? cleaned.slice(0, cut) : cleaned.slice(0, max)) + '…';
 }
 
+// ---------------------------------------------------------------------------
+// Compensation data by domain (BLS-sourced, updated periodically)
+// ---------------------------------------------------------------------------
+const COMP = {
+  sports:     { entry: '$35k–$55k',        note: 'Entry front-office and ops roles pay notoriously low. The path up is through relationships and results — pay jumps sharply at the director level and above.' },
+  product:    { entry: '$95k–$125k',       note: 'APM programs at top companies pay $110–130k. Most PMs enter through adjacent roles — ops, engineering, data — first.' },
+  finance:    { entry: '$65k–$160k',       note: 'Investment banking analysts start ~$110k base + bonus. Corporate finance and financial planning roles run $65–85k to start.' },
+  software:   { entry: '$110k–$135k',      note: 'Median new-grad SWE total comp at large tech companies. Big Tech starts at $150k+; startups vary widely but often include equity.' },
+  marketing:  { entry: '$55k–$75k',        note: 'Marketing coordinators start $50–60k. Brand and growth roles at tech companies run higher. Agency pay is lower to start but builds fast.' },
+  consulting: { entry: '$90k–$112k',       note: 'MBB (McKinsey, BCG, Bain) starts ~$112k base for undergrad. Big 4 management consulting runs $75–95k.' },
+  design:     { entry: '$70k–$95k',        note: 'Junior UX/product designers at tech companies. Agency and startup roles vary. Senior and staff designers reach $130–180k+.' },
+  founder:    { entry: 'varies',           note: 'Early startup employees (#1–10) typically earn $70–110k + equity. Founders pay themselves last — upside is in the equity, not the salary.' },
+  medicine:   { entry: '$61k → $239k+',   note: 'Residency pays ~$61k. Attending physicians earn $200–350k+ depending on specialty. Medical school debt (~$200k average) is the tradeoff to plan for.' },
+  law:        { entry: '$80k–$215k',       note: 'Bimodal market: BigLaw starts at $225k; government and public interest roles run $60–80k. Most lawyers land somewhere in between.' },
+  generic:    { entry: 'varies by path',   note: 'Compensation depends heavily on industry, role, and location. The Opportunities tab links to current listings with real salary data.' },
+};
+
+function renderComp(p) {
+  const c = COMP[detectDomain(p)] || COMP.generic;
+  const entryEl = document.getElementById('compEntry');
+  const noteEl  = document.getElementById('compNote');
+  if (entryEl) entryEl.textContent = c.entry;
+  if (noteEl)  noteEl.textContent  = c.note;
+}
+
+// Niche/custom role keywords → domain. Checked BEFORE the broad domain patterns
+// so specific goals like "NBA GM", "sports agent", "game design" resolve cleanly
+// instead of hitting a generic bucket.
+const NICHE_DOMAIN_MAP = [
+  // Sports — specific front-office and ops roles
+  [/(general manager|\bgm\b|player development|basketball operations|football operations|scouting|scout|sports agent|athletic director|strength and conditioning|sports analytics|sports management|sports marketing)/, 'sports'],
+  // Media / entertainment
+  [/(music producer|record label|\ba&r\b|dj|artist manager|tour manager|screenwr|film direct|cinematograph)/, 'marketing'],
+  // Gov / law enforcement / military
+  [/(fbi|cia|\bmilitary\b|armed forces|intelligence officer|detective|law enforcement|police officer|foreign service|diplomat)/, 'law'],
+  // Game design / esports
+  [/(game design|game dev|esport|gaming industry)/, 'software'],
+  // Fashion
+  [/(fashion design|fashion merch|stylist|apparel)/, 'design'],
+  // Culinary / hospitality
+  [/(chef|culinary|restaurant owner|hospitality manag|hotel manag)/, 'founder'],
+  // Acting / theater
+  [/(actor|acting|theater|theatre|perform)/, 'marketing'],
+  // Architecture
+  [/\barchitect\b/, 'design'],
+  // Veterinary / dental / optometry → medicine bucket
+  [/(veterinar|\bvet\b|dentist|optometr)/, 'medicine'],
+  // Pilot / aviation
+  [/(pilot|aviation|airline)/, 'software'],
+  // Publishing / journalism / writing
+  [/(journalist|author|novelist|editor|publisher|copywriter|content creator)/, 'marketing'],
+  // Research / academia
+  [/(research scientist|professor|academia|phd track|grad school)/, 'consulting'],
+  // Nursing / PA / pharmacy / PT → medicine
+  [/(nurs|\bnp\b|\bpa\b|pharmacist|physical therap|occupational therap)/, 'medicine'],
+  // Real estate
+  [/(real estate|property manag|mortgage|broker)/, 'finance'],
+  // Supply chain / logistics
+  [/(supply chain|logistics|operations manag|procurement)/, 'consulting'],
+  // Accounting / CPA
+  [/(accountant|\bcpa\b|audit|tax advisor|controller|cfo)/, 'finance'],
+  // HR / people ops
+  [/(human resources|\bhr\b|talent acqui|recruiter|people ops)/, 'consulting'],
+  // Sales / business development
+  [/(sales manager|business development|account executive|revenue)/, 'marketing'],
+  // Cybersecurity
+  [/(cyber|information security|infosec|penetration test|ethical hack)/, 'software'],
+  // Data science / analytics
+  [/(data scientist|data analyst|machine learning|ml engineer|ai engineer|analytics)/, 'software'],
+];
+
 function detectDomain(p) {
   const g = ((p.goal || '') + ' ' + (p.major || '') + ' ' + (p.skills || '')).toLowerCase();
+
+  // Check niche roles first — more specific wins over broad patterns
+  for (const [rx, domain] of NICHE_DOMAIN_MAP) {
+    if (rx.test(g)) return domain;
+  }
+
+  // Broad domain patterns
   if (/(basketball|nba|wnba|sport|athlet|football|nfl|soccer|baseball|mlb|hockey|nhl|coach|front office|player development)/.test(g)) return 'sports';
   if (/product/.test(g)) return 'product';
   if (/(invest|bank|financ|equity|trading|wealth)/.test(g)) return 'finance';
@@ -688,9 +766,11 @@ function googleLinkedinURL(who) {
 function indeedURL(keyword) {
   return 'https://www.indeed.com/jobs?q=' + encodeURIComponent(keyword) + '&l=United+States';
 }
-// Handshake job search is login-gated (no public deep link), so open the app
-// directly rather than dumping the goal into the public blog search.
-function handshakeURL() {
+function googleJobsURL(keyword) {
+  return 'https://www.google.com/search?q=' + encodeURIComponent(keyword + ' jobs') + '&ibp=htl;jobs';
+}
+function handshakeURL(keyword) {
+  if (keyword) return 'https://app.joinhandshake.com/search?query=' + encodeURIComponent(keyword) + '&category=JOB';
   return 'https://app.joinhandshake.com/';
 }
 
@@ -900,11 +980,13 @@ Their full profile:
 ${JSON.stringify(p, null, 2)}${insightNote}
 
 Guardrails:
-- Only discuss ${name}'s career path: their goal, gaps, plan, skills, networking, opportunities, applications, and decisions connected to their trajectory. If asked about anything unrelated (homework answers, trivia, other topics), warmly redirect to their path in one sentence.
-- Tone: honest without being brutal. Mentor, not machine. Specific to their real profile — never generic.
-- Never suggest settling for a less ambitious path. Frame every gap as "here's what it takes", never as a verdict.
-- Keep answers under 120 words unless they ask you to go deep. Plain text only — no markdown headings or asterisks. Simple dashes are fine for short lists.
-- Always end with one concrete next move or one sharp question.`;
+- Stay on ${name}'s path: their goal, gaps, plan, skills, networking, opportunities, applications, decisions. If asked about anything else (homework, trivia, other topics), redirect to their path in one sentence.
+- Voice: honest without being brutal. Mentor, not machine. Specific to ${name}'s real profile. Never generic.
+- Never suggest a less ambitious path. Every gap is framed as "here's what it takes", never as a verdict.
+- Length: 60 to 100 words. One paragraph by default. Two short paragraphs only if you genuinely shift from diagnosis to action. Depth beats volume: cut every word that doesn't carry weight.
+- NEVER use em dashes or dashes as punctuation. Use periods, commas, semicolons, or just two short sentences. Em dashes read as AI and break the human voice.
+- Plain text only. No markdown, no headings, no asterisks, no bullet points.
+- End on action. Vary how you close: sometimes a concrete next move, sometimes a sharp question, sometimes one honest sentence of belief. Never the same shape twice in a row.`;
 }
 
 function addBubble(role, text, typing = false) {
@@ -1045,6 +1127,7 @@ function applyProfile(p) {
   }
 
   applyContent(fallbackContent(p, s));
+  renderComp(p);
 
   // Distil the free-text goal into a clean keyword the job boards can search.
   const term = searchTerm(p.goal);
@@ -1059,20 +1142,23 @@ function applyProfile(p) {
   // Internship
   setHref('oppLink1', linkedinJobsURL(`${term} Intern`));
   setHref('oppLink1b', indeedURL(`${term} Intern`));
+  setHref('oppLink1c', googleJobsURL(`${term} intern`));
   // Entry-level
   setHref('oppLink2', linkedinJobsURL(`Entry level ${term}`));
   setHref('oppLink2b', indeedURL(`Entry level ${term}`));
+  setHref('oppLink2c', googleJobsURL(`entry level ${term}`));
   // Fellowship / programs
   setHref('oppLink3', linkedinJobsURL(`${term} Fellowship`));
   setHref('oppLink3b', indeedURL(`${term} Fellowship student`));
+  setHref('oppLink3c', googleJobsURL(`${term} fellowship program`));
   // Networking — Google surfaces real people better than logged-out LI search
   setHref('oppLink4', googleLinkedinURL(`${term} professional`));
-  setHref('oppHandshake4', handshakeURL());
+  setHref('oppHandshake4', handshakeURL(term));
 
   // Connections tab
   setHref('connLinkedinLink', googleLinkedinURL(term));
   setHref('peerLinkedinLink', googleLinkedinURL(`${term} student`));
-  setHref('peerHandshakeLink', handshakeURL());
+  setHref('peerHandshakeLink', handshakeURL(term));
   renderMentors(term);
 
   maybeRunAI(p);

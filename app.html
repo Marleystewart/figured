@@ -43,7 +43,7 @@
           <p class="profile-school">State University</p>
           <p class="profile-meta">Business Admin · Junior</p>
           <span>Goal: Product Manager</span>
-          <a class="profile-edit" href="./onboarding.html">Edit profile →</a>
+          <a class="profile-edit" href="./onboarding.html?edit=1">Edit profile →</a>
         </section>
       </aside>
 
@@ -55,13 +55,13 @@
           </div>
           <div class="product-actions">
             <button class="secondary-button ai-status-btn" id="aiStatusBtn" type="button">Connect AI</button>
-            <a class="secondary-button" href="./onboarding.html">Edit profile</a>
+            <a class="secondary-button" href="./onboarding.html?edit=1">Edit profile</a>
             <button class="primary-button" id="askFiguredTop" type="button">Ask Figured</button>
           </div>
         </header>
 
         <div class="onboarding-nudge" id="onboardingNudge" style="display:none">
-          This is demo data. <a href="./onboarding.html">Build your real trajectory →</a>
+          This is demo data. <a href="./onboarding.html?fresh=1">Build your real trajectory →</a>
         </div>
 
         <!-- Overview -->
@@ -121,11 +121,11 @@
               </div>
             </article>
 
-            <article class="product-card feed-panel">
-              <span>Recommended today</span>
-              <div class="feed-row"><strong>Product Intern</strong><em>90% match</em></div>
-              <div class="feed-row"><strong>Taylor M., PM at Spotify</strong><em>mentor</em></div>
-              <div class="feed-row"><strong>Product Strategy Basics</strong><em>course</em></div>
+            <article class="product-card feed-panel" id="compCard">
+              <span>What this path can pay</span>
+              <div class="feed-row"><strong id="compEntry">$95k–$125k</strong><em>typical entry</em></div>
+              <div class="feed-row comp-note-row"><p id="compNote">APM programs pay $110–130k; most PMs start in adjacent roles first.</p></div>
+              <div class="feed-row"><small id="compSource" style="opacity:.65">Salary context from U.S. BLS data.</small></div>
             </article>
           </div>
         </section>
@@ -240,6 +240,7 @@
               <div class="opp-links">
                 <a class="opp-link" id="oppLink1" href="#" target="_blank" rel="noopener">LinkedIn Jobs →</a>
                 <a class="opp-link" id="oppLink1b" href="#" target="_blank" rel="noopener">Indeed →</a>
+                <a class="opp-link" id="oppLink1c" href="#" target="_blank" rel="noopener">Google Jobs →</a>
               </div>
             </article>
             <article class="product-card opportunity-app-card">
@@ -250,6 +251,7 @@
               <div class="opp-links">
                 <a class="opp-link" id="oppLink2" href="#" target="_blank" rel="noopener">LinkedIn Jobs →</a>
                 <a class="opp-link" id="oppLink2b" href="#" target="_blank" rel="noopener">Indeed →</a>
+                <a class="opp-link" id="oppLink2c" href="#" target="_blank" rel="noopener">Google Jobs →</a>
               </div>
             </article>
             <article class="product-card opportunity-app-card">
@@ -260,6 +262,7 @@
               <div class="opp-links">
                 <a class="opp-link" id="oppLink3" href="#" target="_blank" rel="noopener">LinkedIn Jobs →</a>
                 <a class="opp-link" id="oppLink3b" href="#" target="_blank" rel="noopener">Indeed →</a>
+                <a class="opp-link" id="oppLink3c" href="#" target="_blank" rel="noopener">Google Jobs →</a>
               </div>
             </article>
             <article class="product-card opportunity-app-card">
@@ -269,7 +272,7 @@
               <strong>Mentors</strong>
               <div class="opp-links">
                 <a class="opp-link" id="oppLink4" href="#" target="_blank" rel="noopener">Find on LinkedIn →</a>
-                <a class="opp-link" id="oppHandshake4" href="#" target="_blank" rel="noopener">Open Handshake →</a>
+                <a class="opp-link" id="oppHandshake4" href="#" target="_blank" rel="noopener">Handshake →</a>
               </div>
             </article>
           </div>
@@ -385,7 +388,7 @@
       </div>
     </div>
 
-    <script src="./ai.js"></script>
-    <script src="./script.js"></script>
+    <script src="./ai.js?v=2"></script>
+    <script src="./script.js?v=2"></script>
   </body>
 </html>
