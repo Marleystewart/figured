@@ -32,9 +32,12 @@ mentor.js         saves opted-in mentors to localStorage
 styles.css        full design system
 README.md         public-facing
 HANDOFF.md        this file
+plan/index.html   12-month founder plan page (+ plan.css), live at /plan/
 prompts/startup-plan.md   reusable 12-month startup plan prompt
 .gitignore        excludes junk + system files
 ```
+
+**Cache-busting:** app.html loads `ai.js?v=3` and `script.js?v=3`; onboarding.html loads `onboarding.js?v=4`. When you change those JS files, bump the `?v=N` or browsers serve the stale version.
 
 ## Where it lives
 
@@ -76,12 +79,16 @@ prompts/startup-plan.md   reusable 12-month startup plan prompt
 | Micro-interactions (hover lift, staggered card entrance, press states, reduced-motion guard) | Live |
 | Button text alignment (anchor vs button) | Live |
 | Build My Path resets (blank form + clears prev person's wins/checkmarks); Edit profile prefills | Live |
+| AI "thinking" state (shows "Reading your trajectory…" skeleton on snapshot + paths instead of flashing the weaker rule-based version; loading→great, not okay→great; restores fallback on AI error) | Live |
+| "↻ More" refresh button on the Paths card (AI: `generateMorePaths` returns 3 fresh paths excluding ones already shown; no-AI: rotates a transferable-adjacents pool) | Live |
+| Chat voice tuned: 60–100 words, one paragraph, no em dashes, varied closings, `max_tokens` 280 | Live |
+| `/plan/` — 12-month founder operating system page (sticky TOC, financials, KPIs, roadmap; grounded in real $20/mo budget) | Live |
 
 ## What's still on the polish list
 
-- **AI loading states with personality** — when Claude is generating insights, the moment should feel like a mentor thinking, not a generic spinner. This is where the "real mentor" feeling lives.
-- **Sharpen the landing page** (`index.html`) — still has some old example copy that doesn't fully match the rest of the product's voice.
+- **Sharpen the landing page** (`index.html`) — still has some old example copy that doesn't fully match the rest of the product's voice. This is the main remaining polish item.
 - **Empty/curation states** — opportunities and connections feel slightly generic; "curated" framing copy would help.
+- **Mentor intake reachability** — `mentor.html` exists but isn't linked from a prominent place for actual mentors to find.
 
 ## Considered but deferred (intentional, not forgotten)
 
@@ -92,7 +99,10 @@ prompts/startup-plan.md   reusable 12-month startup plan prompt
 ## Important context about Marley
 
 - Marley's own demo profile is sports management at Duke aiming for NBA basketball operations. Use that as the test case for anything you build, it's the hardest test of the "honest, never less ambitious, never generic" rules because it's a non-traditional goal that most career tools fumble.
-- The voice tuning is *recent and intentional*. The Ask Figured chat was producing ~180-word replies with em dashes and identical closings. That was tightened on June 12. Don't undo it.
+- The voice tuning is *recent and intentional*. The Ask Figured chat was producing ~180-word replies with em dashes and identical closings. That was tightened. Don't undo it.
+- **Alex is the co-founder** and a GitHub collaborator (he can push to the repo; Vercel auto-deploys his pushes too).
+- **Go-to-market is underway.** Marley is meeting a Trinity College career-center advisor to pitch Figured and try to land Trinity as the first school. The play: walk in humble ("help me figure out if this is real"), demo the Honest Take + Ask Figured, ask what it'd take for the school to endorse it. Don't bring a deck or pricing to that first meeting.
+- **Budget reality:** two broke college students. ~$20/month (the Claude subscription) plus a few dollars for a domain. Keep every recommendation scrappy and free-tier-first.
 
 ## Things to *not* do
 
