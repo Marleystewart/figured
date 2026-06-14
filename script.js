@@ -573,8 +573,50 @@ function renderActions(actions) {
       const d = actions.filter((a) => set.has(a)).length;
       el.querySelector('.action-count').textContent = `${d}/${actions.length} done`;
       el.querySelector('.action-progress i').style.width = (actions.length ? Math.round((d / actions.length) * 100) : 0) + '%';
+      renderTodayMove(actions);
     });
   });
+}
+
+function renderTodayMove(actions) {
+  const card = document.getElementById('todayMove');
+  if (!card) return;
+  const titleEl = card.querySelector('#todayMoveAction');
+  const ctxEl = card.querySelector('#todayMoveContext');
+  const btn = card.querySelector('[data-today-done]');
+  if (!actions || !actions.length) {
+    titleEl.textContent = "Set your action plan to see today's move.";
+    ctxEl.textContent = '';
+    btn.style.display = 'none';
+    card.classList.remove('today-move--done');
+    return;
+  }
+  const checked = loadChecked();
+  const next = actions.find((a) => !checked.has(a));
+  if (!next) {
+    titleEl.textContent = "You've cleared every action.";
+    ctxEl.textContent = "Log a win below to mark what changed.";
+    btn.style.display = 'none';
+    card.classList.add('today-move--done');
+    return;
+  }
+  card.classList.remove('today-move--done');
+  titleEl.textContent = next;
+  ctxEl.textContent = "Pulled from your highest-impact actions.";
+  btn.style.display = '';
+  btn.onclick = () => {
+    const set = loadChecked();
+    set.add(next);
+    saveChecked(set);
+    const cbs = document.querySelectorAll('#actionQueue input[data-action]');
+    const cb = Array.from(cbs).find((c) => c.getAttribute('data-action') === next);
+    if (cb && !cb.checked) {
+      cb.checked = true;
+      cb.dispatchEvent(new Event('change'));
+    } else {
+      renderTodayMove(actions);
+    }
+  };
 }
 
 function renderAppPlan(plan) {
@@ -643,6 +685,7 @@ function applyContent(c) {
   renderTracks(c.tracks);
   renderGapCards(c.gaps);
   renderActions(c.actions);
+  renderTodayMove(c.actions);
   renderAppPlan(c.plan);
   renderBridge(c.bridge);
   renderFocus(c.focus);
