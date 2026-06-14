@@ -2862,3 +2862,88 @@ h1 {
     transition: none;
   }
 }
+
+/* --- Paths card: refresh + AI thinking states --- */
+.tracks-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.tracks-head span {
+  margin-bottom: 0;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.tracks-refresh {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 11px 5px 9px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255, 253, 248, 0.85);
+  color: var(--sage-deep);
+  font-size: 12px;
+  font-weight: 800;
+  transition: background 160ms ease, transform 160ms ease;
+}
+
+.tracks-refresh:hover {
+  background: var(--teal-soft);
+  transform: translateY(-1px);
+}
+
+.tracks-refresh svg {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.tracks-refresh.spinning svg {
+  animation: refreshSpin 0.7s linear infinite;
+}
+
+@keyframes refreshSpin {
+  to { transform: rotate(360deg); }
+}
+
+/* --- Skeleton / thinking placeholders --- */
+.skeleton-line {
+  display: block;
+  height: 13px;
+  width: 100%;
+  margin: 9px 0;
+  border-radius: 7px;
+  background: rgba(47, 90, 79, 0.13);
+  animation: skeletonPulse 1.2s ease-in-out infinite;
+}
+
+.skeleton-line.short { width: 62%; }
+.skeleton-line.tiny { width: 34%; height: 9px; }
+
+.snapshot-wide .skeleton-line {
+  background: rgba(255, 255, 255, 0.22);
+}
+
+.snapshot-wide.thinking h2 {
+  opacity: 0.85;
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+.track-item.skeleton {
+  pointer-events: none;
+}
+
+@keyframes skeletonPulse {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
+}

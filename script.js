@@ -637,6 +637,7 @@ function renderTimeline(timeline) {
 }
 
 function applyContent(c) {
+  document.querySelector('.snapshot-wide')?.classList.remove('thinking');
   setText('.snapshot-wide h2', c.headline);
   setText('.snapshot-wide p', c.body);
   renderTracks(c.tracks);
@@ -646,6 +647,99 @@ function applyContent(c) {
   renderBridge(c.bridge);
   renderFocus(c.focus);
   renderTimeline(c.timeline);
+}
+
+// Will a fresh AI generation run for this profile (vs. cached or no key)?
+function aiWillGenerate(p) {
+  if (!aiAvailable() || !FigAI.hasKey()) return false;
+  const cached = readJSON('figuredAiContent');
+  return !(cached && cached.hash === hashProfile(p) && cached.data);
+}
+
+// Show a "thinking" state on the AI-driven cards instead of the weaker
+// rule-based version, so the student goes loading -> great, not okay -> great.
+function setAiThinking() {
+  const snap = document.querySelector('.snapshot-wide');
+  if (snap) {
+    snap.classList.add('thinking');
+    const h2 = snap.querySelector('h2');
+    const p = snap.querySelector('p');
+    if (h2) h2.textContent = 'Reading your trajectory…';
+    if (p) p.innerHTML = '<span class="skeleton-line"></span><span class="skeleton-line"></span><span class="skeleton-line short"></span>';
+  }
+  setTracksThinking();
+}
+
+function setTracksThinking() {
+  const list = document.getElementById('tracksList');
+  if (!list) return;
+  list.innerHTML = [0, 1, 2].map((i) => `
+    <div class="track-item skeleton${i === 0 ? ' primary' : ''}">
+      <div class="skeleton-line tiny"></div>
+      <div class="skeleton-line"></div>
+      <div class="skeleton-line short"></div>
+    </div>`).join('');
+}
+
+// "Show more options" on the Paths card — broadly transferable adjacents that
+// rotate in when there's no AI to generate fresh, profile-specific ones.
+const GENERIC_ADJACENTS = [
+  { role: 'Strategy & Operations', reason: 'Analytical and cross-functional. A strong base for many senior roles.' },
+  { role: 'Project & Program Management', reason: 'High demand, transferable across industries, builds toward leadership.' },
+  { role: 'Data & Analytics', reason: 'Turning numbers into decisions is valuable in almost every field.' },
+  { role: 'Business Development', reason: 'Relationships and deal-making open doors in any industry.' },
+  { role: 'Early-Stage Startup Operator', reason: 'The fastest way to learn every part of a business at once.' },
+];
+
+let fallbackTrackOffset = 0;
+
+function rotateFallbackTracks(p, s) {
+  const goal = trimGoal(p.goal, 48);
+  const domainAdj = buildAdjacentTracks(goal, (p.major || '').toLowerCase(), (p.skills || '').toLowerCase());
+  const seen = new Set();
+  const pool = [];
+  domainAdj.concat(GENERIC_ADJACENTS).forEach((a) => {
+    const key = a.role.toLowerCase();
+    if (!seen.has(key)) { seen.add(key); pool.push(a); }
+  });
+  fallbackTrackOffset = (fallbackTrackOffset + 2) % pool.length;
+  const a = pool[fallbackTrackOffset % pool.length];
+  const b = pool[(fallbackTrackOffset + 1) % pool.length];
+  const primary = generateTracks(p, s)[0];
+  return [
+    primary,
+    { label: 'Adjacent path', role: a.role, reason: a.reason },
+    { label: 'Also worth exploring', role: b.role, reason: b.reason },
+  ];
+}
+
+function initTracksRefresh() {
+  const btn = document.getElementById('tracksRefresh');
+  if (!btn) return;
+  btn.addEventListener('click', async () => {
+    if (btn.classList.contains('spinning') || !currentProfile) return;
+
+    if (aiAvailable() && FigAI.hasKey()) {
+      btn.classList.add('spinning');
+      setTracksThinking();
+      try {
+        const existing = (aiContent && aiContent.tracks ? aiContent.tracks : []).map((t) => t.role);
+        const fresh = await FigAI.generateMorePaths(currentProfile, existing);
+        renderTracks(fresh);
+        if (aiContent) aiContent.tracks = fresh;
+      } catch (e) {
+        console.error('More paths:', e);
+        renderTracks(generateTracks(currentProfile, currentScores));
+      } finally {
+        btn.classList.remove('spinning');
+      }
+    } else {
+      // No AI key — rotate through transferable adjacents for variety
+      btn.classList.add('spinning');
+      renderTracks(rotateFallbackTracks(currentProfile, currentScores));
+      setTimeout(() => btn.classList.remove('spinning'), 360);
+    }
+  });
 }
 
 // ---------------------------------------------------------------------------
@@ -808,8 +902,7 @@ async function maybeRunAI(profile, force = false) {
   }
 
   setAiPill('loading');
-  const snapCard = document.querySelector('.snapshot-wide');
-  snapCard?.classList.add('ai-loading');
+  setAiThinking();
   try {
     const data = await FigAI.generateInsights(profile);
     aiContent = data;
@@ -818,9 +911,9 @@ async function maybeRunAI(profile, force = false) {
     setAiPill('live');
   } catch (e) {
     console.error('Figured AI:', e);
+    // AI failed — restore the honest rule-based version so nothing stays blank.
+    if (currentProfile && currentScores) applyContent(fallbackContent(currentProfile, currentScores));
     setAiPill('error', e.message);
-  } finally {
-    snapCard?.classList.remove('ai-loading');
   }
 }
 
@@ -1047,6 +1140,8 @@ function applyProfile(p) {
   }
 
   applyContent(fallbackContent(p, s));
+  // If real AI is about to run, don't flash the weaker version — show thinking.
+  if (aiWillGenerate(p)) setAiThinking();
 
   // Distil the free-text goal into a clean keyword the job boards can search.
   const term = searchTerm(p.goal);
@@ -1136,6 +1231,7 @@ if (document.querySelector('.product-main')) {
   initKeyModal();
   initChat();
   initWinModal();
+  initTracksRefresh();
   renderTimeline(null);
 
   const profile = loadProfile();

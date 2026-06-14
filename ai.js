@@ -275,5 +275,57 @@ Hard rules:
     return JSON.parse(textBlock.text);
   }
 
-  return { getKey, setKey, hasKey, generateInsights, chatStream, parseResume };
+  // --- "More paths" refresh on the Paths card ---
+  const PATHS_SCHEMA = {
+    type: 'object',
+    properties: {
+      tracks: {
+        type: 'array',
+        items: {
+          type: 'object',
+          properties: {
+            label: { type: 'string' },
+            role: { type: 'string' },
+            reason: { type: 'string' },
+          },
+          required: ['label', 'role', 'reason'],
+          additionalProperties: false,
+        },
+      },
+    },
+    required: ['tracks'],
+    additionalProperties: false,
+  };
+
+  const PATHS_SYSTEM = `You are Figured, an honest career mentor for college students. Return exactly 3 paths that fit this student's profile.
+
+Rules:
+- First path: label "Your goal", role = their stated goal cleaned into a crisp role or field title (max 40 chars), reason tied to their real strengths.
+- Second path: label "Adjacent path". Third: label "Also worth exploring".
+- The 2nd and 3rd must be GENUINELY DIFFERENT from any roles listed as already shown. Fresh options, not rewordings.
+- Never suggest a path less ambitious than their goal. Adjacent paths are equal or upward moves that genuinely fit their profile.
+- reason: one specific sentence on why it fits THIS student. No em dashes. No generic filler. Plain text.`;
+
+  async function generateMorePaths(profile, existingRoles) {
+    const body = {
+      model: MODEL,
+      max_tokens: 1200,
+      system: PATHS_SYSTEM,
+      messages: [{
+        role: 'user',
+        content: 'Student profile:\n' + JSON.stringify(profile, null, 2) +
+          '\n\nAlready shown (do NOT repeat these roles): ' + ((existingRoles || []).join(', ') || 'none') +
+          '\n\nReturn 3 fresh paths as JSON.',
+      }],
+      output_config: { format: { type: 'json_schema', schema: PATHS_SCHEMA } },
+    };
+    const res = await fetch(API_URL, { method: 'POST', headers: headers(), body: JSON.stringify(body) });
+    if (!res.ok) throw await apiError(res);
+    const msg = await res.json();
+    const textBlock = (msg.content || []).find((b) => b.type === 'text');
+    if (!textBlock) throw new Error('No content returned.');
+    return JSON.parse(textBlock.text).tracks;
+  }
+
+  return { getKey, setKey, hasKey, generateInsights, chatStream, parseResume, generateMorePaths };
 })();
