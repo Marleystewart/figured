@@ -93,6 +93,30 @@ function esc(s) {
   return String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
 
+// Strip em/en dashes used as punctuation. Voice rule: dashes read as AI.
+// Preserve en dashes inside numeric ranges like "$110k–$130k" and ASCII
+// hyphens inside compound words like "front-office".
+function stripDashes(s) {
+  if (typeof s !== 'string') return s;
+  return s
+    // " — Word" or " – Word" → ". Word" (capitalize next letter)
+    .replace(/\s*[—–]\s+([a-zA-Z])/g, (_, c) => '. ' + c.toUpperCase())
+    // " — " with no following letter → ". "
+    .replace(/\s*[—–]\s+/g, '. ');
+}
+
+// Recursively run stripDashes on every string in an object/array.
+function stripDashesDeep(x) {
+  if (typeof x === 'string') return stripDashes(x);
+  if (Array.isArray(x)) return x.map(stripDashesDeep);
+  if (x && typeof x === 'object') {
+    const out = {};
+    for (const k in x) out[k] = stripDashesDeep(x[k]);
+    return out;
+  }
+  return x;
+}
+
 function hashProfile(p) {
   const str = JSON.stringify(p);
   let h = 5381;
@@ -127,14 +151,14 @@ function trimGoal(raw, max) {
 // Compensation data by domain (BLS-sourced, updated periodically)
 // ---------------------------------------------------------------------------
 const COMP = {
-  sports:     { entry: '$35k–$55k',        note: 'Entry front-office and ops roles pay notoriously low. The path up is through relationships and results — pay jumps sharply at the director level and above.' },
-  product:    { entry: '$95k–$125k',       note: 'APM programs at top companies pay $110–130k. Most PMs enter through adjacent roles — ops, engineering, data — first.' },
+  sports:     { entry: '$35k–$55k',        note: 'Entry front-office and ops roles pay notoriously low. The path up is through relationships and results. Pay jumps sharply at the director level and above.' },
+  product:    { entry: '$95k–$125k',       note: 'APM programs at top companies pay $110–130k. Most PMs enter through adjacent roles like ops, engineering, or data first.' },
   finance:    { entry: '$65k–$160k',       note: 'Investment banking analysts start ~$110k base + bonus. Corporate finance and financial planning roles run $65–85k to start.' },
   software:   { entry: '$110k–$135k',      note: 'Median new-grad SWE total comp at large tech companies. Big Tech starts at $150k+; startups vary widely but often include equity.' },
   marketing:  { entry: '$55k–$75k',        note: 'Marketing coordinators start $50–60k. Brand and growth roles at tech companies run higher. Agency pay is lower to start but builds fast.' },
   consulting: { entry: '$90k–$112k',       note: 'MBB (McKinsey, BCG, Bain) starts ~$112k base for undergrad. Big 4 management consulting runs $75–95k.' },
   design:     { entry: '$70k–$95k',        note: 'Junior UX/product designers at tech companies. Agency and startup roles vary. Senior and staff designers reach $130–180k+.' },
-  founder:    { entry: 'varies',           note: 'Early startup employees (#1–10) typically earn $70–110k + equity. Founders pay themselves last — upside is in the equity, not the salary.' },
+  founder:    { entry: 'varies',           note: 'Early startup employees (#1–10) typically earn $70–110k + equity. Founders pay themselves last. Upside is in the equity, not the salary.' },
   medicine:   { entry: '$61k → $239k+',   note: 'Residency pays ~$61k. Attending physicians earn $200–350k+ depending on specialty. Medical school debt (~$200k average) is the tradeoff to plan for.' },
   law:        { entry: '$80k–$215k',       note: 'Bimodal market: BigLaw starts at $225k; government and public interest roles run $60–80k. Most lawyers land somewhere in between.' },
   generic:    { entry: 'varies by path',   note: 'Compensation depends heavily on industry, role, and location. The Opportunities tab links to current listings with real salary data.' },
@@ -757,6 +781,7 @@ function renderTimeline(timeline) {
 }
 
 function applyContent(c) {
+  c = stripDashesDeep(c);
   document.querySelector('.snapshot-wide')?.classList.remove('thinking');
   setText('.snapshot-wide h2', c.headline);
   setText('.snapshot-wide p', c.body);
@@ -766,8 +791,14 @@ function applyContent(c) {
   renderTodayMove(c.actions);
   renderAppPlan(c.plan);
   renderBridge(c.bridge);
+  renderCurrentPath(c.bridge);
   renderFocus(c.focus);
   renderTimeline(c.timeline);
+}
+
+function renderCurrentPath(bridge) {
+  if (!bridge) return;
+  setText('#currentPathCopy', bridge.bridge || bridge.now || '');
 }
 
 // Will a fresh AI generation run for this profile (vs. cached or no key)?
