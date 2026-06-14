@@ -12,7 +12,7 @@ const planItems = {
   90: [
     ["Run a mock product interview", "Practice product sense, prioritization, and communication.", "High impact"],
     ["Lead one measurable campus project", "Create proof of ownership, collaboration, and execution.", "High impact"],
-    ["Refresh your trajectory snapshot", "Update Figured with new skills, projects, applications, and conversations.", "Medium impact"],
+    ["Refresh your trajectory snapshot", "Update 4ward with new skills, projects, applications, and conversations.", "Medium impact"],
   ],
 };
 
@@ -298,7 +298,7 @@ const FALLBACK_DOMAINS = {
       d90: [
         { title: 'Lock a role for next season', detail: 'Student manager, ops assistant, or analytics support — a defined title with real reps.', impact: 'High impact' },
         { title: 'Run 3 informational interviews', detail: 'Front-office staff, scouts, or analytics people. Ask about their path, not for a job.', impact: 'High impact' },
-        { title: 'Refresh your trajectory', detail: 'Update Figured with the new proof and let the picture move.', impact: 'Medium impact' },
+        { title: 'Refresh your trajectory', detail: 'Update 4ward with the new proof and let the picture move.', impact: 'Medium impact' },
       ],
     },
   }),
@@ -346,7 +346,7 @@ const FALLBACK_DOMAINS = {
       d90: [
         { title: 'Run a mock product interview', detail: 'Practice product sense, prioritization, and communication.', impact: 'High impact' },
         { title: 'Lead one measurable campus project', detail: 'Create proof of ownership, collaboration, and execution.', impact: 'High impact' },
-        { title: 'Refresh your trajectory', detail: 'Update Figured with new skills, projects, and conversations.', impact: 'Medium impact' },
+        { title: 'Refresh your trajectory', detail: 'Update 4ward with new skills, projects, and conversations.', impact: 'Medium impact' },
       ],
     },
   }),
@@ -394,7 +394,7 @@ const FALLBACK_DOMAINS = {
       d90: [
         { title: 'Practice the interview', detail: 'Mock interviews for the roles you want, with honest feedback.', impact: 'High impact' },
         { title: 'Take one leadership rep', detail: 'Own something end-to-end that you can point to.', impact: 'High impact' },
-        { title: 'Refresh your trajectory', detail: 'Update Figured with the new proof and see the picture move.', impact: 'Medium impact' },
+        { title: 'Refresh your trajectory', detail: 'Update 4ward with the new proof and see the picture move.', impact: 'Medium impact' },
       ],
     },
   }),
@@ -833,7 +833,7 @@ function handshakeURL() {
 
 // ---------------------------------------------------------------------------
 // Mentors — real opted-in profiles link directly; everyone else falls back to
-// a search. A mentor who joins Figured and shares their profile becomes one
+// a search. A mentor who joins 4ward and shares their profile becomes one
 // object in MENTORS_OPTED_IN with a `linkedin` URL, and the card links straight
 // to it. This is the consent model: we only deep-link a real person when they
 // have said yes and given us the URL.
@@ -891,7 +891,7 @@ function renderMentors(term) {
         <div class="mentor-avatar">${esc(initialsFor(m))}</div>
         <h3>${esc(m.name)}</h3>
         <p>${esc(m.sub || '')}</p>
-        ${opted ? '<span class="opted-badge">✓ On Figured</span>' : ''}
+        ${opted ? '<span class="opted-badge">✓ On 4ward</span>' : ''}
         <small>${esc(m.why || '')}</small>
         <a class="opp-link${opted ? ' opted' : ''}" href="${href}" target="_blank" rel="noopener">${cta}</a>
       </article>`;
@@ -953,7 +953,7 @@ async function maybeRunAI(profile, force = false) {
     applyContent(data);
     setAiPill('live');
   } catch (e) {
-    console.error('Figured AI:', e);
+    console.error('4ward AI:', e);
     // AI failed — restore the honest rule-based version so nothing stays blank.
     if (currentProfile && currentScores) applyContent(fallbackContent(currentProfile, currentScores));
     setAiPill('error', e.message);
@@ -1016,7 +1016,7 @@ function initKeyModal() {
 }
 
 // ---------------------------------------------------------------------------
-// Ask Figured chat
+// Ask 4ward chat
 // ---------------------------------------------------------------------------
 
 const chatHistory = [];
@@ -1028,9 +1028,9 @@ function chatSystemPrompt() {
   const name = p.firstName || 'this student';
   let insightNote = '';
   if (aiContent) {
-    insightNote = `\n\nTheir current Figured insights:\nHeadline: ${aiContent.headline}\nRead: ${aiContent.body}\nTop actions: ${(aiContent.actions || []).join('; ')}`;
+    insightNote = `\n\nTheir current 4ward insights:\nHeadline: ${aiContent.headline}\nRead: ${aiContent.body}\nTop actions: ${(aiContent.actions || []).join('; ')}`;
   }
-  return `You are Figured — a personal career trajectory mentor inside the Figured app, talking with ${name}, a ${p.year || 'college'} ${p.major || ''} student${p.school ? ' at ' + p.school : ''}.
+  return `You are 4ward — a personal career trajectory mentor inside the 4ward app, talking with ${name}, a ${p.year || 'college'} ${p.major || ''} student${p.school ? ' at ' + p.school : ''}.
 
 Their full profile:
 ${JSON.stringify(p, null, 2)}${insightNote}
@@ -1146,8 +1146,8 @@ function initChat() {
     overlay.classList.remove('show');
   };
 
-  document.getElementById('askFiguredBtn')?.addEventListener('click', open);
-  document.getElementById('askFiguredTop')?.addEventListener('click', open);
+  document.getElementById('ask4wardBtn')?.addEventListener('click', open);
+  document.getElementById('ask4wardTop')?.addEventListener('click', open);
   document.getElementById('chatClose')?.addEventListener('click', close);
   overlay.addEventListener('click', close);
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });

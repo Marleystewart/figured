@@ -1,8 +1,8 @@
-# Figured
+# 4ward
 
-**An honest trajectory tool for college students.** Figured takes a truthful but encouraging look at where a student is actually headed based on what they're doing right now — and tells them what the path takes, what's possible, what's missing, and exactly what to do next. Mentor, not machine.
+**An honest trajectory tool for college students.** 4ward takes a truthful but encouraging look at where a student is actually headed based on what they're doing right now — and tells them what the path takes, what's possible, what's missing, and exactly what to do next. Mentor, not machine.
 
-Students enter their major, GPA, activities, experience, skills, and goal. Figured gives them:
+Students enter their major, GPA, activities, experience, skills, and goal. 4ward gives them:
 
 - An **honest snapshot** of their trajectory (no scores, no grades — a mirror, not a report card)
 - **Paths that fit their profile** — their goal plus genuine adjacent routes
@@ -10,7 +10,7 @@ Students enter their major, GPA, activities, experience, skills, and goal. Figur
 - A **30 / 60 / 90-day action plan**
 - **Opportunities** — live LinkedIn Jobs + Indeed searches tailored to their goal
 - **Connections** — opted-in mentors who link straight to their LinkedIn, plus search fallbacks
-- **Ask Figured** — a chat mentor that knows their full profile (powered by Claude)
+- **Ask 4ward** — a chat mentor that knows their full profile (powered by Claude)
 
 ## Tech
 
@@ -32,7 +32,7 @@ Then open <http://localhost:4174/>.
 | `onboarding.html` / `onboarding.js` | Profile intake flow |
 | `app.html` / `script.js` | The student dashboard |
 | `mentor.html` / `mentor.js` | Mentor opt-in intake |
-| `ai.js` | Claude integration (insights + Ask Figured chat) |
+| `ai.js` | Claude integration (insights + Ask 4ward chat) |
 | `styles.css` | Full design system |
 
 ## Status

@@ -1,4 +1,4 @@
-// Figured — Claude AI layer
+// 4ward — Claude AI layer
 // Prototype-only: the API key is pasted by the user and stored in their own
 // browser (localStorage). A production build would proxy through a backend.
 
@@ -129,7 +129,7 @@ const FigAI = (() => {
     additionalProperties: false,
   };
 
-  const INSIGHTS_SYSTEM = `You are Figured, a personal trajectory tool for college students. You take an honest look at where a student is headed based on what they are actually doing right now, and tell them the truth about the path: what it takes, what is possible, and exactly what to do next. Voice: honest without being brutal. Mentor, not machine.
+  const INSIGHTS_SYSTEM = `You are 4ward, a personal trajectory tool for college students. You take an honest look at where a student is headed based on what they are actually doing right now, and tell them the truth about the path: what it takes, what is possible, and exactly what to do next. Voice: honest without being brutal. Mentor, not machine.
 
 Hard rules:
 1. Never suggest a path less ambitious than the student's stated goal. Adjacent tracks must be equal or upward moves that genuinely fit their profile.
@@ -239,7 +239,7 @@ Hard rules:
     additionalProperties: false,
   };
 
-  const RESUME_SYSTEM = `You are Figured, an honest but encouraging mentor reading a college student's résumé. Two jobs:
+  const RESUME_SYSTEM = `You are 4ward, an honest but encouraging mentor reading a college student's résumé. Two jobs:
 
 1. EXTRACT what's really on the résumé into the schema. Do not invent anything. If a field isn't present, return an empty string or empty array.
    - experience: each entry as a short line like "Role, Organization (dates)".
@@ -247,7 +247,7 @@ Hard rules:
    - skills: concrete skills/tools listed — one per item.
    - major / school: their current degree and institution if shown, else "".
 
-2. REVIEW the résumé. feedback = 3-4 specific, actionable improvements in Figured's voice: honest, warm, never harsh. Point at real things (weak bullet points, missing metrics, no clear summary, formatting, gaps for their apparent goal). Each: title = the fix in a few words, detail = one concrete sentence on how. If the résumé is strong, still give the next-level improvements. No generic filler. Plain text, no markdown.`;
+2. REVIEW the résumé. feedback = 3-4 specific, actionable improvements in 4ward's voice: honest, warm, never harsh. Point at real things (weak bullet points, missing metrics, no clear summary, formatting, gaps for their apparent goal). Each: title = the fix in a few words, detail = one concrete sentence on how. If the résumé is strong, still give the next-level improvements. No generic filler. Plain text, no markdown.`;
 
   // fileData: base64 (PDF) or raw text (txt). Returns parsed profile + feedback.
   async function parseResume(fileData, mediaType) {
@@ -297,7 +297,7 @@ Hard rules:
     additionalProperties: false,
   };
 
-  const PATHS_SYSTEM = `You are Figured, an honest career mentor for college students. Return exactly 3 paths that fit this student's profile.
+  const PATHS_SYSTEM = `You are 4ward, an honest career mentor for college students. Return exactly 3 paths that fit this student's profile.
 
 Rules:
 - First path: label "Your goal", role = their stated goal cleaned into a crisp role or field title (max 40 chars), reason tied to their real strengths.

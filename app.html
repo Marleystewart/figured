@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Figured | Alex Rivera</title>
+    <title>4ward | Alex Rivera</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -13,13 +13,7 @@
     <div class="product-shell">
       <aside class="product-sidebar">
         <a class="brand product-brand" href="./index.html">
-          <span class="brand-mark" aria-hidden="true">
-            <svg viewBox="0 0 32 32">
-              <path d="M26.8 5.3C16.5 7 9.1 12.9 6.5 23.2c6.2-.9 11.7-4.1 15.7-9.5-2.8 1.1-5.5 2.7-8 4.9 2.5-4.7 6.6-8.2 12.6-13.3Z" />
-              <path d="M7 24.2c2.4-3.3 5.2-5.9 8.6-7.7" />
-            </svg>
-          </span>
-          <span>Figured</span>
+          <img class="brand-logo" src="./assets/logo.png" alt="4ward" />
         </a>
 
         <nav class="product-nav" aria-label="Product navigation">
@@ -32,9 +26,9 @@
           <button class="product-nav-item" data-product-section="timeline">Timeline</button>
         </nav>
 
-        <button class="ask-figured-btn" id="askFiguredBtn" type="button">
+        <button class="ask-figured-btn" id="ask4wardBtn" type="button">
           <span class="ask-dot" id="aiDot" aria-hidden="true"></span>
-          Ask Figured
+          Ask 4ward
         </button>
 
         <section class="profile-pocket">
@@ -56,7 +50,7 @@
           <div class="product-actions">
             <button class="secondary-button ai-status-btn" id="aiStatusBtn" type="button">Connect AI</button>
             <a class="secondary-button" href="./onboarding.html?edit=1">Edit profile</a>
-            <button class="primary-button" id="askFiguredTop" type="button">Ask Figured</button>
+            <button class="primary-button" id="ask4wardTop" type="button">Ask 4ward</button>
           </div>
         </header>
 
@@ -294,7 +288,7 @@
           </div>
 
           <div class="conn-panel active" id="conn-mentors">
-            <p class="conn-note">Mentors who join Figured link straight to their profile. Everyone else, tap to find them on LinkedIn. <a class="conn-join" href="./mentor.html">Are you a mentor? Join →</a></p>
+            <p class="conn-note">Mentors who join 4ward link straight to their profile. Everyone else, tap to find them on LinkedIn. <a class="conn-join" href="./mentor.html">Are you a mentor? Join →</a></p>
             <div class="opportunity-app-grid" id="mentorGrid"></div>
           </div>
 
@@ -345,12 +339,12 @@
       </main>
     </div>
 
-    <!-- Ask Figured chat -->
+    <!-- Ask 4ward chat -->
     <div class="chat-overlay" id="chatOverlay"></div>
-    <aside class="chat-panel" id="chatPanel" aria-label="Ask Figured">
+    <aside class="chat-panel" id="chatPanel" aria-label="Ask 4ward">
       <header class="chat-head">
         <div>
-          <strong>Ask Figured</strong>
+          <strong>Ask 4ward</strong>
           <p id="chatStatus">Knows your full profile. Only talks about your path.</p>
         </div>
         <button class="chat-close" id="chatClose" type="button" aria-label="Close chat">&times;</button>
@@ -367,7 +361,7 @@
     <div class="modal-overlay" id="keyModal" hidden>
       <div class="modal-card">
         <h3>Connect Claude</h3>
-        <p>Paste an Anthropic API key to turn on personalized AI insights and the Ask Figured chat. The key is stored only in this browser — nothing leaves your machine except your own requests to Claude.</p>
+        <p>Paste an Anthropic API key to turn on personalized AI insights and the Ask 4ward chat. The key is stored only in this browser — nothing leaves your machine except your own requests to Claude.</p>
         <input class="ob-input" id="keyInput" type="password" placeholder="sk-ant-…" autocomplete="off" />
         <div class="modal-actions">
           <button class="ghost-button" id="keyCancel" type="button">Not now</button>

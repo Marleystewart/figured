@@ -1,14 +1,14 @@
-# Figured — Handoff Doc
+# 4ward — Handoff Doc
 
 *Use this to bring a new chat session (or a collaborator) up to speed without re-explaining the build. Paste it as your first message or point the model at it.*
 
 ---
 
-I'm Marley. I'm building **Figured** — an honest career trajectory tool for college students. You're picking up mid-build. Here's everything you need to be useful from message one.
+I'm Marley. I'm building **4ward** — an honest career trajectory tool for college students. You're picking up mid-build. Here's everything you need to be useful from message one.
 
 ## The product, in one paragraph
 
-A student enters their major, GPA, school, year, time-left, activities, experience, skills, and goal. Figured gives them an **honest snapshot** of where their path is actually leading, three **paths that fit their profile**, a **Gap Analyzer** (skills/experience/exposure/mindset framed as "what it takes," never as a judgment), a **30/60/90 action plan**, **opportunities** (LinkedIn + Indeed job links generated from their goal), **connections** (opted-in mentors + Google-search fallback), an **Ask Figured chat mentor** powered by Claude, a **résumé upload** that Claude reads, prefills, and reviews, and an **over-time loop** — they check off actions and log wins that land on their **Timeline**.
+A student enters their major, GPA, school, year, time-left, activities, experience, skills, and goal. 4ward gives them an **honest snapshot** of where their path is actually leading, three **paths that fit their profile**, a **Gap Analyzer** (skills/experience/exposure/mindset framed as "what it takes," never as a judgment), a **30/60/90 action plan**, **opportunities** (LinkedIn + Indeed job links generated from their goal), **connections** (opted-in mentors + Google-search fallback), an **Ask 4ward chat mentor** powered by Claude, a **résumé upload** that Claude reads, prefills, and reviews, and an **over-time loop** — they check off actions and log wins that land on their **Timeline**.
 
 The whole product is a **mirror, not a report card.** No scores. No grades. The voice is honest without being brutal. Mentor, not machine.
 
@@ -53,7 +53,7 @@ prompts/startup-plan.md   reusable 12-month startup plan prompt
 - Mobile-first; nav becomes a horizontal pill row at ≤820px
 - `prefers-reduced-motion` is respected
 
-## Hard rules baked into Figured's voice
+## Hard rules baked into 4ward's voice
 
 - **Never suggest a less ambitious path than the student stated.** Adjacent tracks are equal or upward.
 - **Every gap is framed as "here's what it takes," never "here's what you lack."**
@@ -69,9 +69,9 @@ prompts/startup-plan.md   reusable 12-month startup plan prompt
 | Landing page + onboarding + dashboard | Live |
 | Goal-aware rule-based fallback content (sports/product/finance/etc.) | Live |
 | Claude insights (JSON schema: headline, body, 3 tracks, gaps, 4 actions, 30/60/90 plan, bridge, focus, timeline) | Live |
-| Ask Figured chat (streaming, profile-aware, guardrailed to her path only) | Live, voice tuned |
+| Ask 4ward chat (streaming, profile-aware, guardrailed to her path only) | Live, voice tuned |
 | Résumé upload → Claude parses → prefills form + gives improvement feedback | Live |
-| Opted-in mentor system (`mentor.html` → "✓ On Figured" direct-link cards, archetype fallback with Google search) | Live |
+| Opted-in mentor system (`mentor.html` → "✓ On 4ward" direct-link cards, archetype fallback with Google search) | Live |
 | Over-time loop: persistent action check-offs with progress bar, "Log a win" → Timeline with date | Live |
 | Timeline derived from real profile (no fabricated months) | Live |
 | Mobile shell (horizontal pill nav, content above the fold at 375px) | Live |
@@ -99,9 +99,9 @@ prompts/startup-plan.md   reusable 12-month startup plan prompt
 ## Important context about Marley
 
 - Marley's own demo profile is sports management at Duke aiming for NBA basketball operations. Use that as the test case for anything you build, it's the hardest test of the "honest, never less ambitious, never generic" rules because it's a non-traditional goal that most career tools fumble.
-- The voice tuning is *recent and intentional*. The Ask Figured chat was producing ~180-word replies with em dashes and identical closings. That was tightened. Don't undo it.
+- The voice tuning is *recent and intentional*. The Ask 4ward chat was producing ~180-word replies with em dashes and identical closings. That was tightened. Don't undo it.
 - **Alex is the co-founder** and a GitHub collaborator (he can push to the repo; Vercel auto-deploys his pushes too).
-- **Go-to-market is underway.** Marley is meeting a Trinity College career-center advisor to pitch Figured and try to land Trinity as the first school. The play: walk in humble ("help me figure out if this is real"), demo the Honest Take + Ask Figured, ask what it'd take for the school to endorse it. Don't bring a deck or pricing to that first meeting.
+- **Go-to-market is underway.** Marley is meeting a Trinity College career-center advisor to pitch 4ward and try to land Trinity as the first school. The play: walk in humble ("help me figure out if this is real"), demo the Honest Take + Ask 4ward, ask what it'd take for the school to endorse it. Don't bring a deck or pricing to that first meeting.
 - **Budget reality:** two broke college students. ~$20/month (the Claude subscription) plus a few dollars for a domain. Keep every recommendation scrappy and free-tier-first.
 
 ## Things to *not* do
@@ -109,7 +109,7 @@ prompts/startup-plan.md   reusable 12-month startup plan prompt
 1. **Never reintroduce numeric scores, percentage bars, or grading.** Those were intentionally removed. It's a mirror, not a report card.
 2. **Never put API keys in committed code.** The repo is public. Keys live in user browsers via the "Connect AI" flow.
 3. **Don't add web search to chat without an explicit go.** That's a deliberate held decision.
-4. **Don't suggest a less ambitious path as "more realistic."** That's the cardinal sin of every other career tool, it's what Figured exists to fix.
+4. **Don't suggest a less ambitious path as "more realistic."** That's the cardinal sin of every other career tool, it's what 4ward exists to fix.
 5. **Don't strip the conversational onboarding into a plain form.** The personalized eyebrows ("Nice to meet you, Marley") and "Building your trajectory…" interstitial are part of the product feel.
 
 ## How Marley likes to work

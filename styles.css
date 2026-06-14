@@ -123,6 +123,17 @@ h3 {
   stroke-linejoin: round;
 }
 
+.brand-logo {
+  height: 40px;
+  width: auto;
+  display: block;
+}
+
+.brand.mini .brand-logo,
+.product-brand .brand-logo {
+  height: 34px;
+}
+
 .desktop-nav {
   display: flex;
   gap: 22px;

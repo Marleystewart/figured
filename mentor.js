@@ -1,5 +1,5 @@
-// Figured — mentor intake. Saves an opted-in mentor to localStorage so they
-// appear as a "✓ On Figured" direct-link card in the student's Connections.
+// 4ward — mentor intake. Saves an opted-in mentor to localStorage so they
+// appear as a "✓ On 4ward" direct-link card in the student's Connections.
 // (Prototype: same-browser storage. Production would POST to a shared backend.)
 
 const $ = (id) => document.getElementById(id);
@@ -49,7 +49,7 @@ function renderPreview(m) {
       <div class="mentor-avatar">${esc(m.initials)}</div>
       <h3>${esc(m.name)}</h3>
       <p>${esc(m.sub || '')}</p>
-      <span class="opted-badge">✓ On Figured</span>
+      <span class="opted-badge">✓ On 4ward</span>
       <small>${esc(m.why || '')}</small>
       <a class="opp-link opted" href="${esc(m.linkedin)}" target="_blank" rel="noopener">View profile →</a>
     </article>`;
@@ -72,7 +72,7 @@ $('mSubmit').addEventListener('click', () => {
   const mentor = { name, sub, field, why, linkedin, initials: initialsFor(name) };
   saveMentor(mentor);
 
-  $('successHeadline').textContent = `You're on Figured, ${name.split(' ')[0]}.`;
+  $('successHeadline').textContent = `You're on 4ward, ${name.split(' ')[0]}.`;
   renderPreview(mentor);
   $('mError').hidden = true;
   $('mentorForm').classList.remove('active');
