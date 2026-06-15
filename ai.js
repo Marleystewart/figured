@@ -160,9 +160,10 @@ Hard rules:
         content: 'Student profile:\n' + JSON.stringify(profile, null, 2) +
           '\n\nGenerate this student\'s trajectory insights as JSON.',
       }],
-      // effort 'medium' trades a little depth for noticeably faster generation.
-      // Default (omitted) is 'high', which is the slowest. Keep adaptive thinking on.
-      output_config: { effort: 'medium', format: { type: 'json_schema', schema: INSIGHTS_SCHEMA } },
+      // Keep this at high for the strongest possible trajectory quality.
+      // The onboarding interstitial gives students something useful to do
+      // while the fuller structured analysis finishes.
+      output_config: { effort: 'high', format: { type: 'json_schema', schema: INSIGHTS_SCHEMA } },
     };
     const res = await fetch(API_URL, { method: 'POST', headers: headers(), body: JSON.stringify(body) });
     if (!res.ok) throw await apiError(res);

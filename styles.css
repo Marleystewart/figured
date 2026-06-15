@@ -2934,6 +2934,47 @@ h1 {
   font-size: 16px;
 }
 
+.building-game {
+  width: min(100%, 560px);
+  margin-top: 8px;
+  padding: 14px;
+  border: 1px solid rgba(47, 90, 79, 0.14);
+  border-radius: 8px;
+  background: rgba(255, 252, 244, 0.72);
+  box-shadow: 0 18px 50px rgba(35, 52, 46, 0.12);
+}
+
+.building-game-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.building-game-head strong {
+  min-width: 48px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.building-game canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.building-overlay .building-game-help {
+  margin-top: 10px;
+  color: rgba(39, 54, 48, 0.66);
+  font-size: 13px;
+}
+
 @keyframes markPulse {
   0%, 100% { transform: scale(1); opacity: 1; }
   50% { transform: scale(1.08); opacity: 0.82; }

@@ -153,10 +153,18 @@
       </div>
       <h2 id="buildingHeadline">Building your trajectory…</h2>
       <p id="buildingSub">Reading where you are and where you're headed.</p>
+      <div class="building-game" aria-label="Path Dash loading game">
+        <div class="building-game-head">
+          <span>Path Dash</span>
+          <strong id="buildGameScore">0</strong>
+        </div>
+        <canvas id="buildGame" width="520" height="190" aria-label="Jump over blockers while your trajectory loads"></canvas>
+        <p class="building-game-help">Press space, tap, or click to jump while 4ward builds your path.</p>
+      </div>
     </div>
 
-    <script src="./ai.js?v=6"></script>
+    <script src="./ai.js?v=7"></script>
     <script src="./schools.js?v=1"></script>
-    <script src="./onboarding.js?v=6"></script>
+    <script src="./onboarding.js?v=7"></script>
   </body>
 </html>

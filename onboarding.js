@@ -138,6 +138,7 @@ nextBtn.addEventListener('click', () => {
   if (overlay) {
     overlay.hidden = false;
     requestAnimationFrame(() => overlay.classList.add('show'));
+    startBuildGame();
   }
 
   // Overlap the AI generation with this interstitial: generate the trajectory
@@ -175,6 +176,182 @@ function hashProfile(p) {
 }
 
 goTo(1);
+
+function startBuildGame() {
+  const canvas = document.getElementById('buildGame');
+  const scoreEl = document.getElementById('buildGameScore');
+  if (!canvas || canvas.dataset.running === '1') return;
+  canvas.dataset.running = '1';
+
+  const ctx = canvas.getContext('2d');
+  const state = {
+    width: canvas.width,
+    height: canvas.height,
+    ground: canvas.height - 36,
+    player: { x: 54, y: canvas.height - 72, size: 28, vy: 0 },
+    blockers: [],
+    sparks: [],
+    speed: 3.8,
+    score: 0,
+    best: Number(localStorage.getItem('figuredBuildGameBest') || 0),
+    last: performance.now(),
+    nextBlocker: 880,
+    alive: true,
+  };
+
+  function jump() {
+    if (!state.alive) {
+      resetGame();
+      return;
+    }
+    if (state.player.y >= state.ground - state.player.size - 1) {
+      state.player.vy = -11.5;
+    }
+  }
+
+  function resetGame() {
+    state.blockers = [];
+    state.sparks = [];
+    state.speed = 3.8;
+    state.score = 0;
+    state.nextBlocker = 760;
+    state.player.y = state.ground - state.player.size;
+    state.player.vy = 0;
+    state.alive = true;
+  }
+
+  const onKey = (event) => {
+    if (event.code === 'Space' && !document.getElementById('buildingOverlay')?.hidden) {
+      event.preventDefault();
+      jump();
+    }
+  };
+
+  canvas.addEventListener('pointerdown', jump);
+  document.addEventListener('keydown', onKey);
+
+  function addSpark(x, y) {
+    state.sparks.push({ x, y, r: 2 + Math.random() * 3, life: 1 });
+  }
+
+  function drawRoundedRect(x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.lineTo(x + w - r, y);
+    ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+    ctx.lineTo(x + w, y + h - r);
+    ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    ctx.lineTo(x + r, y + h);
+    ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+    ctx.lineTo(x, y + r);
+    ctx.quadraticCurveTo(x, y, x + r, y);
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  function tick(now) {
+    const overlay = document.getElementById('buildingOverlay');
+    if (!overlay || overlay.hidden) {
+      document.removeEventListener('keydown', onKey);
+      return;
+    }
+
+    const dt = Math.min(32, now - state.last);
+    state.last = now;
+    ctx.clearRect(0, 0, state.width, state.height);
+
+    const sky = ctx.createLinearGradient(0, 0, 0, state.height);
+    sky.addColorStop(0, '#eef6f0');
+    sky.addColorStop(1, '#f7f4ea');
+    ctx.fillStyle = sky;
+    drawRoundedRect(0, 0, state.width, state.height, 18);
+
+    ctx.fillStyle = 'rgba(47, 90, 79, 0.14)';
+    ctx.fillRect(0, state.ground, state.width, 2);
+    ctx.fillStyle = 'rgba(47, 90, 79, 0.12)';
+    for (let i = 0; i < 8; i++) {
+      const x = ((i * 90) - (state.score * 0.35 % 90));
+      ctx.fillRect(x, state.ground + 16, 44, 3);
+    }
+
+    if (state.alive) {
+      state.score += dt * 0.012;
+      state.speed = Math.min(7.5, 3.8 + state.score * 0.018);
+      state.nextBlocker -= dt * state.speed;
+      if (state.nextBlocker <= 0) {
+        const h = 24 + Math.random() * 26;
+        state.blockers.push({ x: state.width + 20, y: state.ground - h, w: 18 + Math.random() * 14, h });
+        state.nextBlocker = 720 + Math.random() * 540;
+      }
+
+      state.player.vy += 0.58;
+      state.player.y += state.player.vy;
+      const floor = state.ground - state.player.size;
+      if (state.player.y > floor) {
+        state.player.y = floor;
+        state.player.vy = 0;
+      }
+    }
+
+    state.blockers.forEach((b) => { b.x -= state.speed; });
+    state.blockers = state.blockers.filter((b) => b.x + b.w > -10);
+
+    const p = state.player;
+    state.blockers.forEach((b) => {
+      const hit = state.alive && p.x < b.x + b.w && p.x + p.size > b.x && p.y < b.y + b.h && p.y + p.size > b.y;
+      if (hit) {
+        state.alive = false;
+        state.best = Math.max(state.best, Math.floor(state.score));
+        localStorage.setItem('figuredBuildGameBest', String(state.best));
+        for (let i = 0; i < 16; i++) addSpark(p.x + p.size / 2, p.y + p.size / 2);
+      }
+    });
+
+    ctx.fillStyle = '#315b50';
+    drawRoundedRect(p.x, p.y, p.size, p.size, 8);
+    ctx.fillStyle = '#f6f2e8';
+    ctx.fillRect(p.x + 8, p.y + 8, 5, 5);
+    ctx.fillRect(p.x + 18, p.y + 8, 5, 5);
+
+    state.blockers.forEach((b) => {
+      ctx.fillStyle = '#c56f3f';
+      drawRoundedRect(b.x, b.y, b.w, b.h, 5);
+      ctx.fillStyle = 'rgba(255,255,255,0.35)';
+      ctx.fillRect(b.x + 4, b.y + 6, Math.max(3, b.w - 8), 3);
+    });
+
+    state.sparks.forEach((s) => {
+      s.x += (Math.random() - 0.5) * 5;
+      s.y += (Math.random() - 0.5) * 5;
+      s.life -= 0.04;
+      ctx.globalAlpha = Math.max(0, s.life);
+      ctx.fillStyle = '#d6a23f';
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.globalAlpha = 1;
+    });
+    state.sparks = state.sparks.filter((s) => s.life > 0);
+
+    ctx.fillStyle = '#2f5a4f';
+    ctx.font = '700 12px system-ui, -apple-system, BlinkMacSystemFont, sans-serif';
+    ctx.fillText(`Best ${state.best}`, 16, 24);
+    if (!state.alive) {
+      ctx.fillStyle = 'rgba(246, 242, 232, 0.92)';
+      drawRoundedRect(148, 58, 224, 72, 14);
+      ctx.fillStyle = '#1f2d28';
+      ctx.font = '800 16px system-ui, -apple-system, BlinkMacSystemFont, sans-serif';
+      ctx.fillText('Tap to try again', 200, 91);
+      ctx.font = '600 12px system-ui, -apple-system, BlinkMacSystemFont, sans-serif';
+      ctx.fillText('Your path is still building.', 195, 112);
+    }
+
+    if (scoreEl) scoreEl.textContent = String(Math.floor(state.score));
+    requestAnimationFrame(tick);
+  }
+
+  requestAnimationFrame(tick);
+}
 
 // --- Résumé upload: read it, prefill the profile, review it ---
 (function resumeUpload() {
