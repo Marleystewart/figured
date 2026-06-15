@@ -1102,6 +1102,7 @@ h1 {
   position: sticky;
   top: 0;
   height: 100vh;
+  max-height: 100vh;
   display: flex;
   flex-direction: column;
   gap: 18px;
@@ -1109,6 +1110,8 @@ h1 {
   border-right: 1px solid var(--line);
   background: rgba(255, 253, 248, 0.64);
   backdrop-filter: blur(24px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .product-brand {
@@ -1229,7 +1232,13 @@ h1 {
 .product-grid {
   display: grid;
   grid-template-columns: minmax(0, 1.25fr) minmax(280px, 0.75fr) minmax(280px, 0.85fr);
+  grid-template-areas:
+    "snapshot snapshot tracks"
+    "path actions tracks"
+    "today actions focus"
+    "comp comp focus";
   gap: 14px;
+  align-items: start;
 }
 
 .product-card {
@@ -1266,7 +1275,7 @@ h1 {
 }
 
 .snapshot-wide {
-  grid-column: span 2;
+  grid-area: snapshot;
   align-self: start;        /* size to content, don't stretch to match the taller paths card */
   min-height: 280px;
   display: grid;
@@ -1281,6 +1290,30 @@ h1 {
 .snapshot-wide > span,
 .snapshot-wide p {
   color: #e7eee8;
+}
+
+.tracks-card {
+  grid-area: tracks;
+}
+
+.current-path-card {
+  grid-area: path;
+}
+
+.action-queue {
+  grid-area: actions;
+}
+
+.gap-panel {
+  grid-area: focus;
+}
+
+.today-move {
+  grid-area: today;
+}
+
+.feed-panel {
+  grid-area: comp;
 }
 
 .alignment-card,
@@ -1552,6 +1585,16 @@ h1 {
   .full-product-card {
     grid-column: span 2;
   }
+
+  .product-grid {
+    grid-template-areas:
+      "snapshot snapshot"
+      "tracks tracks"
+      "path actions"
+      "today actions"
+      "focus focus"
+      "comp comp";
+  }
 }
 
 @media (max-width: 820px) {
@@ -1670,6 +1713,17 @@ h1 {
   .snapshot-wide,
   .full-product-card {
     grid-column: span 1;
+  }
+
+  .product-grid {
+    grid-template-areas:
+      "snapshot"
+      "tracks"
+      "path"
+      "actions"
+      "today"
+      "focus"
+      "comp";
   }
 }
 

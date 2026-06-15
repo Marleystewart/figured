@@ -122,6 +122,13 @@ function capitalizeName(name) {
   return s.toLowerCase().replace(/(^|[\s'\-])([a-z])/g, (_, sep, ch) => sep + ch.toUpperCase());
 }
 
+function profileInitials(name) {
+  const parts = (name || '').trim().split(/\s+/).filter(Boolean);
+  if (!parts.length) return '4W';
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
+
 // Strip em/en dashes used as punctuation. Voice rule: dashes read as AI.
 // Preserve en dashes inside numeric ranges like "$110k–$130k" and ASCII
 // hyphens inside compound words like "front-office".
@@ -1412,6 +1419,7 @@ function applyProfile(p) {
   const period = hour < 12 ? 'morning' : hour < 18 ? 'afternoon' : 'evening';
   setText('.product-topbar h1', `Good ${period}, ${name}.`);
   setText('.profile-pocket strong', name);
+  setText('.student-avatar', profileInitials(name));
   setText('.profile-meta', [p.major, p.year].filter(Boolean).join(' · '));
   setText('.profile-pocket span', `Goal: ${p.goal || '—'}`);
 
