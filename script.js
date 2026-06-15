@@ -867,7 +867,7 @@ function renderTimeline(timeline) {
   el.innerHTML = html || '<p><strong>Right now</strong> Your path starts here. Log your first win to begin the record.</p>';
 }
 
-function applyContent(c) {
+function applyContent(c, opts = {}) {
   c = stripDashesDeep(c);
   document.querySelector('.snapshot-wide')?.classList.remove('thinking');
   setText('.snapshot-wide h2', c.headline);
@@ -881,6 +881,34 @@ function applyContent(c) {
   renderCurrentPath(c.bridge);
   renderFocus(c.focus);
   renderTimeline(c.timeline);
+  // When the detailed Claude version replaces the instant draft, fade the hero
+  // cards in so the upgrade lands smoothly instead of snapping.
+  if (opts.refined) {
+    const snap = document.querySelector('.snapshot-wide');
+    const tracks = document.getElementById('tracksList');
+    [snap, tracks].forEach((el) => {
+      if (!el) return;
+      el.classList.remove('just-refined');
+      void el.offsetWidth; // restart the animation
+      el.classList.add('just-refined');
+    });
+  }
+}
+
+// A quiet "we're sharpening this" cue on the instant draft while Claude writes
+// the real analysis. No mention of AI — it reads as personalization, not a
+// machine status light.
+function showRefiningCue() {
+  const snap = document.querySelector('.snapshot-wide');
+  if (!snap || snap.querySelector('.refining-cue')) return;
+  const cue = document.createElement('div');
+  cue.className = 'refining-cue';
+  cue.innerHTML = '<span class="refining-dot"></span> Personalizing your trajectory…';
+  snap.appendChild(cue);
+}
+
+function hideRefiningCue() {
+  document.querySelectorAll('.refining-cue').forEach((el) => el.remove());
 }
 
 function renderCurrentPath(bridge) {
@@ -1146,17 +1174,22 @@ async function maybeRunAI(profile, force = false) {
   }
 
   setAiPill('loading');
+  // The instant rule-based draft is already on screen. Mark it as "personalizing"
+  // so the upgrade reads as the analysis getting sharper, not a glitchy reload.
+  showRefiningCue();
   try {
     const data = await FigAI.generateInsights(profile);
     aiContent = data;
     localStorage.setItem('figuredAiContent', JSON.stringify({ hash: h, data }));
-    applyContent(data);
+    applyContent(data, { refined: true });
     setAiPill('live');
   } catch (e) {
     console.error('4ward AI:', e);
     // AI failed — restore the honest rule-based version so nothing stays blank.
     if (currentProfile && currentScores) applyContent(fallbackContent(currentProfile, currentScores));
     setAiPill('error', e.message);
+  } finally {
+    hideRefiningCue();
   }
 }
 

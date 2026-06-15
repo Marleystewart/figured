@@ -3126,3 +3126,47 @@ h1 {
   0%, 100% { opacity: 0.55; }
   50% { opacity: 1; }
 }
+
+/* --- "Personalizing your trajectory" cue + smooth swap to the real analysis --- */
+.refining-cue {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 18px;
+  font-size: 13px;
+  font-weight: 750;
+  letter-spacing: 0.01em;
+  color: rgba(255, 253, 248, 0.82);
+}
+
+.refining-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+  animation: refinePulse 1.1s ease-in-out infinite;
+}
+
+@keyframes refinePulse {
+  0%, 100% { opacity: 0.3; transform: scale(0.78); }
+  50% { opacity: 1; transform: scale(1); }
+}
+
+/* The detailed version fades its text/cards in over the draft. */
+.snapshot-wide.just-refined h2,
+.snapshot-wide.just-refined p,
+.tracks-list.just-refined .track-item {
+  animation: refineIn 0.5s ease both;
+}
+
+@keyframes refineIn {
+  from { opacity: 0.15; }
+  to { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .refining-dot { animation: none; }
+  .snapshot-wide.just-refined h2,
+  .snapshot-wide.just-refined p,
+  .tracks-list.just-refined .track-item { animation: none; }
+}

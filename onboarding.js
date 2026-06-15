@@ -146,49 +146,14 @@ nextBtn.addEventListener('click', () => {
   // opens already-done instead of waiting for the whole call after a fixed
   // delay. This collapses two waits (interstitial + dashboard thinking) into
   // one honest screen.
-  const MIN_SHOW = 1100;      // keep the interstitial from flashing on fast runs
-  const REASSURE_AT = 5000;   // soften the copy if generation runs long
-  const HARD_CAP = 18000;     // safety valve only: never let the screen truly hang
-  const startedAt = Date.now();
-  let didGoApp = false;
-  const goAppOnce = () => {
-    if (didGoApp) return;
-    didGoApp = true;
-    setTimeout(goApp, Math.max(0, MIN_SHOW - (Date.now() - startedAt)));
-  };
-
-  if (typeof FigAI !== 'undefined' && FigAI.hasKey && FigAI.hasKey()) {
-    // We deliberately wait here for generation to finish and cache it, instead
-    // of navigating on a fixed timer. Navigating mid-flight unloads this page
-    // and kills the in-flight request, so the cache write never happens and the
-    // dashboard has to fire a second, duplicate call. Waiting it out (the Path
-    // Dash game covers the time) means the dashboard opens to a cache hit with
-    // no wasted call and no fallback flash.
-    const sub = document.getElementById('buildingSub');
-    const reassure = setTimeout(() => {
-      if (sub) sub.textContent = 'Almost there. Reading your goal closely.';
-    }, REASSURE_AT);
-    // Only if generation genuinely hangs do we hand off to the dashboard, which
-    // falls back and retries on its own. This is the lone remaining path that
-    // can cost a second call, and only for a pathologically slow generation.
-    const hardCap = setTimeout(goAppOnce, HARD_CAP);
-    FigAI.generateInsights(profile)
-      .then((data) => {
-        try {
-          localStorage.setItem('figuredAiContent', JSON.stringify({ hash: hashProfile(profile), data }));
-        } catch (e) { /* storage full or blocked — app will just regenerate */ }
-      })
-      .catch(() => { /* generation failed — app falls back or retries on load */ })
-      .finally(() => {
-        clearTimeout(reassure);
-        clearTimeout(hardCap);
-        goAppOnce();
-      });
-  } else if (overlay) {
-    setTimeout(goApp, 1700);
-  } else {
-    goApp();
-  }
+  // The dashboard owns trajectory generation now. It paints the instant draft
+  // immediately, then personalizes it with Claude in place (with a "Personalizing
+  // your trajectory" cue and a smooth fade to the detailed version). So the build
+  // screen is just a short, snappy branded beat with Path Dash, not a place we
+  // wait on a ~30s API call. Generating only on the dashboard means a single
+  // call, no abandoned request, and no duplicate generation.
+  const BUILD_SHOW = overlay ? 3400 : 0;
+  setTimeout(goApp, BUILD_SHOW);
 });
 
 // djb2 hash, identical to script.js hashProfile — must match so the dashboard
