@@ -132,14 +132,47 @@ nextBtn.addEventListener('click', () => {
   const name = profile.firstName === 'You' ? '' : capitalizeName(profile.firstName);
   const head = document.getElementById('buildingHeadline');
   if (head) head.textContent = name ? `Building your trajectory, ${name}…` : 'Building your trajectory…';
+
+  const goApp = () => { window.location.href = './app.html'; };
+
   if (overlay) {
     overlay.hidden = false;
     requestAnimationFrame(() => overlay.classList.add('show'));
-    setTimeout(() => { window.location.href = './app.html'; }, 1700);
+  }
+
+  // Overlap the AI generation with this interstitial: generate the trajectory
+  // here and cache it in the same shape the dashboard reads, so the dashboard
+  // opens already-done instead of waiting for the whole call after a fixed
+  // delay. This collapses two waits (interstitial + dashboard thinking) into
+  // one honest screen.
+  const MIN_SHOW = 1100; // keep the interstitial from flashing on fast runs
+  const startedAt = Date.now();
+  const finishAfterMinShow = () => setTimeout(goApp, Math.max(0, MIN_SHOW - (Date.now() - startedAt)));
+
+  if (typeof FigAI !== 'undefined' && FigAI.hasKey && FigAI.hasKey()) {
+    FigAI.generateInsights(profile)
+      .then((data) => {
+        try {
+          localStorage.setItem('figuredAiContent', JSON.stringify({ hash: hashProfile(profile), data }));
+        } catch (e) { /* storage full or blocked — app will just regenerate */ }
+      })
+      .catch(() => { /* generation failed — app falls back or retries on load */ })
+      .finally(finishAfterMinShow);
+  } else if (overlay) {
+    setTimeout(goApp, 1700);
   } else {
-    window.location.href = './app.html';
+    goApp();
   }
 });
+
+// djb2 hash, identical to script.js hashProfile — must match so the dashboard
+// recognizes the insights we pre-generated here as a cache hit for this profile.
+function hashProfile(p) {
+  const str = JSON.stringify(p);
+  let h = 5381;
+  for (let i = 0; i < str.length; i++) h = ((h << 5) + h + str.charCodeAt(i)) | 0;
+  return String(h);
+}
 
 goTo(1);
 
