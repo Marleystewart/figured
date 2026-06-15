@@ -146,18 +146,32 @@ nextBtn.addEventListener('click', () => {
   // opens already-done instead of waiting for the whole call after a fixed
   // delay. This collapses two waits (interstitial + dashboard thinking) into
   // one honest screen.
-  const MIN_SHOW = 1100; // keep the interstitial from flashing on fast runs
-  const MAX_SHOW = 5000; // never let the build screen feel stuck
+  const MIN_SHOW = 1100;      // keep the interstitial from flashing on fast runs
+  const REASSURE_AT = 5000;   // soften the copy if generation runs long
+  const HARD_CAP = 18000;     // safety valve only: never let the screen truly hang
   const startedAt = Date.now();
   let didGoApp = false;
-  const finishAfterMinShow = () => {
+  const goAppOnce = () => {
     if (didGoApp) return;
     didGoApp = true;
     setTimeout(goApp, Math.max(0, MIN_SHOW - (Date.now() - startedAt)));
   };
 
   if (typeof FigAI !== 'undefined' && FigAI.hasKey && FigAI.hasKey()) {
-    const maxWait = setTimeout(finishAfterMinShow, MAX_SHOW);
+    // We deliberately wait here for generation to finish and cache it, instead
+    // of navigating on a fixed timer. Navigating mid-flight unloads this page
+    // and kills the in-flight request, so the cache write never happens and the
+    // dashboard has to fire a second, duplicate call. Waiting it out (the Path
+    // Dash game covers the time) means the dashboard opens to a cache hit with
+    // no wasted call and no fallback flash.
+    const sub = document.getElementById('buildingSub');
+    const reassure = setTimeout(() => {
+      if (sub) sub.textContent = 'Almost there. Reading your goal closely.';
+    }, REASSURE_AT);
+    // Only if generation genuinely hangs do we hand off to the dashboard, which
+    // falls back and retries on its own. This is the lone remaining path that
+    // can cost a second call, and only for a pathologically slow generation.
+    const hardCap = setTimeout(goAppOnce, HARD_CAP);
     FigAI.generateInsights(profile)
       .then((data) => {
         try {
@@ -166,8 +180,9 @@ nextBtn.addEventListener('click', () => {
       })
       .catch(() => { /* generation failed — app falls back or retries on load */ })
       .finally(() => {
-        clearTimeout(maxWait);
-        finishAfterMinShow();
+        clearTimeout(reassure);
+        clearTimeout(hardCap);
+        goAppOnce();
       });
   } else if (overlay) {
     setTimeout(goApp, 1700);
