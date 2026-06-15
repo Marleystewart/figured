@@ -147,10 +147,17 @@ nextBtn.addEventListener('click', () => {
   // delay. This collapses two waits (interstitial + dashboard thinking) into
   // one honest screen.
   const MIN_SHOW = 1100; // keep the interstitial from flashing on fast runs
+  const MAX_SHOW = 5000; // never let the build screen feel stuck
   const startedAt = Date.now();
-  const finishAfterMinShow = () => setTimeout(goApp, Math.max(0, MIN_SHOW - (Date.now() - startedAt)));
+  let didGoApp = false;
+  const finishAfterMinShow = () => {
+    if (didGoApp) return;
+    didGoApp = true;
+    setTimeout(goApp, Math.max(0, MIN_SHOW - (Date.now() - startedAt)));
+  };
 
   if (typeof FigAI !== 'undefined' && FigAI.hasKey && FigAI.hasKey()) {
+    const maxWait = setTimeout(finishAfterMinShow, MAX_SHOW);
     FigAI.generateInsights(profile)
       .then((data) => {
         try {
@@ -158,7 +165,10 @@ nextBtn.addEventListener('click', () => {
         } catch (e) { /* storage full or blocked — app will just regenerate */ }
       })
       .catch(() => { /* generation failed — app falls back or retries on load */ })
-      .finally(finishAfterMinShow);
+      .finally(() => {
+        clearTimeout(maxWait);
+        finishAfterMinShow();
+      });
   } else if (overlay) {
     setTimeout(goApp, 1700);
   } else {
@@ -191,11 +201,11 @@ function startBuildGame() {
     player: { x: 54, y: canvas.height - 72, size: 28, vy: 0 },
     blockers: [],
     sparks: [],
-    speed: 3.8,
+    speed: 2.45,
     score: 0,
     best: Number(localStorage.getItem('figuredBuildGameBest') || 0),
     last: performance.now(),
-    nextBlocker: 880,
+    nextBlocker: 1650,
     alive: true,
   };
 
@@ -205,16 +215,16 @@ function startBuildGame() {
       return;
     }
     if (state.player.y >= state.ground - state.player.size - 1) {
-      state.player.vy = -11.5;
+      state.player.vy = -12.6;
     }
   }
 
   function resetGame() {
     state.blockers = [];
     state.sparks = [];
-    state.speed = 3.8;
+    state.speed = 2.45;
     state.score = 0;
-    state.nextBlocker = 760;
+    state.nextBlocker = 1450;
     state.player.y = state.ground - state.player.size;
     state.player.vy = 0;
     state.alive = true;
@@ -275,13 +285,13 @@ function startBuildGame() {
     }
 
     if (state.alive) {
-      state.score += dt * 0.012;
-      state.speed = Math.min(7.5, 3.8 + state.score * 0.018);
+      state.score += dt * 0.01;
+      state.speed = Math.min(5.7, 2.45 + state.score * 0.01);
       state.nextBlocker -= dt * state.speed;
       if (state.nextBlocker <= 0) {
-        const h = 24 + Math.random() * 26;
-        state.blockers.push({ x: state.width + 20, y: state.ground - h, w: 18 + Math.random() * 14, h });
-        state.nextBlocker = 720 + Math.random() * 540;
+        const h = 18 + Math.random() * 22;
+        state.blockers.push({ x: state.width + 20, y: state.ground - h, w: 14 + Math.random() * 10, h });
+        state.nextBlocker = 1120 + Math.random() * 760;
       }
 
       state.player.vy += 0.58;

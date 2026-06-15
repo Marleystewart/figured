@@ -1121,7 +1121,6 @@ async function maybeRunAI(profile, force = false) {
   }
 
   setAiPill('loading');
-  setAiThinking();
   try {
     const data = await FigAI.generateInsights(profile);
     aiContent = data;
@@ -1423,8 +1422,6 @@ function applyProfile(p) {
   }
 
   applyContent(fallbackContent(p, s));
-  // If real AI is about to run, don't flash the weaker version — show thinking.
-  if (aiWillGenerate(p)) setAiThinking();
   renderComp(p);
 
   // Distil the free-text goal into a clean keyword the job boards can search.
