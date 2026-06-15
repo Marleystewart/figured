@@ -1233,6 +1233,7 @@ h1 {
   display: grid;
   grid-template-columns: minmax(0, 1.25fr) minmax(280px, 0.75fr) minmax(280px, 0.85fr);
   gap: 14px;
+  align-items: start;
 }
 
 .product-card {
