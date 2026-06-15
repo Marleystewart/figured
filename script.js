@@ -77,6 +77,27 @@ productNavItems.forEach((item) => {
 
 renderPlan("30");
 
+// Landing-page header: hide when scrolling down, reveal when scrolling up.
+// Toggle directly in the listener (cheap) rather than via rAF, so it can't
+// get stuck if rAF is throttled in a background tab.
+(function autoHideHeader() {
+  const header = document.querySelector('.site-header');
+  if (!header) return;
+  let lastY = window.scrollY;
+  const SHOW_NEAR_TOP = 80; // always visible at the very top of the page
+  window.addEventListener('scroll', () => {
+    const y = window.scrollY;
+    if (y < SHOW_NEAR_TOP) {
+      header.classList.remove('header-hidden');
+    } else if (y > lastY + 6) {
+      header.classList.add('header-hidden');      // scrolling down
+    } else if (y < lastY - 6) {
+      header.classList.remove('header-hidden');    // scrolling up
+    }
+    lastY = y;
+  }, { passive: true });
+})();
+
 // ---------------------------------------------------------------------------
 // Profile + helpers
 // ---------------------------------------------------------------------------
