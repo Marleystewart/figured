@@ -1270,7 +1270,6 @@ h1 {
 
 .snapshot-wide {
   grid-column: span 2;
-  align-self: start;        /* size to content, don't stretch to match the taller paths card */
   min-height: 280px;
   display: grid;
   align-content: center;
@@ -2900,11 +2899,11 @@ h1 {
 }
 
 .building-mark {
-  width: 88px;
-  height: 88px;
+  width: 140px;
+  height: 140px;
   display: grid;
   place-items: center;
-  border-radius: 22px;
+  border-radius: 32px;
   background: #e4eee8;
   border: 1px solid rgba(47, 90, 79, 0.12);
   animation: markPulse 1.4s ease-in-out infinite;
@@ -2924,7 +2923,7 @@ h1 {
 /* The interstitial uses the real logo image — keep it inside the pulsing box,
    not the full-size header logo. */
 .building-mark .brand-logo {
-  height: 60px;
+  height: 100px;
 }
 
 .building-overlay h2 {
