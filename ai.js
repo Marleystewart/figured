@@ -13,7 +13,12 @@ const FigAI = (() => {
   const KEY_STORE = 'figuredApiKey';
   const PROXY_URL = '/api/claude';
   const ANTHROPIC_URL = 'https://api.anthropic.com/v1/messages';
+  // Opus for the trajectory generation: the voice quality and depth are the
+  // whole product. Sonnet for structured extraction work (résumé parsing) and
+  // for the "more paths" refresh — both are short, well-shaped tasks where
+  // Sonnet matches Opus output and runs 3x faster with 5x lower cost.
   const MODEL = 'claude-opus-4-8';
+  const SONNET = 'claude-sonnet-4-6';
 
   const getKey = () => localStorage.getItem(KEY_STORE) || '';
   const setKey = (k) => {
@@ -285,7 +290,10 @@ Hard rules:
       content = [{ type: 'text', text: "Student résumé text:\n\n" + fileData + "\n\nExtract into the schema and give improvement feedback." }];
     }
     const body = {
-      model: MODEL,
+      // Sonnet is the right model here: this is structured extraction +
+      // short feedback writing, not deep reasoning. Faster, cheaper, and
+      // far less prone to Opus capacity crunches.
+      model: SONNET,
       max_tokens: 4000,
       system: RESUME_SYSTEM,
       messages: [{ role: 'user', content }],

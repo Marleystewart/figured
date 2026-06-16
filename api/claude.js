@@ -17,12 +17,12 @@ export const config = { runtime: 'edge' };
 
 const ANTHROPIC_URL = 'https://api.anthropic.com/v1/messages';
 
-// Tried in order when the preferred model is overloaded. Keeps voice quality
-// close to Opus 4.8; we never silently fall to Sonnet for the structured
-// trajectory call because the schema is sized for Opus output.
+// Tried in order when the preferred model is overloaded. Opus 4.7 first to
+// keep voice quality close, then Sonnet 4.6 as the last-resort fallback.
+// Better a slightly flatter trajectory than an error in the user's face.
 const MODEL_FALLBACK = {
   'claude-opus-4-8': 'claude-opus-4-7',
-  'claude-opus-4-7': 'claude-opus-4-6',
+  'claude-opus-4-7': 'claude-sonnet-4-6',
 };
 
 const RETRYABLE_STATUS = new Set([429, 500, 502, 503, 504, 529]);
