@@ -1,10 +1,18 @@
 // 4ward — Claude AI layer
-// Prototype-only: the API key is pasted by the user and stored in their own
-// browser (localStorage). A production build would proxy through a backend.
+//
+// Requests go through our own Vercel serverless function (api/claude.js),
+// which adds the ANTHROPIC_API_KEY server-side. Students never need their
+// own key — they just open 4ward and it works.
+//
+// A legacy "bring your own key" path is still here for local development:
+// if a key has been pasted into the (now hidden) Connect AI modal, requests
+// go directly to Anthropic instead of through the proxy. Useful when running
+// `python3 -m http.server` locally where the Vercel function isn't available.
 
 const FigAI = (() => {
   const KEY_STORE = 'figuredApiKey';
-  const API_URL = 'https://api.anthropic.com/v1/messages';
+  const PROXY_URL = '/api/claude';
+  const ANTHROPIC_URL = 'https://api.anthropic.com/v1/messages';
   const MODEL = 'claude-opus-4-8';
 
   const getKey = () => localStorage.getItem(KEY_STORE) || '';
@@ -12,14 +20,25 @@ const FigAI = (() => {
     if (k && k.trim()) localStorage.setItem(KEY_STORE, k.trim());
     else localStorage.removeItem(KEY_STORE);
   };
-  const hasKey = () => Boolean(getKey());
+  // With the proxy in place, AI is always available to students. hasKey()
+  // is kept for compatibility with existing UI gates.
+  const hasKey = () => true;
 
-  const headers = () => ({
-    'x-api-key': getKey(),
-    'anthropic-version': '2023-06-01',
-    'content-type': 'application/json',
-    'anthropic-dangerous-direct-browser-access': 'true',
-  });
+  // Pasted-key mode (admin/local dev). Anyone using the deployed site
+  // automatically uses the proxy.
+  const usingBYOK = () => Boolean(getKey());
+  const endpoint = () => (usingBYOK() ? ANTHROPIC_URL : PROXY_URL);
+  const headers = () => {
+    if (usingBYOK()) {
+      return {
+        'x-api-key': getKey(),
+        'anthropic-version': '2023-06-01',
+        'content-type': 'application/json',
+        'anthropic-dangerous-direct-browser-access': 'true',
+      };
+    }
+    return { 'content-type': 'application/json' };
+  };
 
   async function apiError(res) {
     let msg = `Request failed (${res.status})`;
@@ -165,7 +184,7 @@ Hard rules:
       // while the fuller structured analysis finishes.
       output_config: { effort: 'high', format: { type: 'json_schema', schema: INSIGHTS_SCHEMA } },
     };
-    const res = await fetch(API_URL, { method: 'POST', headers: headers(), body: JSON.stringify(body) });
+    const res = await fetch(endpoint(), { method: 'POST', headers: headers(), body: JSON.stringify(body) });
     if (!res.ok) throw await apiError(res);
     const msg = await res.json();
     const textBlock = (msg.content || []).find((b) => b.type === 'text');
@@ -186,7 +205,7 @@ Hard rules:
       system,
       messages,
     };
-    const res = await fetch(API_URL, { method: 'POST', headers: headers(), body: JSON.stringify(body) });
+    const res = await fetch(endpoint(), { method: 'POST', headers: headers(), body: JSON.stringify(body) });
     if (!res.ok) throw await apiError(res);
 
     const reader = res.body.getReader();
@@ -272,7 +291,7 @@ Hard rules:
       messages: [{ role: 'user', content }],
       output_config: { format: { type: 'json_schema', schema: RESUME_SCHEMA } },
     };
-    const res = await fetch(API_URL, { method: 'POST', headers: headers(), body: JSON.stringify(body) });
+    const res = await fetch(endpoint(), { method: 'POST', headers: headers(), body: JSON.stringify(body) });
     if (!res.ok) throw await apiError(res);
     const msg = await res.json();
     const textBlock = (msg.content || []).find((b) => b.type === 'text');
@@ -324,7 +343,7 @@ Rules:
       }],
       output_config: { format: { type: 'json_schema', schema: PATHS_SCHEMA } },
     };
-    const res = await fetch(API_URL, { method: 'POST', headers: headers(), body: JSON.stringify(body) });
+    const res = await fetch(endpoint(), { method: 'POST', headers: headers(), body: JSON.stringify(body) });
     if (!res.ok) throw await apiError(res);
     const msg = await res.json();
     const textBlock = (msg.content || []).find((b) => b.type === 'text');

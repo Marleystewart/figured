@@ -1055,9 +1055,71 @@ function indeedURL(keyword) {
 function googleJobsURL(keyword) {
   return 'https://www.google.com/search?q=' + encodeURIComponent(keyword + ' jobs') + '&ibp=htl;jobs';
 }
-function handshakeURL(keyword) {
-  if (keyword) return 'https://app.joinhandshake.com/search?query=' + encodeURIComponent(keyword) + '&category=JOB';
-  return 'https://app.joinhandshake.com/';
+// Each school has its own Handshake subdomain (e.g. trinity.joinhandshake.com).
+// When we know it, link there so the student lands in their own school's
+// posting feed instead of the generic login page. Falls back to app.joinhandshake.com
+// when the school isn't mapped or there's no profile yet.
+const HANDSHAKE_SUBDOMAIN = {
+  // NESCAC + small liberal arts (Marley's primary targets)
+  'trinity college': 'trinity',
+  'amherst college': 'amherst',
+  'bowdoin college': 'bowdoin',
+  'bates college': 'bates',
+  'colby college': 'colby',
+  'hamilton college': 'hamilton',
+  'middlebury college': 'middlebury',
+  'wesleyan university': 'wesleyan',
+  'williams college': 'williams',
+  'connecticut college': 'conncoll',
+  'tufts university': 'tufts',
+  'pomona college': 'pomona',
+  'swarthmore college': 'swarthmore',
+  'haverford college': 'haverford',
+  'carleton college': 'carleton',
+  'macalester college': 'macalester',
+  'davidson college': 'davidson',
+  'reed college': 'reed',
+  'vassar college': 'vassar',
+  'bard college': 'bard',
+  'holy cross': 'holycross',
+  'college of the holy cross': 'holycross',
+  'skidmore college': 'skidmore',
+  // HBCUs
+  'spelman college': 'spelman',
+  'morehouse college': 'morehouse',
+  'howard university': 'howard',
+  'hampton university': 'hampton',
+  // Big schools also worth seeding
+  'boston university': 'bu',
+  'boston college': 'bc',
+  'duke university': 'duke',
+  'emory university': 'emory',
+  'cornell university': 'cornell',
+  'yale university': 'yale',
+  'harvard university': 'harvard',
+  'university of pennsylvania': 'upenn',
+  'northwestern university': 'northwestern',
+  'georgetown university': 'georgetown',
+  'university of southern california': 'usc',
+  'new york university': 'nyu',
+  'vanderbilt university': 'vanderbilt',
+};
+
+function handshakeSubdomain(profile) {
+  const school = String(profile?.school || '').trim().toLowerCase();
+  if (!school) return '';
+  if (HANDSHAKE_SUBDOMAIN[school]) return HANDSHAKE_SUBDOMAIN[school];
+  // Strip common suffixes and try again ("Trinity College" -> "trinity")
+  const stripped = school.replace(/\b(college|university|institute|of|the)\b/g, '').replace(/\s+/g, '').trim();
+  if (stripped && stripped.length >= 3) return stripped;
+  return '';
+}
+
+function handshakeURL(keyword, profile) {
+  const sub = handshakeSubdomain(profile);
+  const base = sub ? `https://${sub}.joinhandshake.com` : 'https://app.joinhandshake.com';
+  if (keyword) return base + '/job-search/?query=' + encodeURIComponent(keyword);
+  return base + '/';
 }
 
 // ---------------------------------------------------------------------------
@@ -1504,23 +1566,26 @@ function applyProfile(p) {
   setHref('oppLink1', linkedinJobsURL(internKw, 1));
   setHref('oppLink1b', indeedURL(`${term} Intern`));
   setHref('oppLink1c', googleJobsURL(`${term} intern`));
+  setHref('oppLink1d', handshakeURL(`${term} intern`, p));
   // Entry-level — f_E=2 limits to entry-level postings; use the real role
   // title when we know it so we get actual entry roles, not adjacent ones.
   setHref('oppLink2', linkedinJobsURL(entryKw, 2));
   setHref('oppLink2b', indeedURL(`Entry level ${entryKw}`));
   setHref('oppLink2c', googleJobsURL(`entry level ${entryKw}`));
+  setHref('oppLink2d', handshakeURL(entryKw, p));
   // Fellowship / programs
   setHref('oppLink3', linkedinJobsURL(`${term} Fellowship`));
   setHref('oppLink3b', indeedURL(`${term} Fellowship student`));
   setHref('oppLink3c', googleJobsURL(`${term} fellowship program`));
+  setHref('oppLink3d', handshakeURL(`${term} fellowship`, p));
   // Networking — Google surfaces real people better than logged-out LI search
   setHref('oppLink4', googleLinkedinURL(`${term} professional`));
-  setHref('oppHandshake4', handshakeURL(term));
+  setHref('oppHandshake4', handshakeURL(term, p));
 
   // Connections tab
   setHref('connLinkedinLink', googleLinkedinURL(term));
   setHref('peerLinkedinLink', googleLinkedinURL(`${term} student`));
-  setHref('peerHandshakeLink', handshakeURL(term));
+  setHref('peerHandshakeLink', handshakeURL(term, p));
   renderMentors(term);
 
   maybeRunAI(p);
