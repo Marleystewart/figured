@@ -1060,8 +1060,11 @@ function googleJobsURL(keyword) {
 // posting feed instead of the generic login page. Falls back to app.joinhandshake.com
 // when the school isn't mapped or there's no profile yet.
 const HANDSHAKE_SUBDOMAIN = {
-  // NESCAC + small liberal arts (Marley's primary targets)
-  'trinity college': 'trinity',
+  // NESCAC + small liberal arts (Marley's primary targets). Trinity College in
+  // Hartford uses "trincoll" on Handshake (matches their email domain).
+  'trinity college': 'trincoll',
+  'trinity college hartford': 'trincoll',
+  'trinity, hartford, ct': 'trincoll',
   'amherst college': 'amherst',
   'bowdoin college': 'bowdoin',
   'bates college': 'bates',
@@ -1106,13 +1109,23 @@ const HANDSHAKE_SUBDOMAIN = {
 };
 
 function handshakeSubdomain(profile) {
-  const school = String(profile?.school || '').trim().toLowerCase();
-  if (!school) return '';
-  if (HANDSHAKE_SUBDOMAIN[school]) return HANDSHAKE_SUBDOMAIN[school];
-  // Strip common suffixes and try again ("Trinity College" -> "trinity")
-  const stripped = school.replace(/\b(college|university|institute|of|the)\b/g, '').replace(/\s+/g, '').trim();
-  if (stripped && stripped.length >= 3) return stripped;
-  return '';
+  const raw = String(profile?.school || '').trim().toLowerCase();
+  if (!raw) return '';
+  if (HANDSHAKE_SUBDOMAIN[raw]) return HANDSHAKE_SUBDOMAIN[raw];
+  // Derive a subdomain. Replace every non-alphanumeric with a space so commas,
+  // periods, ampersands etc. can't end up in the hostname (DNS NXDOMAINs on
+  // them). Then drop stopwords and take the FIRST significant token, which
+  // matches the real Handshake pattern (pomona, williams, hamilton, etc.).
+  const stopwords = new Set(['college', 'university', 'institute', 'school', 'of', 'the', 'at', 'and']);
+  const tokens = raw
+    .replace(/[^a-z0-9]/g, ' ')
+    .split(/\s+/)
+    .filter((t) => t && !stopwords.has(t));
+  const first = tokens[0] || '';
+  // Hostnames must be at least 3 chars to be useful; anything shorter (e.g. a
+  // single "of" surviving) gets the generic Handshake login instead of a
+  // broken subdomain.
+  return first.length >= 3 ? first : '';
 }
 
 function handshakeURL(keyword, profile) {

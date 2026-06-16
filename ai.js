@@ -19,6 +19,9 @@ const FigAI = (() => {
   // Sonnet matches Opus output and runs 3x faster with 5x lower cost.
   const MODEL = 'claude-opus-4-8';
   const SONNET = 'claude-sonnet-4-6';
+  // Haiku for the résumé parser: structured extraction plus short feedback is
+  // exactly what Haiku is built for. ~2x faster than Sonnet, ~10x cheaper.
+  const HAIKU = 'claude-haiku-4-5-20251001';
 
   const getKey = () => localStorage.getItem(KEY_STORE) || '';
   const setKey = (k) => {
@@ -290,10 +293,10 @@ Hard rules:
       content = [{ type: 'text', text: "Student résumé text:\n\n" + fileData + "\n\nExtract into the schema and give improvement feedback." }];
     }
     const body = {
-      // Sonnet is the right model here: this is structured extraction +
-      // short feedback writing, not deep reasoning. Faster, cheaper, and
-      // far less prone to Opus capacity crunches.
-      model: SONNET,
+      // Haiku 4.5 — structured extraction plus a few lines of feedback. ~2x
+      // faster than Sonnet on this task, far more capacity headroom, and
+      // dramatically cheaper. Voice rules still apply via the system prompt.
+      model: HAIKU,
       max_tokens: 4000,
       system: RESUME_SYSTEM,
       messages: [{ role: 'user', content }],
