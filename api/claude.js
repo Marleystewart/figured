@@ -8,28 +8,34 @@
 // Set ANTHROPIC_API_KEY as a Vercel environment variable before deploying.
 // Never commit a real key. The public repo would leak it instantly.
 //
-// Resilience: Anthropic returns 529 ("Overloaded") when capacity is short, and
-// occasional 503s when something transient breaks upstream. We retry those with
-// exponential backoff; if the user's preferred model stays overloaded, we fall
-// back to the previous-generation Opus so the student still gets a real result.
+// Resilience strategy (revised after a friend hit repeated failures):
+//   The Vercel Edge function has a ~25s hard timeout on the Hobby tier. Opus
+//   under heavy load can take ~25s by itself, so a long retry chain on Opus
+//   will time out before we ever reach a fallback model. New plan:
+//     - One quick retry on Opus 4.8 (handles transient 5xx)
+//     - On any continued failure, immediately fall back to Sonnet 4.6
+//     - Sonnet has far more capacity and is roughly 3x faster, so it usually
+//       lands in well under the remaining time budget.
+//   Voice rules are entirely in the system prompt, so a Sonnet trajectory is
+//   still on-brand — just slightly less rich than Opus. Always shipping a
+//   real result beats a fancy result the user never sees.
 
 export const config = { runtime: 'edge' };
 
 const ANTHROPIC_URL = 'https://api.anthropic.com/v1/messages';
 
-// Tried in order when the preferred model is overloaded. Opus 4.7 first to
-// keep voice quality close, then Sonnet 4.6 as the last-resort fallback.
-// Better a slightly flatter trajectory than an error in the user's face.
-const MODEL_FALLBACK = {
-  'claude-opus-4-8': 'claude-opus-4-7',
-  'claude-opus-4-7': 'claude-sonnet-4-6',
+// Trajectory generation is the only place we silently fall back. Sonnet 4.6
+// matches Opus 4.8 on schema compliance and on the 4ward voice rules; the
+// only loss is some depth of analysis. Better than an error in the user's
+// face. Chat and résumé already use their own dedicated models.
+const PRIMARY_FALLBACK = {
+  'claude-opus-4-8': 'claude-sonnet-4-6',
 };
 
 const RETRYABLE_STATUS = new Set([429, 500, 502, 503, 504, 529]);
-// 5 retries after the initial call. Total wait budget on a fully overloaded
-// call is ~15s, well within the Vercel Edge timeout. The vast majority of
-// Anthropic capacity crunches clear inside that window.
-const RETRY_DELAYS_MS = [500, 1200, 2400, 4000, 7000];
+// Total wall-clock budget we're allowed to spend before the Edge function is
+// killed. Leave headroom for response serialization.
+const TIME_BUDGET_MS = 22000;
 
 export default async function handler(req) {
   if (req.method !== 'POST') {
@@ -51,9 +57,9 @@ export default async function handler(req) {
   }
   const isStream = bodyObj.stream === true;
 
-  // Streaming responses can't be retried mid-flight without buffering, and chat
-  // is the lowest-stakes call. Pass it through with no retry; if Anthropic
-  // returns 5xx, the browser surfaces it and the student can resend.
+  // Streaming responses (chat) can't be retried mid-flight without buffering,
+  // and chat is the lowest-stakes call. Pass it through; if Anthropic returns
+  // 5xx, the browser surfaces it and the student can resend.
   if (isStream) {
     const upstream = await callAnthropic(apiKey, bodyText);
     return new Response(upstream.body, {
@@ -65,18 +71,22 @@ export default async function handler(req) {
     });
   }
 
-  // Non-streaming (insights, résumé, more paths): retry on transient 5xx, then
-  // fall back to the previous-generation Opus if the preferred model is still
-  // overloaded. The model from the original request determines the fallback.
-  let lastResponse = null;
-  let lastBodyText = bodyText;
-  let currentModel = bodyObj.model;
+  // Non-streaming (insights, résumé, more paths). Two-attempt strategy on the
+  // requested model, then one swap to the fallback model with two more
+  // attempts, all clamped to TIME_BUDGET_MS total.
+  const startedAt = Date.now();
+  const remaining = () => TIME_BUDGET_MS - (Date.now() - startedAt);
 
-  while (true) {
-    for (let attempt = 0; attempt <= RETRY_DELAYS_MS.length; attempt++) {
-      const upstream = await callAnthropic(apiKey, lastBodyText);
+  let currentBody = bodyText;
+  let currentModel = bodyObj.model;
+  let lastResponse = null;
+
+  for (let phase = 0; phase < 2; phase++) {
+    // Phase 0 = original model, phase 1 = fallback (if any).
+    for (let attempt = 0; attempt < 2; attempt++) {
+      if (remaining() < 3000) break; // not enough time for another full call
+      const upstream = await callAnthropic(apiKey, currentBody);
       if (!RETRYABLE_STATUS.has(upstream.status)) {
-        // Either a clean 200 or a non-retryable error: send it straight back.
         const text = await upstream.text();
         return new Response(text, {
           status: upstream.status,
@@ -84,22 +94,24 @@ export default async function handler(req) {
         });
       }
       lastResponse = { status: upstream.status, text: await upstream.text() };
-      if (attempt < RETRY_DELAYS_MS.length) {
-        await sleep(RETRY_DELAYS_MS[attempt]);
+      // Brief backoff before the second attempt on the same model. Skip if we
+      // don't have time, so we get to the fallback model.
+      if (attempt === 0 && remaining() > 5000) {
+        await sleep(800);
       }
     }
-    // All retries on this model exhausted. Try the next model in the chain.
-    const nextModel = MODEL_FALLBACK[currentModel];
-    if (!nextModel) break;
-    bodyObj.model = nextModel;
-    currentModel = nextModel;
-    lastBodyText = JSON.stringify(bodyObj);
+    const next = PRIMARY_FALLBACK[currentModel];
+    if (!next) break;
+    bodyObj.model = next;
+    currentModel = next;
+    currentBody = JSON.stringify(bodyObj);
   }
 
-  // Fully exhausted: surface the last error to the browser so the user sees
-  // a clear message instead of a silent failure.
-  return new Response(lastResponse.text, {
-    status: lastResponse.status,
+  // Fully exhausted: surface the last error so the user sees a clear message.
+  return new Response(lastResponse ? lastResponse.text : JSON.stringify({
+    error: { message: 'Service is temporarily unavailable. Try again in a moment.' },
+  }), {
+    status: lastResponse ? lastResponse.status : 503,
     headers: { 'content-type': 'application/json' },
   });
 }
