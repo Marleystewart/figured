@@ -7,6 +7,7 @@
 //
 // Set ANTHROPIC_API_KEY as a Vercel environment variable before deploying.
 // Never commit a real key. The public repo would leak it instantly.
+import { Readable } from 'node:stream';
 //
 // Resilience strategy (revised after a friend hit repeated failures):
 //   The Vercel Edge function has a ~25s hard timeout on the Hobby tier. Opus
@@ -53,23 +54,24 @@ function attemptTimeoutMs(model, attempt) {
   return 12000;
 }
 
-export default async function handler(req) {
+export default async function handler(req, res) {
   if (req.method !== 'POST') {
-    return json({ error: { message: 'Method not allowed' } }, 405);
+    return json(res, { error: { message: 'Method not allowed' } }, 405);
   }
 
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
     return json(
+      res,
       { error: { message: 'Server is not configured. ANTHROPIC_API_KEY missing on Vercel.' } },
       500,
     );
   }
 
-  const bodyText = await req.text();
+  const bodyText = await readBody(req);
   let bodyObj;
   try { bodyObj = JSON.parse(bodyText); } catch {
-    return json({ error: { message: 'Invalid JSON in request body.' } }, 400);
+    return json(res, { error: { message: 'Invalid JSON in request body.' } }, 400);
   }
   const isStream = bodyObj.stream === true;
 
@@ -78,12 +80,9 @@ export default async function handler(req) {
   // 5xx, the browser surfaces it and the student can resend.
   if (isStream) {
     const upstream = await callAnthropic(apiKey, bodyText);
-    return new Response(upstream.body, {
-      status: upstream.status,
-      headers: {
-        'content-type': upstream.headers.get('content-type') || 'text/event-stream',
-        'cache-control': 'no-cache',
-      },
+    return sendUpstream(res, upstream, {
+      'content-type': upstream.headers.get('content-type') || 'text/event-stream',
+      'cache-control': 'no-cache',
     });
   }
 
@@ -126,10 +125,7 @@ export default async function handler(req) {
       // Success → return straight through.
       if (upstream.status >= 200 && upstream.status < 300) {
         const text = await upstream.text();
-        return new Response(text, {
-          status: upstream.status,
-          headers: { 'content-type': 'application/json' },
-        });
+        return sendText(res, text, upstream.status, { 'content-type': 'application/json' });
       }
       // Any non-success: remember the response and either retry, or fall
       // back to the next model in the chain. We used to only retry/fallback
@@ -167,12 +163,9 @@ export default async function handler(req) {
   }
 
   // Fully exhausted: surface the last error so the user sees a clear message.
-  return new Response(lastResponse ? lastResponse.text : JSON.stringify({
+  return sendText(res, lastResponse ? lastResponse.text : JSON.stringify({
     error: { message: 'Service is temporarily unavailable. Try again in a moment.' },
-  }), {
-    status: lastResponse ? lastResponse.status : 503,
-    headers: { 'content-type': 'application/json' },
-  });
+  }), lastResponse ? lastResponse.status : 503, { 'content-type': 'application/json' });
 }
 
 async function callAnthropic(apiKey, body, timeoutMs) {
@@ -194,9 +187,48 @@ function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-function json(obj, status = 200) {
-  return new Response(JSON.stringify(obj), {
-    status,
-    headers: { 'content-type': 'application/json' },
+async function readBody(req) {
+  if (typeof req.text === 'function') return req.text();
+  return new Promise((resolve, reject) => {
+    let body = '';
+    req.setEncoding?.('utf8');
+    req.on('data', (chunk) => { body += chunk; });
+    req.on('end', () => resolve(body));
+    req.on('error', reject);
   });
+}
+
+function isNodeResponse(res) {
+  return res && typeof res.setHeader === 'function' && typeof res.end === 'function';
+}
+
+function sendText(res, text, status = 200, headers = {}) {
+  if (!isNodeResponse(res)) {
+    return new Response(text, { status, headers });
+  }
+  res.statusCode = status;
+  for (const [key, value] of Object.entries(headers)) res.setHeader(key, value);
+  res.end(text);
+  return undefined;
+}
+
+function sendUpstream(res, upstream, headers = {}) {
+  if (!isNodeResponse(res)) {
+    return new Response(upstream.body, { status: upstream.status, headers });
+  }
+  res.statusCode = upstream.status;
+  for (const [key, value] of Object.entries(headers)) res.setHeader(key, value);
+  if (upstream.body && Readable.fromWeb) {
+    Readable.fromWeb(upstream.body).pipe(res);
+    return undefined;
+  }
+  upstream.text().then((text) => res.end(text)).catch((e) => {
+    res.statusCode = 502;
+    res.end(JSON.stringify({ error: { message: e.message || 'Upstream stream failed.' } }));
+  });
+  return undefined;
+}
+
+function json(res, obj, status = 200) {
+  return sendText(res, JSON.stringify(obj), status, { 'content-type': 'application/json' });
 }
