@@ -20,7 +20,12 @@
 //   still on-brand — just slightly less rich than Opus. Always shipping a
 //   real result beats a fancy result the user never sees.
 
-export const config = { runtime: 'edge' };
+// Use Vercel's Node.js serverless runtime, not Edge. Edge has a ~25s hard
+// timeout on the Hobby tier, which Opus 4.8 can blow through on its own
+// during overload — the function gets killed mid-fallback and the browser
+// sees a 504. Node.js serverless gives us up to 60s on Hobby, which is
+// plenty of room for the full Opus → Sonnet chain even on a slow day.
+export const config = { maxDuration: 60 };
 
 const ANTHROPIC_URL = 'https://api.anthropic.com/v1/messages';
 
@@ -33,9 +38,20 @@ const PRIMARY_FALLBACK = {
 };
 
 const RETRYABLE_STATUS = new Set([429, 500, 502, 503, 504, 529]);
-// Total wall-clock budget we're allowed to spend before the Edge function is
-// killed. Leave headroom for response serialization.
-const TIME_BUDGET_MS = 22000;
+// Node.js serverless gives us a larger window than Edge. Use most of it, but
+// leave headroom for response serialization so Vercel does not kill the
+// function while we are returning the final result.
+const TIME_BUDGET_MS = 55000;
+const RESPONSE_HEADROOM_MS = 2500;
+
+function attemptTimeoutMs(model, attempt) {
+  if (model === 'claude-opus-4-8') {
+    // Best-quality path first: give Opus the longest shot, but do not let it
+    // consume the whole serverless function before Sonnet can rescue the run.
+    return attempt === 0 ? 30000 : 8000;
+  }
+  return 12000;
+}
 
 export default async function handler(req) {
   if (req.method !== 'POST') {
@@ -84,8 +100,29 @@ export default async function handler(req) {
   for (let phase = 0; phase < 2; phase++) {
     // Phase 0 = original model, phase 1 = fallback (if any).
     for (let attempt = 0; attempt < 2; attempt++) {
-      if (remaining() < 3000) break; // not enough time for another full call
-      const upstream = await callAnthropic(apiKey, currentBody);
+      const budgetForAttempt = Math.min(attemptTimeoutMs(currentModel, attempt), remaining() - RESPONSE_HEADROOM_MS);
+      if (budgetForAttempt < 2000) break; // not enough time for another full call
+      let upstream;
+      try {
+        upstream = await callAnthropic(apiKey, currentBody, budgetForAttempt);
+      } catch (e) {
+        const timedOut = e && e.name === 'AbortError';
+        lastResponse = {
+          status: timedOut ? 504 : 502,
+          text: JSON.stringify({
+            error: {
+              message: timedOut
+                ? `${currentModel} did not finish within ${Math.round(budgetForAttempt / 1000)}s.`
+                : (e && e.message) || 'Upstream request failed.',
+            },
+          }),
+        };
+        // If Opus stalls, do not spend another long attempt on the same path.
+        // Move to Sonnet while there is still enough time to finish.
+        if (timedOut || !RETRYABLE_STATUS.has(lastResponse.status)) break;
+        if (attempt === 0 && remaining() > 5000) await sleep(800);
+        continue;
+      }
       // Success → return straight through.
       if (upstream.status >= 200 && upstream.status < 300) {
         const text = await upstream.text();
@@ -138,7 +175,9 @@ export default async function handler(req) {
   });
 }
 
-async function callAnthropic(apiKey, body) {
+async function callAnthropic(apiKey, body, timeoutMs) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
   return fetch(ANTHROPIC_URL, {
     method: 'POST',
     headers: {
@@ -147,7 +186,8 @@ async function callAnthropic(apiKey, body) {
       'content-type': 'application/json',
     },
     body,
-  });
+    signal: controller.signal,
+  }).finally(() => clearTimeout(timeout));
 }
 
 function sleep(ms) {
