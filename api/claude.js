@@ -13,8 +13,9 @@ import { Readable } from 'node:stream';
 //   The Vercel Edge function has a ~25s hard timeout on the Hobby tier. Opus
 //   under heavy load can take ~25s by itself, so a long retry chain on Opus
 //   will time out before we ever reach a fallback model. New plan:
-//     - One quick retry on Opus 4.8 (handles transient 5xx)
-//     - On any continued failure, immediately fall back to Sonnet 4.6
+//     - Start Opus 4.8 first so the best-quality result can win
+//     - If Opus is still running after a short grace period, start Sonnet 4.6
+//       in parallel as a safety net
 //     - Sonnet has far more capacity and is roughly 3x faster, so it usually
 //       lands in well under the remaining time budget.
 //   Voice rules are entirely in the system prompt, so a Sonnet trajectory is
@@ -44,6 +45,7 @@ const RETRYABLE_STATUS = new Set([429, 500, 502, 503, 504, 529]);
 // function while we are returning the final result.
 const TIME_BUDGET_MS = 55000;
 const RESPONSE_HEADROOM_MS = 2500;
+const FALLBACK_START_DELAY_MS = 9000;
 
 function attemptTimeoutMs(model, attempt) {
   if (model === 'claude-opus-4-8') {
@@ -55,6 +57,20 @@ function attemptTimeoutMs(model, attempt) {
   // under load and still produced visible errors, so give the fallback enough
   // room to finish inside the 60s Node serverless window.
   return attempt === 0 ? 22000 : 8000;
+}
+
+function fallbackBodyFor(bodyObj, model) {
+  const copy = JSON.parse(JSON.stringify(bodyObj));
+  copy.model = model;
+  if (copy.output_config && typeof copy.output_config === 'object') {
+    const { effort, ...rest } = copy.output_config;
+    copy.output_config = rest;
+  }
+  if (copy.thinking) delete copy.thinking;
+  if (typeof copy.max_tokens === 'number' && copy.max_tokens > 4096) {
+    copy.max_tokens = 4096;
+  }
+  return JSON.stringify(copy);
 }
 
 export default async function handler(req, res) {
@@ -89,9 +105,20 @@ export default async function handler(req, res) {
     });
   }
 
-  // Non-streaming (insights, résumé, more paths). Two-attempt strategy on the
-  // requested model, then one swap to the fallback model with two more
-  // attempts, all clamped to TIME_BUDGET_MS total.
+  const fallbackModel = PRIMARY_FALLBACK[bodyObj.model];
+  if (fallbackModel) {
+    const result = await runPrimaryWithParallelFallback(apiKey, bodyText, fallbackBodyFor(bodyObj, fallbackModel), {
+      primaryModel: bodyObj.model,
+      fallbackModel,
+    });
+    if (result.ok) {
+      return sendText(res, result.text, 200, { 'content-type': 'application/json' });
+    }
+    return sendText(res, result.text, result.status || 503, { 'content-type': 'application/json' });
+  }
+
+  // Non-streaming calls without a model fallback (résumé, more paths). Two
+  // attempts on the requested model, clamped to TIME_BUDGET_MS total.
   const startedAt = Date.now();
   const remaining = () => TIME_BUDGET_MS - (Date.now() - startedAt);
 
@@ -185,6 +212,74 @@ async function callAnthropic(apiKey, body, timeoutMs) {
     body,
     signal: controller.signal,
   }).finally(() => clearTimeout(timeout));
+}
+
+async function runPrimaryWithParallelFallback(apiKey, primaryBody, fallbackBody, labels) {
+  const startedAt = Date.now();
+  let fallbackStarted = false;
+  let fallbackPromise = null;
+  let settled = false;
+  let lastError = null;
+
+  const runOne = async (label, body, timeoutMs) => {
+    try {
+      const upstream = await callAnthropic(apiKey, body, timeoutMs);
+      const text = await upstream.text();
+      if (upstream.status >= 200 && upstream.status < 300) {
+        return { ok: true, label, text };
+      }
+      return { ok: false, label, status: upstream.status, text };
+    } catch (e) {
+      const timedOut = e && e.name === 'AbortError';
+      return {
+        ok: false,
+        label,
+        status: timedOut ? 504 : 502,
+        text: JSON.stringify({
+          error: {
+            message: timedOut
+              ? `${label} did not finish within ${Math.round(timeoutMs / 1000)}s.`
+              : (e && e.message) || `${label} request failed.`,
+          },
+        }),
+      };
+    }
+  };
+
+  const startFallback = () => {
+    if (!fallbackPromise) {
+      fallbackStarted = true;
+      const elapsed = Date.now() - startedAt;
+      const timeout = Math.max(12000, TIME_BUDGET_MS - elapsed - RESPONSE_HEADROOM_MS);
+      fallbackPromise = runOne(labels.fallbackModel, fallbackBody, timeout);
+    }
+    return fallbackPromise;
+  };
+
+  const primary = runOne(labels.primaryModel, primaryBody, 50000);
+  const fallback = sleep(FALLBACK_START_DELAY_MS).then(() => settled ? null : startFallback());
+
+  const pending = [primary, fallback];
+  while (pending.length) {
+    const result = await Promise.race(pending.map((p, i) => p.then((value) => ({ value, i }))));
+    pending.splice(result.i, 1);
+    if (!result.value) continue;
+    if (result.value.ok) {
+      settled = true;
+      return result.value;
+    }
+    lastError = result.value;
+    if (!fallbackStarted && result.value.label === labels.primaryModel) {
+      pending.push(startFallback());
+    }
+  }
+
+  settled = true;
+  return lastError || {
+    ok: false,
+    status: 503,
+    text: JSON.stringify({ error: { message: 'Service is temporarily unavailable. Try again in a moment.' } }),
+  };
 }
 
 function sleep(ms) {
