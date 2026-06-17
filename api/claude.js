@@ -86,18 +86,27 @@ export default async function handler(req) {
     for (let attempt = 0; attempt < 2; attempt++) {
       if (remaining() < 3000) break; // not enough time for another full call
       const upstream = await callAnthropic(apiKey, currentBody);
-      if (!RETRYABLE_STATUS.has(upstream.status)) {
+      // Success → return straight through.
+      if (upstream.status >= 200 && upstream.status < 300) {
         const text = await upstream.text();
         return new Response(text, {
           status: upstream.status,
           headers: { 'content-type': 'application/json' },
         });
       }
+      // Any non-success: remember the response and either retry, or fall
+      // back to the next model in the chain. We used to only retry/fallback
+      // on 5xx; that meant a 400 (e.g. an Opus-only parameter rejected by a
+      // future API change) returned immediately and the user never benefited
+      // from the Sonnet fallback. Now ALL errors trigger the fallback path.
       lastResponse = { status: upstream.status, text: await upstream.text() };
-      // Brief backoff before the second attempt on the same model. Skip if we
-      // don't have time, so we get to the fallback model.
-      if (attempt === 0 && remaining() > 5000) {
+      // Brief backoff only when the error is the kind that might clear with
+      // a retry (5xx / 429). On 4xx, don't waste budget — go straight to
+      // the fallback model.
+      if (attempt === 0 && RETRYABLE_STATUS.has(upstream.status) && remaining() > 5000) {
         await sleep(800);
+      } else if (!RETRYABLE_STATUS.has(upstream.status)) {
+        break; // skip the in-model second attempt; the error won't change
       }
     }
     const next = PRIMARY_FALLBACK[currentModel];

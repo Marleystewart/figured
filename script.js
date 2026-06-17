@@ -914,14 +914,21 @@ function hideRefiningCue() {
 // When the AI personalization fails, replace the silent fallback with a clear
 // "we couldn't personalize, try again" banner so the user is never stuck
 // wondering what happened. The rule-based draft is still on screen behind it.
-function showRefiningError() {
+// We also surface the underlying error message in a small details line so
+// the user (and we, looking at screenshots) can see what actually failed —
+// "Overloaded", "invalid model", an HTTP status, etc. No more guessing.
+function showRefiningError(message) {
   const snap = document.querySelector('.snapshot-wide');
   if (!snap || snap.querySelector('.refining-error')) return;
+  const safeMsg = esc(String(message || '').trim()).slice(0, 240);
   const el = document.createElement('div');
   el.className = 'refining-error';
   el.innerHTML = `
-    <span>Couldn't personalize right now.</span>
-    <button type="button" class="refining-retry">Try again</button>
+    <div class="refining-error-row">
+      <span>Couldn't personalize right now.</span>
+      <button type="button" class="refining-retry">Try again</button>
+    </div>
+    ${safeMsg ? `<div class="refining-error-detail">${safeMsg}</div>` : ''}
   `;
   snap.appendChild(el);
   el.querySelector('.refining-retry').addEventListener('click', () => {
@@ -1434,7 +1441,7 @@ async function maybeRunAI(profile, force = false) {
     if (currentProfile && currentScores) applyContent(fallbackContent(currentProfile, currentScores));
     setAiPill('error', e.message);
     hideRefiningCue();
-    showRefiningError();
+    showRefiningError(e && (e.message || e.toString()));
   }
 }
 
