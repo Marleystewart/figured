@@ -191,13 +191,16 @@ function applyStage(stage) {
 // Populate the school + major autocomplete dropdowns from schools.js / majors.js.
 (function fillDatalists() {
   const escape = (s) => s.replace(/"/g, '&quot;');
-  const fill = (id, source) => {
+  const fill = (id, source, sort) => {
     const list = document.getElementById(id);
     if (!list || !Array.isArray(source)) return;
-    list.innerHTML = source.map((s) => `<option value="${escape(s)}"></option>`).join('');
+    // Source files keep their category grouping for maintenance. Sort a copy
+    // here so the dropdown shows A to Z. localeCompare keeps it case-insensitive.
+    const items = sort ? [...source].sort((a, b) => a.localeCompare(b)) : source;
+    list.innerHTML = items.map((s) => `<option value="${escape(s)}"></option>`).join('');
   };
-  fill('schoolList', window.SCHOOLS);
-  fill('majorList', window.MAJORS);
+  fill('schoolList', window.SCHOOLS, true);
+  fill('majorList', window.MAJORS, true);
   fill('subjectList', HIGH_SCHOOL_SUBJECTS);
 })();
 
