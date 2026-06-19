@@ -185,7 +185,10 @@ Hard rules:
       model: MODEL,
       max_tokens: 8000,
       thinking: { type: 'adaptive' },
-      system: INSIGHTS_SYSTEM,
+      // Prompt caching: INSIGHTS_SYSTEM is ~3k tokens and identical every call,
+      // so cache it. Saves ~80% of the cached input cost and a few seconds of
+      // re-processing latency. Zero output impact.
+      system: [{ type: 'text', text: INSIGHTS_SYSTEM, cache_control: { type: 'ephemeral' } }],
       messages: [{
         role: 'user',
         content: 'Student profile:\n' + JSON.stringify(profile, null, 2) +
@@ -215,7 +218,8 @@ Hard rules:
       stream: true,
       thinking: { type: 'adaptive' },
       output_config: { effort: 'medium' },
-      system,
+      // Cache the (constant) chat system prompt passed in by the caller.
+      system: [{ type: 'text', text: system, cache_control: { type: 'ephemeral' } }],
       messages,
     };
     const res = await fetch(endpoint(), { method: 'POST', headers: headers(), body: JSON.stringify(body) });
@@ -303,7 +307,7 @@ Hard rules:
       // dramatically cheaper. Voice rules still apply via the system prompt.
       model: HAIKU,
       max_tokens: 4000,
-      system: RESUME_SYSTEM,
+      system: [{ type: 'text', text: RESUME_SYSTEM, cache_control: { type: 'ephemeral' } }],
       messages: [{ role: 'user', content }],
       output_config: { format: { type: 'json_schema', schema: RESUME_SCHEMA } },
     };
@@ -350,7 +354,10 @@ Rules:
     const body = {
       model: MODEL,
       max_tokens: 1200,
-      system: PATHS_SYSTEM,
+      // PATHS_SYSTEM is ~430 tokens, below Anthropic's 1024-token cache floor,
+      // so cache_control is a silent no-op here. Kept for consistency in case
+      // the prompt grows past the threshold later.
+      system: [{ type: 'text', text: PATHS_SYSTEM, cache_control: { type: 'ephemeral' } }],
       messages: [{
         role: 'user',
         content: 'Student profile:\n' + JSON.stringify(profile, null, 2) +

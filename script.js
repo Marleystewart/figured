@@ -1025,16 +1025,59 @@ function applyContent(c, opts = {}) {
 // A quiet "we're sharpening this" cue on the instant draft while Claude writes
 // the real analysis. No mention of AI — it reads as personalization, not a
 // machine status light.
+// On-brand one-liner stats rotated under the cue while Claude generates. They
+// double as a quiet marketing impression. Honest mentor voice, no hype, no em
+// dashes (voice rule).
+const REFINING_STATS = [
+  'Students who define a specific goal land internships 2.3x faster.',
+  'Only 23% of college seniors say their career advisor\'s advice was useful.',
+  'The average student takes 11 weeks to land their first internship. Most don\'t know where to start.',
+  'Students with weak networks rate their college experience 28% lower.',
+  'A single peer introduction outperforms 50 cold applications.',
+  'Most students never use their school\'s career center. The ones who do are 4x more likely to land their first job before graduating.',
+];
+
+let refiningStatTimer = null;
+
 function showRefiningCue() {
   const snap = document.querySelector('.snapshot-wide');
   if (!snap || snap.querySelector('.refining-cue')) return;
   const cue = document.createElement('div');
   cue.className = 'refining-cue';
-  cue.innerHTML = '<span class="refining-dot"></span> Personalizing your trajectory…';
+  cue.innerHTML =
+    '<div class="refining-lede"><span class="refining-dot"></span> Personalizing your trajectory…</div>' +
+    '<div class="refining-stat"></div>';
   snap.appendChild(cue);
+
+  const statEl = cue.querySelector('.refining-stat');
+  const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Randomize the start so repeat runs do not always open on the same line.
+  let i = Math.floor(Math.random() * REFINING_STATS.length);
+  const setStat = () => { statEl.textContent = REFINING_STATS[i % REFINING_STATS.length]; };
+
+  // First stat in immediately (fade it up if motion is allowed).
+  setStat();
+  if (!reduceMotion) requestAnimationFrame(() => statEl.classList.add('is-visible'));
+  else statEl.classList.add('is-visible');
+
+  refiningStatTimer = setInterval(() => {
+    i += 1;
+    if (reduceMotion) { setStat(); return; }
+    // Cross-fade: fade out, swap text, fade back in.
+    statEl.classList.remove('is-visible');
+    setTimeout(() => {
+      setStat();
+      statEl.classList.add('is-visible');
+    }, 250);
+  }, 4500);
 }
 
 function hideRefiningCue() {
+  if (refiningStatTimer) {
+    clearInterval(refiningStatTimer);
+    refiningStatTimer = null;
+  }
   document.querySelectorAll('.refining-cue').forEach((el) => el.remove());
 }
 

@@ -3404,14 +3404,36 @@ h1 {
 
 /* --- "Personalizing your trajectory" cue + smooth swap to the real analysis --- */
 .refining-cue {
-  display: inline-flex;
-  align-items: center;
+  display: flex;
+  flex-direction: column;
   gap: 8px;
   margin-top: 18px;
   font-size: 13px;
-  font-weight: 750;
   letter-spacing: 0.01em;
   color: rgba(255, 253, 248, 0.82);
+}
+
+.refining-lede {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 750;
+}
+
+/* Rotating stat line. Lighter weight than the lede so it reads as supporting
+   copy, not a second headline. Cross-fades on swap; opacity only, no layout
+   movement. */
+.refining-stat {
+  max-width: 42ch;
+  font-weight: 600;
+  line-height: 1.45;
+  color: rgba(255, 253, 248, 0.68);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.refining-stat.is-visible {
+  opacity: 1;
 }
 
 .refining-dot {
@@ -3489,6 +3511,7 @@ h1 {
 
 @media (prefers-reduced-motion: reduce) {
   .refining-dot { animation: none; }
+  .refining-stat { transition: none; }
   .snapshot-wide.just-refined h2,
   .snapshot-wide.just-refined p,
   .tracks-list.just-refined .track-item { animation: none; }
