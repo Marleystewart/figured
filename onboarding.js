@@ -48,16 +48,16 @@ const copyByStage = {
   college: {
     eyebrow1: 'Step 1 of 4',
     step1Title: "Let's start with you.",
-    step1Desc: 'No fluff — just enough to build your real profile.',
+    step1Desc: 'No fluff. Just enough to build your real profile.',
     firstNamePlaceholder: 'Alex',
     yearLabel: 'Year',
     yearOptions: ['Freshman', 'Sophomore', 'Junior', 'Senior'],
     majorLabel: 'Major',
-    majorPlaceholder: 'Start typing — e.g. Business Administration',
+    majorPlaceholder: 'Start typing, e.g. Business Administration',
     schoolLabel: 'School',
-    schoolPlaceholder: 'Start typing — e.g. Harvard',
+    schoolPlaceholder: 'Start typing, e.g. Harvard',
     heading2: 'Now, your record.',
-    step2Desc: 'Honest inputs mean honest outputs — this stays between us.',
+    step2Desc: 'Honest inputs mean honest outputs. This stays between us.',
     gpaLabel: 'GPA',
     gpaPlaceholder: '3.45 or a range like 3.3-3.69',
     timeLeftLabel: 'Time left in school',
@@ -362,7 +362,10 @@ nextBtn.addEventListener('click', () => {
   const firstNameValue = document.getElementById('firstName').value.trim();
   const profile = {
     schoolStage,
-    firstName: firstNameValue || (isHighSchool() ? copyByStage.highSchool.firstNamePlaceholder : 'You'),
+    // Placeholder text is a visual hint, not a saved value. Without this both
+    // stages fall back to 'You' so an empty name field never silently saves
+    // the placeholder ("Marley") as the student's actual name.
+    firstName: firstNameValue || 'You',
     year: document.getElementById('year').value,
     major: document.getElementById('major').value.trim(),
     school: document.getElementById('school').value.trim(),

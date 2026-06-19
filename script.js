@@ -1852,10 +1852,10 @@ function applyProfile(p) {
   setText('.student-avatar', profileInitials(name));
   if (p.schoolStage === 'highSchool') {
     setText('.profile-meta', [p.year, p.major ? `Exploring: ${p.major}` : 'Exploring majors'].filter(Boolean).join(' · '));
-    setText('.profile-pocket span', `Direction: ${p.goal || '—'}`);
+    setText('.profile-pocket span', `Direction: ${p.goal || 'Not set'}`);
   } else {
     setText('.profile-meta', [p.major, p.year].filter(Boolean).join(' · '));
-    setText('.profile-pocket span', `Goal: ${p.goal || '—'}`);
+    setText('.profile-pocket span', `Goal: ${p.goal || 'Not set'}`);
   }
 
   const schoolEl = document.querySelector('.profile-school');
