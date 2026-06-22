@@ -2066,4 +2066,22 @@ if (document.querySelector('.product-main')) {
   }, { rootMargin: '0px 0px -10% 0px', threshold: 0.12 });
 
   targets.forEach((el) => io.observe(el));
+
+  // Signature moment: the trajectory roadmap draws its line and lights up its
+  // stages in sequence once it scrolls into view.
+  const roadmap = document.querySelector('.roadmap');
+  if (roadmap) {
+    if (reduceMotion || !('IntersectionObserver' in window)) {
+      roadmap.classList.add('lit');
+    } else {
+      const rio = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add('lit');
+          rio.unobserve(entry.target);
+        });
+      }, { threshold: 0.45 });
+      rio.observe(roadmap);
+    }
+  }
 })();
