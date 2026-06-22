@@ -2026,3 +2026,44 @@ if (document.querySelector('.product-main')) {
     setAiPill(aiAvailable() && FigAI.hasKey() ? 'idle' : 'off');
   }
 }
+
+// --- Landing-page scroll reveals -------------------------------------------
+// One calm motion language for the whole marketing page: elements fade up and
+// settle as they enter the viewport, with a slight stagger inside grids. We
+// reveal once (no re-animating on scroll-up) and fully respect reduced motion.
+// Guarded to the landing page (only it has the #how section) so the app and
+// onboarding are untouched.
+(function initScrollReveals() {
+  if (!document.getElementById('how')) return;
+
+  const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Groups that should stagger their direct children, plus standalone blocks.
+  const groupSelectors = ['.steps-grid', '.gap-grid', '.mentor-grid', '.opportunity-grid', '.trajectory-cards', '.dashboard-grid'];
+  const soloSelectors = ['.section-heading', '.roadmap-panel', '.plan-panel', '.cta-band'];
+
+  const targets = [];
+  soloSelectors.forEach((sel) => document.querySelectorAll(sel).forEach((el) => { el.classList.add('reveal'); targets.push(el); }));
+  groupSelectors.forEach((sel) => document.querySelectorAll(sel).forEach((grid) => {
+    [...grid.children].forEach((child, i) => {
+      child.classList.add('reveal');
+      child.style.setProperty('--reveal-delay', (i % 6) * 70 + 'ms');
+      targets.push(child);
+    });
+  }));
+
+  if (reduceMotion || !('IntersectionObserver' in window)) {
+    targets.forEach((el) => el.classList.add('in'));
+    return;
+  }
+
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (!entry.isIntersecting) return;
+      entry.target.classList.add('in');
+      io.unobserve(entry.target);
+    });
+  }, { rootMargin: '0px 0px -10% 0px', threshold: 0.12 });
+
+  targets.forEach((el) => io.observe(el));
+})();

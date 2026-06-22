@@ -434,6 +434,89 @@ h3 {
   letter-spacing: 0.02em;
 }
 
+/* Scroll reveal: one quiet fade-up for the whole landing page. The stagger
+   delay is set per-card in script.js. Reveals once, then stays. */
+.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.6s cubic-bezier(0.22, 0.61, 0.36, 1),
+              transform 0.6s cubic-bezier(0.22, 0.61, 0.36, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+  will-change: opacity, transform;
+}
+
+.reveal.in {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* Full-width closing call to action so the page ends with intent. */
+.cta-band {
+  margin: 8px 0 64px;
+  padding: 56px clamp(24px, 5vw, 72px);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: linear-gradient(135deg, #294f49, #2f5a4f 55%, #3a6a5c);
+  color: #f4f0e6;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+}
+
+.cta-band h2 {
+  max-width: 18ch;
+  font-size: clamp(28px, 3.6vw, 44px);
+  line-height: 1.04;
+  letter-spacing: -0.01em;
+}
+
+.cta-band p {
+  margin-top: 12px;
+  max-width: 46ch;
+  color: rgba(244, 240, 230, 0.78);
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.cta-band .primary-button {
+  background: #f4f0e6;
+  color: var(--sage-deep);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.22);
+}
+
+.site-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 28px 4px 48px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.site-footer nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.site-footer a:hover {
+  color: var(--sage-deep);
+}
+
 /* Hero eyebrow reads as a small badge, which feels more like a product
    landing than a stray label. A tiny live dot keeps it warm, not corporate. */
 .account-copy .eyebrow {
