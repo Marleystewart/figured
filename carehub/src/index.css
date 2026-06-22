@@ -1,0 +1,39 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    background: #f7f9fe;
+  }
+
+  body {
+    margin: 0;
+    min-width: 320px;
+    min-height: 100vh;
+    color: #16162f;
+    background:
+      radial-gradient(circle at top left, rgba(102, 126, 234, 0.14), transparent 36rem),
+      linear-gradient(135deg, #fbfcff 0%, #f6f8ff 46%, #f8fbff 100%);
+    font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  button,
+  a {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  button:focus-visible,
+  a:focus-visible {
+    outline: 3px solid rgba(93, 95, 239, 0.35);
+    outline-offset: 3px;
+  }
+}

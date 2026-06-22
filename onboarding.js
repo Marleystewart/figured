@@ -330,7 +330,7 @@ backBtn.addEventListener('click', () => {
     goTo(current - 1);
     return;
   }
-  if (ONBOARD_MODE !== 'edit' && !requestedStage) showStageIntro();
+  // College-only for now: no stage chooser to fall back to from step 1.
 });
 
 nextBtn.addEventListener('click', () => {
@@ -435,11 +435,14 @@ function hashProfile(p) {
   return String(h);
 }
 
-if (!didPrefillStage && requestedStage) {
-  startForm(requestedStage);
-} else if (!didPrefillStage) {
-  applyStage('college');
-  showStageIntro();
+// High school onboarding is paused while we focus on college. Fresh sessions
+// start directly in college mode and skip the stage chooser; ?stage=highSchool
+// deep links are ignored. The HS code paths (copyByStage.highSchool, .hs-only
+// fields, the stage intro screen) stay in place so we can re-enable later by
+// restoring the chooser branch. Existing saved HS profiles still load in edit
+// mode via prefill() so no one's data breaks.
+if (!didPrefillStage) {
+  startForm('college');
 } else {
   stageIntro?.classList.remove('active');
   if (progress) progress.hidden = false;
