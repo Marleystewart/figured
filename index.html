@@ -129,7 +129,17 @@
       .nav-actions .btn { padding: 11px 20px; font-size: 15px; }
       .nav-login { font-size: 15px; font-weight: 600; color: var(--text); padding: 11px 18px; }
       .menu-toggle { display: none; background: none; border: none; cursor: pointer; padding: 8px; }
-      .menu-toggle span { display: block; width: 22px; height: 2px; background: var(--text); border-radius: 2px; margin: 4px 0; }
+      .menu-toggle span { display: block; width: 22px; height: 2px; background: var(--text); border-radius: 2px; margin: 4px 0; transition: transform 0.2s ease, opacity 0.2s ease; }
+      .menu-toggle.open span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+      .menu-toggle.open span:nth-child(2) { opacity: 0; }
+      .menu-toggle.open span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+
+      /* Mobile dropdown menu */
+      .mobile-menu { display: none; flex-direction: column; gap: 2px; padding: 6px var(--pad) 22px; background: rgba(248, 248, 244, 0.96); border-bottom: 1px solid var(--line); }
+      .mobile-menu.open { display: flex; }
+      .mobile-menu a { padding: 14px 4px; font-size: 17px; font-weight: 600; color: var(--text); border-bottom: 1px solid var(--line); }
+      .mobile-menu .mm-login { color: var(--muted); }
+      .mobile-menu .mm-cta { margin-top: 14px; border-bottom: none; justify-content: center; color: #fff; }
 
       /* ---------- Section rhythm ---------- */
       section { padding: clamp(72px, 11vw, 140px) 0; }
@@ -311,7 +321,7 @@
       }
       @media (max-width: 560px) {
         body { font-size: 18px; }
-        .nav-login, .nav-actions .btn-ghost { display: none; }
+        .nav-login, .nav-actions .btn { display: none; }
         .menu-toggle { display: block; }
         .hero-cta .btn, .cta-actions .btn { flex: 1; }
         .segmented { display: flex; width: 100%; }
@@ -333,8 +343,16 @@
         <div class="nav-actions">
           <a class="nav-login" href="./app.html">Log in</a>
           <a class="btn btn-primary" href="./onboarding.html?fresh=1">Build My Path</a>
-          <button class="menu-toggle" aria-label="Menu"><span></span><span></span><span></span></button>
+          <button class="menu-toggle" id="menuToggle" aria-label="Menu" aria-expanded="false" aria-controls="mobileMenu"><span></span><span></span><span></span></button>
         </div>
+      </div>
+      <div class="mobile-menu" id="mobileMenu">
+        <a href="#how">How it works</a>
+        <a href="#trajectory">Trajectory</a>
+        <a href="#analysis">Dashboard</a>
+        <a href="#mentors">Mentors</a>
+        <a class="mm-login" href="./app.html">Log in</a>
+        <a class="mm-cta btn btn-primary" href="./onboarding.html?fresh=1">Build My Path</a>
       </div>
     </header>
 
@@ -592,6 +610,23 @@
       const onScroll = () => hdr.classList.toggle('scrolled', window.scrollY > 8);
       onScroll();
       window.addEventListener('scroll', onScroll, { passive: true });
+
+      // Mobile menu toggle
+      const menuToggle = document.getElementById('menuToggle');
+      const mobileMenu = document.getElementById('mobileMenu');
+      menuToggle.addEventListener('click', () => {
+        const open = mobileMenu.classList.toggle('open');
+        menuToggle.classList.toggle('open', open);
+        menuToggle.setAttribute('aria-expanded', open);
+      });
+      // Close the menu after tapping any link inside it
+      mobileMenu.querySelectorAll('a').forEach((link) => {
+        link.addEventListener('click', () => {
+          mobileMenu.classList.remove('open');
+          menuToggle.classList.remove('open');
+          menuToggle.setAttribute('aria-expanded', 'false');
+        });
+      });
 
       // Reveal on scroll (Framer-style fade-up, no library)
       const io = new IntersectionObserver((entries) => {
