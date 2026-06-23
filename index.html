@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="./styles.css?v=33" />
+    <link rel="stylesheet" href="./styles.css?v=36" />
   </head>
   <body>
     <div class="site-shell">
@@ -17,14 +17,24 @@
         </a>
         <nav class="desktop-nav" aria-label="Primary navigation">
           <a href="#how">How it works</a>
-          <a href="#account">Start</a>
-          <a href="#dashboard">Preview</a>
+          <a href="#trajectory">Trajectory</a>
+          <a href="#dashboard">Dashboard</a>
           <a href="#mentors">Mentors</a>
         </nav>
         <div class="header-actions">
           <a class="ghost-button" href="./app.html">Open Dashboard</a>
           <a class="primary-button" href="./onboarding.html?fresh=1">Build My Path</a>
+          <button class="nav-toggle" id="navToggle" type="button" aria-label="Menu" aria-expanded="false" aria-controls="navPanel">
+            <span></span><span></span><span></span>
+          </button>
         </div>
+        <nav class="nav-panel" id="navPanel" aria-label="Primary navigation">
+          <a href="#how">How it works</a>
+          <a href="#trajectory">Trajectory</a>
+          <a href="#dashboard">Dashboard</a>
+          <a href="#mentors">Mentors</a>
+          <a class="nav-panel-cta" href="./app.html">Open Dashboard</a>
+        </nav>
       </header>
 
       <main id="top">
@@ -306,6 +316,6 @@
         </section>
       </main>
     </div>
-    <script src="./script.js?v=31"></script>
+    <script src="./script.js?v=32"></script>
   </body>
 </html>

@@ -3878,3 +3878,119 @@ h1 {
     section.collapsible > .section-heading::after { transition: none; }
   }
 }
+
+/* --- Hamburger menu + dropdown nav panel ---------------------------------- */
+/* Replaces the flat top nav with a three-line button that drops a clean,
+   compact panel of links. "Build My Path" stays visible as the main CTA. */
+.nav-toggle {
+  flex: 0 0 auto;
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 46px;
+  height: 46px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  background: rgba(255, 253, 248, 0.7);
+  transition: border-color 0.18s ease, background 0.18s ease;
+}
+
+.nav-toggle:hover {
+  border-color: rgba(47, 90, 79, 0.3);
+}
+
+.nav-toggle span {
+  display: block;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--sage-deep);
+  transition: transform 0.3s ease, opacity 0.2s ease;
+}
+
+/* Lines morph into an X when open. */
+.nav-toggle[aria-expanded="true"] span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.nav-toggle[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+.nav-toggle[aria-expanded="true"] span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+.nav-panel {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  z-index: 30;
+  display: grid;
+  gap: 2px;
+  width: min(264px, calc(100vw - 36px));
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: rgba(255, 253, 248, 0.97);
+  box-shadow: 0 26px 60px rgba(47, 90, 79, 0.16);
+  backdrop-filter: blur(22px);
+  transform-origin: top right;
+  transform: translateY(-8px) scale(0.97);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.22s ease, transform 0.22s ease, visibility 0s linear 0.22s;
+}
+
+.nav-panel.open {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: none;
+  transition: opacity 0.22s ease, transform 0.22s ease;
+}
+
+.nav-panel a {
+  padding: 11px 14px;
+  border-radius: 12px;
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 650;
+  transition: background 0.16s ease, color 0.16s ease;
+}
+
+.nav-panel a:hover {
+  background: var(--paper-soft);
+  color: var(--sage-deep);
+}
+
+.nav-panel-cta {
+  margin-top: 4px;
+  text-align: center;
+  background: var(--sage-deep);
+  color: #fffdf8 !important;
+  font-weight: 800 !important;
+}
+
+.nav-panel-cta:hover {
+  background: #284d44;
+  color: #fffdf8 !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-toggle span,
+  .nav-panel { transition: none; }
+}
+
+/* Keep the header CTA on one line next to the hamburger, and tighten the
+   header on phones so logo + CTA + menu button fit comfortably. */
+.site-header .primary-button { white-space: nowrap; }
+
+@media (max-width: 760px) {
+  .site-header { gap: 8px; }
+  .site-header .header-actions { gap: 8px; }
+  .site-header .primary-button { padding: 0 14px; font-size: 13px; }
+  .nav-toggle { width: 42px; height: 42px; }
+}
+
+/* Hamburger is phone-only: on desktop the flat nav shows and the menu button
+   and dropdown panel are hidden. (Mobile already hides .desktop-nav and the
+   .ghost-button.) */
+@media (min-width: 761px) {
+  .nav-toggle,
+  .nav-panel { display: none !important; }
+}

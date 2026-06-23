@@ -2156,3 +2156,49 @@ if (document.querySelector('.product-main')) {
   // structure is harmless at desktop widths.
   if (mq.addEventListener) mq.addEventListener('change', (e) => { if (e.matches) build(); });
 })();
+
+// --- Header hamburger menu -------------------------------------------------
+// Replaces the flat nav: a three-line button drops a compact panel of links.
+// Closes on link click, outside click, or Escape. When a link points at a
+// collapsible section (mobile accordions), we open that section so the user
+// lands on real content, not just a collapsed header.
+(function initNavMenu() {
+  const toggle = document.getElementById('navToggle');
+  const panel = document.getElementById('navPanel');
+  if (!toggle || !panel) return;
+
+  const setOpen = (open) => {
+    panel.classList.toggle('open', open);
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  };
+
+  toggle.addEventListener('click', (e) => {
+    e.stopPropagation();
+    setOpen(!panel.classList.contains('open'));
+  });
+
+  panel.querySelectorAll('a').forEach((a) => {
+    a.addEventListener('click', () => {
+      const href = a.getAttribute('href') || '';
+      if (href.startsWith('#')) {
+        const sec = document.getElementById(href.slice(1));
+        if (sec && sec.classList.contains('collapsible') && !sec.classList.contains('open')) {
+          sec.classList.add('open');
+          const h = sec.querySelector(':scope > .section-heading');
+          if (h) h.setAttribute('aria-expanded', 'true');
+        }
+      }
+      setOpen(false);
+    });
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!panel.classList.contains('open')) return;
+    if (panel.contains(e.target) || toggle.contains(e.target)) return;
+    setOpen(false);
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') setOpen(false);
+  });
+})();
