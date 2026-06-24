@@ -212,9 +212,10 @@ Hard rules:
   async function chatStream(system, messages, onDelta) {
     const body = {
       model: MODEL,
-      // Hard ceiling on chat reply length. 60–100 words ≈ ~80–135 tokens.
-      // 280 leaves room for adaptive thinking + a tight reply, never a wall of text.
-      max_tokens: 280,
+      // Ceiling on chat reply length. The prompt controls actual length adaptively
+      // (tight ~60-100 words for simple questions, longer for "how do I get into X"
+      // roadmaps). 600 gives headroom for a sequenced roadmap without a wall of text.
+      max_tokens: 600,
       stream: true,
       thinking: { type: 'adaptive' },
       output_config: { effort: 'medium' },

@@ -2934,6 +2934,14 @@ h1 {
   color: #8a4a2f;
 }
 
+/* Rendered markdown inside an assistant reply (bold, paragraphs, bullet steps). */
+.chat-bubble .cb-p + .cb-p,
+.chat-bubble .cb-p + .cb-ul,
+.chat-bubble .cb-ul + .cb-p { margin-top: 8px; }
+.chat-bubble .cb-ul { margin: 6px 0 0; padding-left: 18px; }
+.chat-bubble .cb-ul li { margin: 3px 0; }
+.chat-bubble strong { font-weight: 700; }
+
 .typing-dots {
   display: inline-flex;
   gap: 5px;
