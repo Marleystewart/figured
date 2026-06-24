@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>4ward | Feedback</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        --bg: #f8f8f4; --card: #ffffff; --green: #2f6b5a; --green-deep: #275a4c;
+        --sage: #dce7df; --sage-soft: #eaf1ec; --text: #0f1a17; --muted: #66706b;
+        --accent: #d8c18b; --line: #ecece6; --radius: 18px;
+        --shadow: 0 1px 2px rgba(15,26,23,0.05), 0 18px 44px rgba(15,26,23,0.07);
+      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+        background: var(--bg); color: var(--text); line-height: 1.55;
+        -webkit-font-smoothing: antialiased;
+        padding: clamp(20px, 5vw, 56px) 16px;
+      }
+      .wrap { width: 100%; max-width: 620px; margin: 0 auto; }
+      .brand { display: flex; justify-content: center; margin-bottom: 18px; }
+      .brand img { height: 60px; width: auto; }
+      .head { text-align: center; margin-bottom: 28px; }
+      .eyebrow {
+        display: inline-block; font-size: 12px; font-weight: 700; letter-spacing: 0.12em;
+        text-transform: uppercase; color: var(--green); margin-bottom: 12px;
+      }
+      h1 { font-size: clamp(28px, 6vw, 38px); line-height: 1.05; letter-spacing: -0.02em; font-weight: 800; }
+      .sub { margin-top: 12px; color: var(--muted); font-size: 16px; }
+      form {
+        background: var(--card); border: 1px solid var(--line); border-radius: 24px;
+        box-shadow: var(--shadow); padding: clamp(22px, 4vw, 36px); display: grid; gap: 22px;
+      }
+      .field { display: grid; gap: 8px; }
+      label { font-size: 14.5px; font-weight: 600; }
+      label .opt { color: var(--muted); font-weight: 500; }
+      input[type="text"], input[type="email"], textarea {
+        width: 100%; font-family: inherit; font-size: 15.5px; color: var(--text);
+        background: var(--bg); border: 1px solid var(--line); border-radius: 12px;
+        padding: 13px 14px; transition: border-color 0.15s ease, box-shadow 0.15s ease;
+      }
+      input:focus, textarea:focus {
+        outline: none; border-color: var(--green);
+        box-shadow: 0 0 0 3px rgba(47,107,90,0.12);
+      }
+      textarea { resize: vertical; min-height: 92px; }
+      .scale { display: flex; gap: 8px; flex-wrap: wrap; }
+      .scale label {
+        flex: 1; min-width: 56px; text-align: center; cursor: pointer;
+        border: 1px solid var(--line); border-radius: 12px; padding: 12px 6px;
+        font-weight: 600; color: var(--muted); transition: all 0.15s ease; background: var(--bg);
+      }
+      .scale input { position: absolute; opacity: 0; pointer-events: none; }
+      .scale input:checked + label,
+      .choice input:checked + label { border-color: var(--green); background: var(--sage-soft); color: var(--green-deep); }
+      .scale small { display: block; font-size: 11px; font-weight: 500; color: var(--muted); margin-top: 2px; }
+      .choice { display: flex; gap: 8px; flex-wrap: wrap; }
+      .choice label {
+        cursor: pointer; border: 1px solid var(--line); border-radius: 9999px;
+        padding: 10px 18px; font-weight: 600; color: var(--muted); background: var(--bg);
+        transition: all 0.15s ease;
+      }
+      .choice input { position: absolute; opacity: 0; pointer-events: none; }
+      .submit {
+        border: none; cursor: pointer; background: var(--green); color: #fff;
+        font-family: inherit; font-size: 16px; font-weight: 600; border-radius: 9999px;
+        padding: 15px; transition: background 0.15s ease, transform 0.15s ease;
+        box-shadow: 0 10px 24px rgba(47,107,90,0.22);
+      }
+      .submit:hover { background: var(--green-deep); transform: translateY(-1px); }
+      .submit:disabled { opacity: 0.6; cursor: default; transform: none; }
+      .foot { text-align: center; margin-top: 20px; font-size: 13px; color: var(--muted); }
+      .foot a { color: var(--green); text-decoration: none; }
+      /* Thank-you state */
+      .thanks { display: none; text-align: center; background: var(--card); border: 1px solid var(--line);
+        border-radius: 24px; box-shadow: var(--shadow); padding: clamp(36px, 6vw, 60px); }
+      .thanks.show { display: block; }
+      .thanks .check { width: 56px; height: 56px; border-radius: 50%; background: var(--sage);
+        color: var(--green-deep); display: grid; place-items: center; font-size: 26px; margin: 0 auto 18px; }
+      .thanks h2 { font-size: 24px; letter-spacing: -0.01em; }
+      .thanks p { margin-top: 10px; color: var(--muted); }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <a class="brand" href="./index.html" aria-label="4ward"><img src="./assets/logo.png" alt="4ward" /></a>
+
+      <div class="head" id="head">
+        <span class="eyebrow">Your honest take</span>
+        <h1>What did you think of 4ward?</h1>
+        <p class="sub">You just saw it in action. A few minutes of honest feedback helps us build the right thing for students and career teams.</p>
+      </div>
+
+      <form id="feedbackForm">
+        <div class="field">
+          <label for="name">Your name <span class="opt">(optional)</span></label>
+          <input type="text" id="name" name="name" autocomplete="name" />
+        </div>
+
+        <div class="field">
+          <label for="role">Your role &amp; school or organization</label>
+          <input type="text" id="role" name="role" placeholder="e.g. Career advisor, Williams College" />
+        </div>
+
+        <div class="field">
+          <label for="email">Email <span class="opt">(optional, only if you're open to a follow-up)</span></label>
+          <input type="email" id="email" name="email" autocomplete="email" />
+        </div>
+
+        <div class="field">
+          <label>Overall, how useful does this feel?</label>
+          <div class="scale">
+            <input type="radio" id="u1" name="usefulness" value="1 - Not useful" /><label for="u1">1<small>Not useful</small></label>
+            <input type="radio" id="u2" name="usefulness" value="2" /><label for="u2">2</label>
+            <input type="radio" id="u3" name="usefulness" value="3" /><label for="u3">3</label>
+            <input type="radio" id="u4" name="usefulness" value="4" /><label for="u4">4</label>
+            <input type="radio" id="u5" name="usefulness" value="5 - Very useful" /><label for="u5">5<small>Very useful</small></label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="liked">What stood out, or felt most useful?</label>
+          <textarea id="liked" name="liked"></textarea>
+        </div>
+
+        <div class="field">
+          <label for="missing">What's missing, confusing, or what would you change?</label>
+          <textarea id="missing" name="missing"></textarea>
+        </div>
+
+        <div class="field">
+          <label>Would your office consider letting students try this?</label>
+          <div class="choice">
+            <input type="radio" id="p-yes" name="pilot" value="Yes" /><label for="p-yes">Yes</label>
+            <input type="radio" id="p-maybe" name="pilot" value="Maybe / want to learn more" /><label for="p-maybe">Maybe</label>
+            <input type="radio" id="p-no" name="pilot" value="Not yet" /><label for="p-no">Not yet</label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="other">Anything else? <span class="opt">(optional)</span></label>
+          <textarea id="other" name="other"></textarea>
+        </div>
+
+        <button type="submit" class="submit" id="submitBtn">Send feedback</button>
+      </form>
+
+      <div class="thanks" id="thanks">
+        <div class="check">✓</div>
+        <h2>Thank you.</h2>
+        <p>Your feedback goes straight to the 4ward team. It genuinely shapes what we build next.</p>
+      </div>
+
+      <p class="foot">Part of <a href="https://almar-site.vercel.app/" target="_blank" rel="noopener">Almar Group</a></p>
+    </div>
+
+    <script>
+      // To collect responses in one place, create a free form endpoint at
+      // formspree.io (60 seconds) and paste its URL below. Until then, the form
+      // falls back to opening a pre-filled email to the address in MAILTO.
+      const FORM_ENDPOINT = ""; // e.g. "https://formspree.io/f/abcdwxyz"
+      const MAILTO = "marleystewart@gmail.com";
+
+      const form = document.getElementById('feedbackForm');
+      const btn = document.getElementById('submitBtn');
+
+      function collect() {
+        const data = new FormData(form);
+        const obj = {};
+        for (const [k, v] of data.entries()) obj[k] = v;
+        return obj;
+      }
+
+      function showThanks() {
+        document.getElementById('head').style.display = 'none';
+        form.style.display = 'none';
+        document.getElementById('thanks').classList.add('show');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        btn.disabled = true;
+        btn.textContent = 'Sending…';
+        const obj = collect();
+
+        if (FORM_ENDPOINT) {
+          try {
+            const res = await fetch(FORM_ENDPOINT, {
+              method: 'POST',
+              headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+              body: JSON.stringify(obj),
+            });
+            if (res.ok) { showThanks(); return; }
+          } catch (err) { /* fall through to mailto */ }
+        }
+
+        // Fallback: open a pre-filled email with all answers.
+        const lines = [
+          'Name: ' + (obj.name || ''),
+          'Role/School: ' + (obj.role || ''),
+          'Email: ' + (obj.email || ''),
+          'Usefulness: ' + (obj.usefulness || ''),
+          'Would consider a pilot: ' + (obj.pilot || ''),
+          '',
+          'What stood out:',
+          (obj.liked || ''),
+          '',
+          'What is missing / would change:',
+          (obj.missing || ''),
+          '',
+          'Anything else:',
+          (obj.other || ''),
+        ].join('\n');
+        const subject = '4ward feedback' + (obj.role ? ' — ' + obj.role : '');
+        window.location.href = 'mailto:' + MAILTO +
+          '?subject=' + encodeURIComponent(subject) +
+          '&body=' + encodeURIComponent(lines);
+        showThanks();
+      });
+    </script>
+  </body>
+</html>
