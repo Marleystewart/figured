@@ -98,7 +98,29 @@ export default async function handler(req, res) {
   // and chat is the lowest-stakes call. Pass it through; if Anthropic returns
   // 5xx, the browser surfaces it and the student can resend.
   if (isStream) {
-    const upstream = await callAnthropic(apiKey, bodyText);
+    // Must pass an explicit timeout: callAnthropic does setTimeout(abort,
+    // timeoutMs), and an undefined timeout coerces to 0ms, which aborts the
+    // request the instant it starts and crashes the function. The timeout
+    // only guards header arrival; once the stream's headers land it's cleared,
+    // so a long stream is never cut off.
+    let upstream;
+    try {
+      upstream = await callAnthropic(apiKey, bodyText, TIME_BUDGET_MS);
+    } catch (e) {
+      const timedOut = e && e.name === 'AbortError';
+      return sendText(
+        res,
+        JSON.stringify({ error: { message: timedOut ? 'The request timed out. Try again.' : ((e && e.message) || 'Upstream request failed.') } }),
+        timedOut ? 504 : 502,
+        { 'content-type': 'application/json' },
+      );
+    }
+    // A non-2xx upstream is an error JSON, not a valid SSE stream. Surface it
+    // as JSON so the browser shows a clear message instead of a broken stream.
+    if (upstream.status < 200 || upstream.status >= 300) {
+      const text = await upstream.text();
+      return sendText(res, text, upstream.status, { 'content-type': 'application/json' });
+    }
     return sendUpstream(res, upstream, {
       'content-type': upstream.headers.get('content-type') || 'text/event-stream',
       'cache-control': 'no-cache',
