@@ -1663,6 +1663,9 @@ h1 {
   gap: 6px;
 }
 
+/* Only shown on mobile, where the nav becomes a horizontal pill row. */
+.product-nav-hint { display: none; }
+
 .product-nav-item {
   min-height: 44px;
   border: 0;
@@ -2126,7 +2129,7 @@ h1 {
     padding: 2px;
   }
 
-  /* Nav becomes a horizontal-scrolling pill row */
+  /* Nav becomes a horizontal-scrolling pill row, with a fade hinting more pills */
   .product-nav {
     display: flex;
     gap: 8px;
@@ -2136,6 +2139,8 @@ h1 {
     -webkit-overflow-scrolling: touch;
     margin: 0 -16px;
     padding: 2px 16px;
+    -webkit-mask-image: linear-gradient(to right, #000 88%, transparent 100%);
+    mask-image: linear-gradient(to right, #000 88%, transparent 100%);
   }
 
   .product-nav::-webkit-scrollbar {
@@ -2144,18 +2149,29 @@ h1 {
 
   .product-nav-item {
     flex: 0 0 auto;
-    min-height: 38px;
+    min-height: 40px;
     padding: 0 16px;
     border-radius: 999px;
+    border: 1px solid var(--line);
     background: var(--paper-soft);
-    color: var(--muted);
+    color: var(--ink);
     white-space: nowrap;
     font-size: 14px;
   }
 
   .product-nav-item.active {
     background: var(--sage-deep);
+    border-color: var(--sage-deep);
     color: #fffdf8;
+  }
+
+  /* Tells first-time users the pills are tappable and scroll for more */
+  .product-nav-hint {
+    display: block;
+    margin: 8px 2px 0;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
   }
 
   /* Redundant on mobile — topbar already has Ask Figured */

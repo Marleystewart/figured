@@ -72,6 +72,12 @@ productNavItems.forEach((item) => {
 
     item.classList.add("active");
     document.getElementById(sectionId)?.classList.add("active");
+
+    // Always start the new section at the top, otherwise tapping a section while
+    // scrolled down leaves you stranded at the bottom of the new one.
+    window.scrollTo({ top: 0, behavior: "instant" });
+    // On mobile the nav is a horizontal pill row, so bring the tapped one into view.
+    item.scrollIntoView({ inline: "center", block: "nearest" });
   });
 });
 
