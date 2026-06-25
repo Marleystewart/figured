@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="./styles.css?v=41" />
+    <link rel="stylesheet" href="./styles.css?v=46" />
   </head>
   <body class="product-body">
     <div class="product-shell">
@@ -22,6 +22,7 @@
           <button class="product-nav-item" data-product-section="gaps">Gap Analyzer</button>
           <button class="product-nav-item" data-product-section="plan">Action Plan</button>
           <button class="product-nav-item" data-product-section="opportunities">Opportunities</button>
+          <button class="product-nav-item" data-product-section="resume">Résumé</button>
           <button class="product-nav-item" data-product-section="connections">Connections</button>
           <button class="product-nav-item" data-product-section="timeline">Timeline</button>
         </nav>
@@ -169,6 +170,7 @@
               </article>
             </div>
           </div>
+
         </section>
 
         <!-- Gap Analyzer -->
@@ -290,6 +292,80 @@
                 <a class="opp-link" id="oppLink4" href="#" target="_blank" rel="noopener">Find on LinkedIn →</a>
                 <a class="opp-link" id="oppHandshake4" href="#" target="_blank" rel="noopener">Handshake →</a>
               </div>
+            </article>
+          </div>
+        </section>
+
+        <!-- Résumé -->
+        <section class="product-section" id="product-resume">
+          <div class="resume-head">
+            <div>
+              <span class="resume-eyebrow">Résumé review</span>
+              <h2>An honest read on your résumé.</h2>
+              <p class="resume-intro">Upload your résumé and 4ward reads it the way a recruiter and an ATS would, then shows exactly what to strengthen. Bring the fixes to your advisor to refine together.</p>
+            </div>
+            <div class="resume-upload-box">
+              <input type="file" id="appResumeFile" accept="application/pdf,.pdf,.txt,text/plain" hidden />
+              <button type="button" class="primary-button" id="appResumeBtn">Upload résumé</button>
+              <small id="appResumeStatus" class="resume-app-status"></small>
+            </div>
+          </div>
+
+          <div class="resume-format">
+            <div class="resume-format-row">
+              <label for="resumeFormat">Résumé format to check against</label>
+              <select id="resumeFormat" class="resume-select">
+                <option value="Standard reverse-chronological (most common: contact, education, experience, skills; reverse date order)">Standard reverse-chronological</option>
+                <option value="One-page career-center classic (strictly one page, clear section headers, consistent dates, no graphics or columns that break ATS)">Career-center one-page classic</option>
+                <option value="Skills-forward / functional (skills and projects grouped up top, useful when experience is light)">Skills-forward / functional</option>
+              </select>
+            </div>
+            <details class="resume-guidelines">
+              <summary>My school uses a specific format → use it instead</summary>
+              <p class="resume-guidelines-help">Upload your school's résumé template or a sample they recommend, and 4ward checks your résumé against that exact format. This is the most accurate option. You can also paste the written rules instead.</p>
+              <div class="resume-template-upload">
+                <input type="file" id="resumeTemplateFile" accept="application/pdf,.pdf,.txt,text/plain" hidden />
+                <button type="button" class="secondary-button" id="resumeTemplateBtn">Upload your school's format</button>
+                <small id="resumeTemplateName" class="resume-template-name"></small>
+              </div>
+              <p class="resume-or">or paste the rules</p>
+              <textarea id="resumeGuidelines" class="resume-textarea" rows="4" placeholder="e.g. Trinity College résumé format: Name and contact centered at top. Education first with GPA. Experience in reverse-chronological order with 2-4 bullets each. One page only. No photos or columns."></textarea>
+            </details>
+          </div>
+
+          <div class="resume-empty" id="resumeEmpty">
+            <p>No résumé analyzed yet. Upload a PDF or text file above and you'll get a full breakdown here: how it reads, where it's strong, weak verbs to swap, bullet rewrites, and keywords you're missing for your goal.</p>
+            <small id="resumeEmptyAi">Connect AI (top right) to enable résumé analysis.</small>
+          </div>
+
+          <div class="resume-analysis" id="resumeAnalysis" hidden>
+            <article class="product-card resume-summary-card">
+              <span>The honest read</span>
+              <p id="resumeSummary"></p>
+            </article>
+
+            <article class="product-card">
+              <span>How it holds up</span>
+              <div class="resume-review-grid" id="resumeReview"></div>
+            </article>
+
+            <div class="resume-two-col">
+              <article class="product-card">
+                <span>Stronger verbs</span>
+                <h3>Swap weak words for active ones</h3>
+                <div class="resume-verbs" id="resumeVerbs"></div>
+              </article>
+              <article class="product-card">
+                <span>Missing for your goal</span>
+                <h3>Keywords worth adding</h3>
+                <div class="resume-keywords" id="resumeKeywords"></div>
+              </article>
+            </div>
+
+            <article class="product-card">
+              <span>Bullet rewrites</span>
+              <h3>Before and after</h3>
+              <div class="resume-rewrites" id="resumeRewrites"></div>
             </article>
           </div>
         </section>
@@ -422,7 +498,7 @@
       </div>
     </div>
 
-    <script src="./ai.js?v=25"></script>
-    <script src="./script.js?v=34"></script>
+    <script src="./ai.js?v=28"></script>
+    <script src="./script.js?v=39"></script>
   </body>
 </html>

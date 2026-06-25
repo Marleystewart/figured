@@ -276,12 +276,51 @@ Hard rules:
           additionalProperties: false,
         },
       },
+      summary: { type: 'string' },
+      review: {
+        type: 'array',
+        items: {
+          type: 'object',
+          properties: {
+            area: { type: 'string' },
+            status: { type: 'string', enum: ['Strong', 'Building', 'Needs work', 'Missing'] },
+            note: { type: 'string' },
+          },
+          required: ['area', 'status', 'note'],
+          additionalProperties: false,
+        },
+      },
+      verbSwaps: {
+        type: 'array',
+        items: {
+          type: 'object',
+          properties: {
+            from: { type: 'string' },
+            to: { type: 'string' },
+          },
+          required: ['from', 'to'],
+          additionalProperties: false,
+        },
+      },
+      rewrites: {
+        type: 'array',
+        items: {
+          type: 'object',
+          properties: {
+            before: { type: 'string' },
+            after: { type: 'string' },
+          },
+          required: ['before', 'after'],
+          additionalProperties: false,
+        },
+      },
+      keywords: { type: 'array', items: { type: 'string' } },
     },
-    required: ['major', 'school', 'experience', 'activities', 'skills', 'feedback'],
+    required: ['major', 'school', 'experience', 'activities', 'skills', 'feedback', 'summary', 'review', 'verbSwaps', 'rewrites', 'keywords'],
     additionalProperties: false,
   };
 
-  const RESUME_SYSTEM = `You are 4ward, an honest but encouraging mentor reading a college student's résumé. Two jobs:
+  const RESUME_SYSTEM = `You are 4ward, an honest but encouraging mentor reading a college student's résumé. Do these jobs:
 
 1. EXTRACT what's really on the résumé into the schema. Do not invent anything. If a field isn't present, return an empty string or empty array.
    - experience: each entry as a short line like "Role, Organization (dates)".
@@ -289,25 +328,55 @@ Hard rules:
    - skills: concrete skills/tools listed — one per item.
    - major / school: their current degree and institution if shown, else "".
 
-2. REVIEW the résumé. feedback = 3-4 specific, actionable improvements in 4ward's voice: honest, warm, never harsh. Point at real things (weak bullet points, missing metrics, no clear summary, formatting, gaps for their apparent goal). Each: title = the fix in a few words, detail = one concrete sentence on how. If the résumé is strong, still give the next-level improvements. No generic filler. Plain text, no markdown.`;
+2. feedback = 3-4 specific, actionable improvements in 4ward's voice: honest, warm, never harsh. Each: title = the fix in a few words, detail = one concrete sentence on how. (This is a short summary list; the deeper analysis goes in the fields below.)
 
-  // fileData: base64 (PDF) or raw text (txt). Returns parsed profile + feedback.
-  async function parseResume(fileData, mediaType) {
-    let content;
+3. summary = two honest sentences: the résumé's biggest strength, and the single highest-leverage thing to fix. Warm but direct.
+
+4. review = evaluate these areas, each with a status LABEL (never a number or grade) and one concrete note. Cover, at minimum: "ATS readability" (parses cleanly, standard sections, no tables/columns that break parsers), "Bullet strength", "Quantified results" (numbers, %, scale), "Action verbs", "Keywords for their goal", "Formatting & length", "Leadership signals". status must be exactly one of: Strong, Building, Needs work, Missing.
+
+5. verbSwaps = 3-6 weak verbs found on the résumé paired with a stronger replacement. from = the weak word actually used (e.g. "Helped"), to = a stronger verb (e.g. "Drove"). If none are weak, return an empty array.
+
+6. rewrites = 2-3 of their actual weak bullet points rewritten stronger. before = the real bullet as written; after = a tighter, quantified, action-led version. Never fabricate numbers — if a metric is unknown, show a placeholder like "[X%]" so they fill it in.
+
+7. keywords = skills or terms a student aiming for their goal should have but are missing from the résumé. Tailor to the goal given. 4-8 items.
+
+Voice rules: honest and encouraging, never harsh, no numeric scores or letter grades anywhere, no em dashes, plain text (no markdown). If the résumé is strong, still give the next-level improvements.`;
+
+  // fileData: base64 (PDF) or raw text (txt). opts: { goal, format, guidelines } so
+  // keyword/rewrite suggestions are tailored and the review checks against the
+  // student's chosen résumé format. Returns parsed profile + analysis.
+  async function parseResume(fileData, mediaType, opts) {
+    const o = opts || {};
+    const goal = typeof o === 'string' ? o : o.goal; // back-compat: old callers passed goal directly
+    const goalLine = goal ? `\n\nThe student's goal is: ${goal}. Tailor keywords and rewrites toward it.` : '';
+    const hasTemplate = o.template && o.template.data;
+    // An uploaded template is the strongest signal, then pasted rules, then the dropdown.
+    const formatLine = (o.format && !hasTemplate && !o.guidelines)
+      ? `\n\nThe student is following this résumé format: ${o.format}. In the "ATS readability" and "Formatting & length" review items, check the résumé against that format's conventions.` : '';
+    const guideLine = o.guidelines ? `\n\nTheir school's career center publishes these résumé guidelines. Treat them as the source of truth for structure and sections, and call out where the résumé deviates:\n"""\n${o.guidelines}\n"""` : '';
+    const templateLine = hasTemplate ? `\n\nThe student uploaded their school's official résumé template or sample (the second document). Treat its structure, section order, and formatting as the required format. In the review, call out specifically where the student's résumé does not match that template.` : '';
+    const extra = goalLine + formatLine + guideLine + templateLine;
+
+    const content = [];
     if (mediaType === 'application/pdf') {
-      content = [
-        { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: fileData } },
-        { type: 'text', text: "Extract this student's résumé into the schema and give improvement feedback." },
-      ];
+      content.push({ type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: fileData } });
     } else {
-      content = [{ type: 'text', text: "Student résumé text:\n\n" + fileData + "\n\nExtract into the schema and give improvement feedback." }];
+      content.push({ type: 'text', text: "Student résumé text:\n\n" + fileData });
     }
+    if (hasTemplate) {
+      if (o.template.mediaType === 'application/pdf') {
+        content.push({ type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: o.template.data } });
+      } else {
+        content.push({ type: 'text', text: "School résumé format template:\n\n" + o.template.data });
+      }
+    }
+    content.push({ type: 'text', text: "Extract this student's résumé into the schema and give the full analysis." + extra });
     const body = {
       // Haiku 4.5 — structured extraction plus a few lines of feedback. ~2x
       // faster than Sonnet on this task, far more capacity headroom, and
       // dramatically cheaper. Voice rules still apply via the system prompt.
       model: HAIKU,
-      max_tokens: 4000,
+      max_tokens: 6000,
       system: [{ type: 'text', text: RESUME_SYSTEM, cache_control: { type: 'ephemeral' } }],
       messages: [{ role: 'user', content }],
       output_config: { format: { type: 'json_schema', schema: RESUME_SCHEMA } },

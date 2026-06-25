@@ -664,12 +664,11 @@ function startBuildGame() {
     const sk = document.getElementById('skills'); if (sk) sk.value = mergeLines(sk.value, data.skills);
   }
 
-  function renderFeedback(feedback) {
-    if (!feedback || !feedback.length) { feedbackEl.hidden = true; return; }
+  // Onboarding shows only a short pointer — the full breakdown lives in the
+  // dashboard Résumé tab, so we don't duplicate it here.
+  function renderFeedback() {
     feedbackEl.hidden = false;
-    feedbackEl.innerHTML = '<h4>Résumé feedback</h4>' + feedback.map((f) =>
-      `<div class="resume-fb-row"><strong>${esc(f.title)}</strong><p>${esc(f.detail)}</p></div>`
-    ).join('');
+    feedbackEl.innerHTML = '<div class="resume-fb-row"><strong>Full résumé review is ready</strong><p>Finish setting up, then open the Résumé tab in your dashboard for the complete breakdown: how it reads, weak verbs to swap, bullet rewrites, and keywords for your goal.</p></div>';
   }
 
   async function runParse() {
@@ -678,12 +677,15 @@ function startBuildGame() {
     setStatus('Reading your résumé…', 'loading');
     feedbackEl.hidden = true;
     try {
-      const data = await FigAI.parseResume(pending.data, pending.mediaType);
+      const goal = document.getElementById('goal')?.value.trim() || '';
+      const data = await FigAI.parseResume(pending.data, pending.mediaType, { goal });
       fillFromResume(data);
+      // Save the full analysis so it flows straight into the dashboard Résumé tab.
+      try { localStorage.setItem('figuredResumeAnalysis', JSON.stringify(data)); } catch (e) { /* ignore */ }
       try { localStorage.setItem('figuredResumeFeedback', JSON.stringify(data.feedback || [])); } catch (e) { /* ignore */ }
       const filled = [data.experience, data.activities, data.skills].reduce((n, a) => n + (a ? a.length : 0), 0);
       setStatus(`Done — read your résumé and filled in ${filled} item${filled === 1 ? '' : 's'}. Edit anything below.`, 'ok');
-      renderFeedback(data.feedback);
+      renderFeedback();
     } catch (e) {
       setStatus('Could not read that résumé: ' + e.message, 'error');
     }

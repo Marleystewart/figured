@@ -1652,6 +1652,142 @@ document.addEventListener('click', (e) => {
 });
 
 // ---------------------------------------------------------------------------
+// Résumé review (dashboard). Upload a résumé, get the full honest breakdown:
+// an overall read, how it holds up area-by-area (labels, never scores), weak
+// verbs to swap, bullet rewrites, and keywords missing for the student's goal.
+// ---------------------------------------------------------------------------
+const RESUME_STATUS_CLASS = { strong: 'strong', building: 'building', 'needs work': 'needs', missing: 'missing' };
+
+function renderResumeAnalysis(a) {
+  const empty = document.getElementById('resumeEmpty');
+  const wrap = document.getElementById('resumeAnalysis');
+  if (!wrap) return;
+  if (!a || !a.summary) { if (empty) empty.hidden = false; wrap.hidden = true; return; }
+  if (empty) empty.hidden = true;
+  wrap.hidden = false;
+
+  const set = (id, html) => { const el = document.getElementById(id); if (el) el.innerHTML = html; };
+  set('resumeSummary', esc(a.summary));
+
+  set('resumeReview', (a.review || []).map((r) => {
+    const cls = RESUME_STATUS_CLASS[String(r.status || '').toLowerCase()] || 'building';
+    return `<div class="resume-review-row">
+      <div><p>${esc(r.area)}</p><small>${esc(r.note)}</small></div>
+      <em class="resume-pill ${cls}">${esc(r.status)}</em>
+    </div>`;
+  }).join('') || '<p class="resume-none">No issues flagged.</p>');
+
+  set('resumeVerbs', (a.verbSwaps || []).length
+    ? (a.verbSwaps || []).map((v) => `<div class="resume-verb"><span class="verb-from">${esc(v.from)}</span><span class="verb-arrow">→</span><span class="verb-to">${esc(v.to)}</span></div>`).join('')
+    : '<p class="resume-none">Your verbs are already active. Nice.</p>');
+
+  set('resumeKeywords', (a.keywords || []).length
+    ? (a.keywords || []).map((k) => `<span class="resume-kw">${esc(k)}</span>`).join('')
+    : '<p class="resume-none">You already cover the key terms for your goal.</p>');
+
+  set('resumeRewrites', (a.rewrites || []).length
+    ? (a.rewrites || []).map((r) => `<div class="resume-rewrite">
+        <div class="rw-before"><span>Before</span><p>${esc(r.before)}</p></div>
+        <div class="rw-after"><span>After</span><p>${esc(r.after)}</p></div>
+      </div>`).join('')
+    : '<p class="resume-none">No bullets needed rewriting.</p>');
+}
+
+(function dashboardResume() {
+  const btn = document.getElementById('appResumeBtn');
+  const fileInput = document.getElementById('appResumeFile');
+  const statusEl = document.getElementById('appResumeStatus');
+  const emptyAi = document.getElementById('resumeEmptyAi');
+  if (!btn || !fileInput) return;
+
+  const setStatus = (msg, kind) => {
+    if (!statusEl) return;
+    statusEl.textContent = msg || '';
+    statusEl.className = 'resume-app-status' + (kind ? ' ' + kind : '');
+  };
+
+  const formatSel = document.getElementById('resumeFormat');
+  const guidelinesEl = document.getElementById('resumeGuidelines');
+  const templateBtn = document.getElementById('resumeTemplateBtn');
+  const templateInput = document.getElementById('resumeTemplateFile');
+  const templateNameEl = document.getElementById('resumeTemplateName');
+
+  // The uploaded school template, kept for the session and reused on each parse.
+  let resumeTemplate = null;
+
+  // Show any analysis saved from a previous upload (here or in onboarding).
+  renderResumeAnalysis(readJSON('figuredResumeAnalysis'));
+  const aiReady = () => (typeof FigAI !== 'undefined') && FigAI.hasKey();
+  if (emptyAi) emptyAi.style.display = aiReady() ? 'none' : '';
+
+  // Remember the student's format choice + pasted guidelines between visits.
+  try {
+    const savedFmt = localStorage.getItem('figuredResumeFormat');
+    if (savedFmt && formatSel) formatSel.value = savedFmt;
+    const savedGuide = localStorage.getItem('figuredResumeGuidelines');
+    if (savedGuide && guidelinesEl) guidelinesEl.value = savedGuide;
+  } catch (e) { /* ignore */ }
+  if (formatSel) formatSel.addEventListener('change', () => {
+    try { localStorage.setItem('figuredResumeFormat', formatSel.value); } catch (e) { /* ignore */ }
+  });
+  if (guidelinesEl) guidelinesEl.addEventListener('input', () => {
+    try { localStorage.setItem('figuredResumeGuidelines', guidelinesEl.value); } catch (e) { /* ignore */ }
+  });
+
+  // Upload the school's résumé template/sample to check the résumé against.
+  if (templateBtn && templateInput) {
+    templateBtn.addEventListener('click', () => templateInput.click());
+    templateInput.addEventListener('change', () => {
+      const file = templateInput.files[0];
+      if (!file) return;
+      const isPdf = file.type === 'application/pdf' || /\.pdf$/i.test(file.name);
+      const reader = new FileReader();
+      reader.onload = () => {
+        const data = isPdf ? (String(reader.result).split(',')[1] || '') : String(reader.result);
+        resumeTemplate = { data, mediaType: isPdf ? 'application/pdf' : 'text/plain' };
+        if (templateNameEl) templateNameEl.textContent = 'Using: ' + file.name;
+      };
+      if (isPdf) reader.readAsDataURL(file); else reader.readAsText(file);
+      templateInput.value = '';
+    });
+  }
+
+  btn.addEventListener('click', () => {
+    if (!aiReady()) { setStatus('Connect AI (top right) first, then upload.', 'error'); return; }
+    fileInput.click();
+  });
+
+  fileInput.addEventListener('change', () => {
+    const file = fileInput.files[0];
+    if (!file) return;
+    const isPdf = file.type === 'application/pdf' || /\.pdf$/i.test(file.name);
+    const reader = new FileReader();
+    reader.onload = async () => {
+      const data = isPdf ? (String(reader.result).split(',')[1] || '') : String(reader.result);
+      const mediaType = isPdf ? 'application/pdf' : 'text/plain';
+      setStatus('Reading your résumé…', 'loading');
+      try {
+        const goal = (currentProfile || DEMO_PROFILE).goal || '';
+        const a = await FigAI.parseResume(data, mediaType, {
+          goal,
+          format: formatSel ? formatSel.value : '',
+          guidelines: guidelinesEl ? guidelinesEl.value.trim() : '',
+          template: resumeTemplate,
+        });
+        try { localStorage.setItem('figuredResumeAnalysis', JSON.stringify(a)); } catch (e) { /* ignore */ }
+        try { localStorage.setItem('figuredResumeFeedback', JSON.stringify(a.feedback || [])); } catch (e) { /* ignore */ }
+        renderResumeAnalysis(a);
+        setStatus('Done. Your breakdown is below.', 'ok');
+      } catch (e) {
+        setStatus('Could not read that résumé: ' + (e.message || e), 'error');
+      }
+      fileInput.value = '';
+    };
+    if (isPdf) reader.readAsDataURL(file); else reader.readAsText(file);
+  });
+})();
+
+// ---------------------------------------------------------------------------
 // AI orchestration
 // ---------------------------------------------------------------------------
 
