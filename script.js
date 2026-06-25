@@ -208,10 +208,10 @@ function goalNoun(goal) {
 // Compensation data by domain (BLS-sourced, updated periodically)
 // ---------------------------------------------------------------------------
 const COMP = {
-  sports:     { entry: '$35k–$55k',        note: 'Entry front-office and ops roles pay notoriously low. The path up is through relationships and results. Pay jumps sharply at the director level and above.' },
-  product:    { entry: '$95k–$125k',       note: 'APM programs at top companies pay $110–130k. Most PMs enter through adjacent roles like ops, engineering, or data first.' },
+  sports:     { entry: '$40k–$52k',        note: 'Entry front-office and ops roles pay low, roughly $40–52k. The path up is through relationships and results. Pay climbs at the director level and above.' },
+  product:    { entry: '$75k–$110k',       note: 'Associate PM base runs about $75–110k. Top-tech APM programs reach $120k+, but most PMs enter through ops, data, or engineering first.' },
   finance:    { entry: '$65k–$160k',       note: 'Investment banking analysts start ~$110k base + bonus. Corporate finance and financial planning roles run $65–85k to start.' },
-  software:   { entry: '$110k–$135k',      note: 'Median new-grad SWE total comp at large tech companies. Big Tech starts at $150k+; startups vary widely but often include equity.' },
+  software:   { entry: '$80k–$120k',       note: 'New-grad software median is about $85k (NACE). Big Tech starts $130–150k+; startups vary widely and often add equity.' },
   marketing:  { entry: '$55k–$75k',        note: 'Marketing coordinators start $50–60k. Brand and growth roles at tech companies run higher. Agency pay is lower to start but builds fast.' },
   consulting: { entry: '$90k–$112k',       note: 'MBB (McKinsey, BCG, Bain) starts ~$112k base for undergrad. Big 4 management consulting runs $75–95k.' },
   design:     { entry: '$70k–$95k',        note: 'Junior UX/product designers at tech companies. Agency and startup roles vary. Senior and staff designers reach $130–180k+.' },
@@ -252,8 +252,14 @@ function renderComp(p) {
   const c = COMP[detectDomain(p)] || COMP.generic;
   const entryEl = document.getElementById('compEntry');
   const noteEl  = document.getElementById('compNote');
+  const srcEl   = document.getElementById('compSource');
   if (entryEl) entryEl.textContent = c.entry;
   if (noteEl)  noteEl.textContent  = c.note;
+  // Link straight to live, BLS-sourced wage data for their goal so they can verify.
+  if (srcEl) {
+    const kw = (p && p.goal) ? p.goal : (p && p.major) ? p.major : '';
+    srcEl.href = 'https://www.mynextmove.org/find/search?keyword=' + encodeURIComponent(kw);
+  }
 }
 
 // Niche/custom role keywords → domain. Checked BEFORE the broad domain patterns
@@ -2317,6 +2323,7 @@ if (document.querySelector('.product-main')) {
   } else {
     currentScores = computeScores(DEMO_PROFILE);
     renderNetwork(DEMO_PROFILE.goal, DEMO_PROFILE);
+    renderComp(DEMO_PROFILE);
     const nudge = document.getElementById('onboardingNudge');
     if (nudge) nudge.style.display = 'flex';
     setAiPill(aiAvailable() && FigAI.hasKey() ? 'idle' : 'off');

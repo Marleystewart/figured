@@ -3067,6 +3067,14 @@ h1 {
   background: rgba(255, 253, 248, 0.7);
 }
 
+.comp-source-link {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--sage-deep);
+  opacity: 0.85;
+}
+.comp-source-link:hover { opacity: 1; text-decoration: underline; }
+
 .plan-week {
   display: block;
   font-size: 10.5px;
