@@ -2441,6 +2441,8 @@ function applyProfile(p) {
   const period = hour < 12 ? 'morning' : hour < 18 ? 'afternoon' : 'evening';
   setText('.product-topbar h1', `Good ${period}, ${name}.`);
   setText('.profile-pocket strong', name);
+  // Keep the browser tab title in sync with the real student, not the demo name.
+  document.title = (p.firstName && name !== 'you') ? `4ward | ${name}` : '4ward';
   setText('.student-avatar', profileInitials(name));
   if (p.schoolStage === 'highSchool') {
     setText('.profile-meta', [p.year, p.major ? `Exploring: ${p.major}` : 'Exploring majors'].filter(Boolean).join(' · '));
