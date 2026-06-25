@@ -1542,11 +1542,8 @@ function networkArchetypes(term, p) {
   const hasSchool = Boolean(p && p.school);
   const school = hasSchool ? p.school : 'your school';
   const first = (p && p.firstName) ? p.firstName : 'a student';
-  // The cards are a reference, not a directory: we tell the student who to look
-  // for and what to say, then open a clean LinkedIn search as a starting point.
-  // We don't guess exact school pages (those break), so the link never dead-ends.
-  const alumniHref = googleLinkedinURL(`${goal} ${school}`);
-  const peerHref = googleLinkedinURL(`${goal} student ${school}`);
+  // The cards are pure reference, not a directory: who to look for, why they
+  // matter, what to ask, and a message to send. No outbound links to break.
   return [
     {
       tag: 'Alumni',
@@ -1559,8 +1556,6 @@ function networkArchetypes(term, p) {
         'What would you do differently if you were starting now?',
       ],
       message: `Hi, I'm ${first}, currently at ${school} working toward ${goal}. I saw you came through ${school} and are now in the field. Would you be open to a 15-minute call? I'd love to hear how you got started.`,
-      href: alumniHref,
-      cta: 'Search on LinkedIn →',
     },
     {
       tag: 'Upperclassman',
@@ -1573,8 +1568,6 @@ function networkArchetypes(term, p) {
         'Which campus resources actually helped?',
       ],
       message: `Hey, I'm ${first}, also at ${school} and exploring ${goal}. I saw you interned in the space. Could I grab 15 minutes to hear how you approached recruiting? Would really appreciate it.`,
-      href: peerHref,
-      cta: 'Find on LinkedIn →',
     },
     {
       tag: 'Professional',
@@ -1587,8 +1580,6 @@ function networkArchetypes(term, p) {
         'Where do you wish more students focused their time?',
       ],
       message: `Hi, I'm ${first}, a student working toward ${goal}. I'm trying to understand the field from people actually in it. Would you be open to a short informational chat? No ask beyond your perspective.`,
-      href: googleLinkedinURL(goal),
-      cta: 'Find on LinkedIn →',
     },
     {
       tag: 'On campus',
@@ -1601,8 +1592,6 @@ function networkArchetypes(term, p) {
         'Are there projects or research I could join?',
       ],
       message: `Hi Professor, I'm ${first}, exploring a path toward ${goal}. I'd love to stop by office hours to ask for advice on building the right experience. When works best?`,
-      href: googleLinkedinURL(`${goal} professor ${school}`),
-      cta: 'Find on LinkedIn →',
     },
   ];
 }
@@ -1631,7 +1620,6 @@ function renderNetwork(term, p) {
           <p data-msg="${esc(c.message)}">${esc(c.message)}</p>
           <div class="network-actions">
             <button class="mini-button" type="button" data-copy-msg="${i}">Copy message</button>
-            <a class="opp-link" href="${c.href}" target="_blank" rel="noopener">${esc(c.cta || 'Find on LinkedIn →')}</a>
           </div>
         </div>
       </article>`;
@@ -2103,14 +2091,23 @@ function applyProfile(p) {
 // Connections tab switching
 const connTabs = document.querySelectorAll('.conn-tab');
 const connPanels = document.querySelectorAll('.conn-panel');
+// The "Who to meet" tab is a pure reference (no outbound links), so we hide the
+// "Find more on LinkedIn" header button there and show it for Mentors/Peers.
+function syncConnHeaderLink(activeTab) {
+  const link = document.getElementById('connLinkedinLink');
+  if (link) link.style.display = activeTab === 'meet' ? 'none' : '';
+}
 connTabs.forEach(tab => {
   tab.addEventListener('click', () => {
     connTabs.forEach(t => t.classList.remove('active'));
     connPanels.forEach(panel => panel.classList.remove('active'));
     tab.classList.add('active');
     document.getElementById('conn-' + tab.dataset.conn)?.classList.add('active');
+    syncConnHeaderLink(tab.dataset.conn);
   });
 });
+// "Who to meet" is the default tab, so hide the header link on load.
+syncConnHeaderLink(document.querySelector('.conn-tab.active')?.dataset.conn);
 
 function initWinModal() {
   const modal = document.getElementById('winModal');
