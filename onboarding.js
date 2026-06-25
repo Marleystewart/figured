@@ -261,6 +261,9 @@ function goTo(n) {
   backBtn.style.visibility = n > 1 ? 'visible' : 'hidden';
   nextBtn.textContent = n === steps.length ? copyByStage[schoolStage].buildText : 'Continue';
   current = n;
+  // Start each step at the top, otherwise a long step (e.g. résumé) leaves you
+  // scrolled at the bottom of the next one.
+  window.scrollTo({ top: 0, behavior: 'instant' });
 }
 
 function showStageIntro() {

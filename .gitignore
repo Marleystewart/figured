@@ -14,3 +14,8 @@ assets/*
 !assets/vibra/
 !assets/vibra/**
 !assets/logo.png
+
+# Other app accidentally synced into this folder by Codex (keep 4ward clean)
+opening-app/
+manifest.json
+service-worker.js
