@@ -2769,6 +2769,22 @@ h1 {
 .advisor-prep-list li { font-size: 14px; line-height: 1.6; color: var(--ink); }
 .advisor-prep-foot { margin-top: 12px; font-size: 13px; color: var(--muted); }
 
+/* Gap analyzer header + refresh */
+.gaps-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 16px; }
+.gaps-eyebrow { font-size: 12px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; color: var(--sage-deep); }
+.gaps-header h2 { margin: 4px 0 0; font-size: 22px; }
+
+/* Action checklist: completed state + next set */
+.action-complete {
+  margin-top: 12px;
+  padding: 14px;
+  border-radius: 12px;
+  background: var(--teal-soft);
+  text-align: center;
+}
+.action-complete p { margin: 0 0 10px; font-size: 13.5px; font-weight: 700; color: var(--sage-deep); }
+.action-next { width: 100%; }
+
 /* Explore tree — discovery map of how a field branches */
 .explore-tree-card { margin-top: 18px; }
 .explore-head { display: flex; gap: 16px; align-items: flex-start; margin-bottom: 20px; }

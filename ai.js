@@ -445,5 +445,74 @@ Rules:
     return JSON.parse(textBlock.text).tracks;
   }
 
-  return { getKey, setKey, hasKey, generateInsights, chatStream, parseResume, generateMorePaths };
+  // --- "Next set" of weekly actions (when the checklist is done) ---
+  const ACTIONS_SCHEMA = {
+    type: 'object',
+    properties: { actions: { type: 'array', items: { type: 'string' } } },
+    required: ['actions'],
+    additionalProperties: false,
+  };
+  async function generateMoreActions(profile, existing) {
+    const body = {
+      model: SONNET,
+      max_tokens: 700,
+      system: [{ type: 'text', text: 'You are 4ward, an honest career mentor. Return exactly 4 fresh, specific, highest-impact next actions a college student could start THIS WEEK toward their goal. Lean experience-first (reach out to a person, apply, build, shadow, join) over passive learning like watching videos. Each is one short imperative line. Do NOT repeat anything already done or shown. Plain text, no markdown, no em dashes.' }],
+      messages: [{
+        role: 'user',
+        content: 'Student profile:\n' + JSON.stringify(profile, null, 2) +
+          '\n\nAlready done or shown (do NOT repeat): ' + ((existing || []).join(' | ') || 'none') +
+          '\n\nReturn 4 fresh actions as JSON.',
+      }],
+      output_config: { format: { type: 'json_schema', schema: ACTIONS_SCHEMA } },
+    };
+    const res = await fetch(endpoint(), { method: 'POST', headers: headers(), body: JSON.stringify(body) });
+    if (!res.ok) throw await apiError(res);
+    const msg = await res.json();
+    const textBlock = (msg.content || []).find((b) => b.type === 'text');
+    if (!textBlock) throw new Error('No content returned.');
+    return JSON.parse(textBlock.text).actions;
+  }
+
+  // --- "More" gaps for the Gap Analyzer ---
+  const GAP_ITEM = { type: 'object', properties: { item: { type: 'string' }, impact: { type: 'string' } }, required: ['item', 'impact'], additionalProperties: false };
+  const GAPS_SCHEMA = {
+    type: 'object',
+    properties: {
+      gaps: {
+        type: 'object',
+        properties: {
+          skills: { type: 'array', items: GAP_ITEM },
+          experience: { type: 'array', items: GAP_ITEM },
+          exposure: { type: 'array', items: GAP_ITEM },
+          mindset: { type: 'array', items: GAP_ITEM },
+        },
+        required: ['skills', 'experience', 'exposure', 'mindset'],
+        additionalProperties: false,
+      },
+    },
+    required: ['gaps'],
+    additionalProperties: false,
+  };
+  async function generateMoreGaps(profile, existing) {
+    const body = {
+      model: SONNET,
+      max_tokens: 1200,
+      system: [{ type: 'text', text: 'You are 4ward, an honest career mentor. Return a fresh set of gaps for this student toward their goal: skills (what to learn), experience (what to do), exposure (what to see or who to meet), mindset (how to think). 3 items per category, each with an impact label like "High impact", "Medium impact", or "Foundational". Frame as "here is what it takes", never judgment. Do NOT repeat items already shown. Plain text, no markdown, no em dashes.' }],
+      messages: [{
+        role: 'user',
+        content: 'Student profile:\n' + JSON.stringify(profile, null, 2) +
+          '\n\nAlready shown (do NOT repeat): ' + ((existing || []).join(' | ') || 'none') +
+          '\n\nReturn fresh gaps as JSON.',
+      }],
+      output_config: { format: { type: 'json_schema', schema: GAPS_SCHEMA } },
+    };
+    const res = await fetch(endpoint(), { method: 'POST', headers: headers(), body: JSON.stringify(body) });
+    if (!res.ok) throw await apiError(res);
+    const msg = await res.json();
+    const textBlock = (msg.content || []).find((b) => b.type === 'text');
+    if (!textBlock) throw new Error('No content returned.');
+    return JSON.parse(textBlock.text).gaps;
+  }
+
+  return { getKey, setKey, hasKey, generateInsights, chatStream, parseResume, generateMorePaths, generateMoreActions, generateMoreGaps };
 })();

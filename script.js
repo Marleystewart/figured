@@ -882,6 +882,7 @@ function renderActions(actions) {
   const checked = loadChecked();
   const done = actions.filter((a) => checked.has(a)).length;
   const pct = actions.length ? Math.round((done / actions.length) * 100) : 0;
+  const allDone = actions.length > 0 && done === actions.length;
   el.innerHTML = `
     <div class="action-head">
       <span>Highest-impact next actions</span>
@@ -892,6 +893,11 @@ function renderActions(actions) {
       <label class="action-item${checked.has(a) ? ' done' : ''}">
         <input type="checkbox" data-action="${esc(a)}"${checked.has(a) ? ' checked' : ''} /> ${esc(a)}
       </label>`).join('')}
+    ${allDone ? `
+      <div class="action-complete">
+        <p>Nice work, you cleared the list. Ready for your next set?</p>
+        <button class="primary-button action-next" type="button" data-next-actions>Get my next set →</button>
+      </div>` : ''}
     <button class="mini-button action-log" type="button" data-log-win>+ Log a win</button>
   `;
   el.querySelectorAll('input[type="checkbox"]').forEach((cb) => {
@@ -905,8 +911,33 @@ function renderActions(actions) {
       el.querySelector('.action-count').textContent = `${d}/${actions.length} done`;
       el.querySelector('.action-progress i').style.width = (actions.length ? Math.round((d / actions.length) * 100) : 0) + '%';
       renderTodayMove(actions);
+      // Re-render so the "next set" prompt appears/disappears as completion changes.
+      if ((d === actions.length) !== allDone) renderActions(actions);
     });
   });
+
+  const nextBtn = el.querySelector('[data-next-actions]');
+  if (nextBtn) {
+    nextBtn.addEventListener('click', async () => {
+      if (!aiAvailable() || !FigAI.hasKey()) { nextBtn.textContent = 'Connect AI (top right) to get more'; return; }
+      nextBtn.disabled = true;
+      nextBtn.textContent = 'Building your next set…';
+      try {
+        const p = currentProfile || DEMO_PROFILE;
+        const fresh = await FigAI.generateMoreActions(p, [...loadChecked(), ...actions]);
+        // Clear the checks for the finished set so the new list starts fresh.
+        const set = loadChecked();
+        actions.forEach((a) => set.delete(a));
+        saveChecked(set);
+        if (aiContent) aiContent.actions = fresh;
+        renderActions(fresh);
+        renderTodayMove(fresh);
+      } catch (e) {
+        nextBtn.disabled = false;
+        nextBtn.textContent = 'That did not go through. Try again';
+      }
+    });
+  }
 }
 
 function renderTodayMove(actions) {
@@ -1198,6 +1229,38 @@ function rotateFallbackTracks(p, s) {
     { label: 'Adjacent path', role: a.role, reason: a.reason },
     { label: 'Also worth exploring', role: b.role, reason: b.reason },
   ];
+}
+
+// Gap Analyzer "More" — fetch a fresh set of gaps from AI, avoiding repeats.
+function gapItemsShown() {
+  const out = [];
+  ['gapSkills', 'gapExperience', 'gapExposure', 'gapMindset'].forEach((id) => {
+    document.querySelectorAll('#' + id + ' .gap-cat-row p').forEach((p) => out.push(p.textContent));
+  });
+  return out;
+}
+function initGapsRefresh() {
+  const btn = document.getElementById('gapsRefresh');
+  if (!btn) return;
+  btn.addEventListener('click', async () => {
+    if (btn.classList.contains('spinning')) return;
+    if (!aiAvailable() || !FigAI.hasKey()) {
+      btn.classList.add('spinning');
+      setTimeout(() => btn.classList.remove('spinning'), 360);
+      return;
+    }
+    btn.classList.add('spinning');
+    try {
+      const p = currentProfile || DEMO_PROFILE;
+      const fresh = await FigAI.generateMoreGaps(p, gapItemsShown());
+      renderGapCards(fresh);
+      if (aiContent) aiContent.gaps = fresh;
+    } catch (e) {
+      console.error('More gaps:', e);
+    } finally {
+      btn.classList.remove('spinning');
+    }
+  });
 }
 
 function initTracksRefresh() {
@@ -2575,6 +2638,7 @@ if (document.querySelector('.product-main')) {
   initChat();
   initWinModal();
   initTracksRefresh();
+  initGapsRefresh();
   renderTimeline(null);
 
   const profile = loadProfile();
