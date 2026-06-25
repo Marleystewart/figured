@@ -1537,36 +1537,16 @@ function renderMentors(term) {
 // meeting on this path, why they matter, what to ask, and a message to send —
 // then link out to a real LinkedIn search so the student finds the actual human.
 // ---------------------------------------------------------------------------
-// Turn a school name into LinkedIn's school-page slug. LinkedIn slugs are
-// predictable: lowercase, "&" -> "and", punctuation dropped, spaces -> hyphens.
-// "Trinity College" -> "trinity-college", "Williams College" -> "williams-college".
-function slugifySchool(school) {
-  return String(school || '')
-    .toLowerCase()
-    .replace(/&/g, ' and ')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
-}
-
-// Deep-link to a school's LinkedIn alumni page, pre-filtered to a field. This is
-// the real alumni tool — the student lands on actual alumni from their own school
-// who work in their target area. Needs only their own LinkedIn login.
-function schoolAlumniURL(school, keywords) {
-  const slug = slugifySchool(school);
-  if (!slug) return googleLinkedinURL(keywords);
-  const q = encodeURIComponent(keywords || '');
-  return `https://www.linkedin.com/school/${slug}/people/?keywords=${q}`;
-}
-
 function networkArchetypes(term, p) {
   const goal = term || 'your field';
   const hasSchool = Boolean(p && p.school);
   const school = hasSchool ? p.school : 'your school';
   const first = (p && p.firstName) ? p.firstName : 'a student';
-  // Alumni + upperclassmen come from the student's own school, so we send them
-  // to the LinkedIn alumni page. Off-campus archetypes use a normal search.
-  const alumniHref = hasSchool ? schoolAlumniURL(school, goal) : googleLinkedinURL(`${goal} ${school}`);
-  const peerHref = hasSchool ? schoolAlumniURL(school, `${goal} intern`) : googleLinkedinURL(`${goal} intern ${school}`);
+  // The cards are a reference, not a directory: we tell the student who to look
+  // for and what to say, then open a clean LinkedIn search as a starting point.
+  // We don't guess exact school pages (those break), so the link never dead-ends.
+  const alumniHref = googleLinkedinURL(`${goal} ${school}`);
+  const peerHref = googleLinkedinURL(`${goal} student ${school}`);
   return [
     {
       tag: 'Alumni',
@@ -1580,7 +1560,7 @@ function networkArchetypes(term, p) {
       ],
       message: `Hi, I'm ${first}, currently at ${school} working toward ${goal}. I saw you came through ${school} and are now in the field. Would you be open to a 15-minute call? I'd love to hear how you got started.`,
       href: alumniHref,
-      cta: 'See alumni on LinkedIn →',
+      cta: 'Search on LinkedIn →',
     },
     {
       tag: 'Upperclassman',
@@ -1621,7 +1601,7 @@ function networkArchetypes(term, p) {
         'Are there projects or research I could join?',
       ],
       message: `Hi Professor, I'm ${first}, exploring a path toward ${goal}. I'd love to stop by office hours to ask for advice on building the right experience. When works best?`,
-      href: hasSchool ? schoolAlumniURL(school, `${goal} professor`) : googleLinkedinURL(`${goal} professor ${school}`),
+      href: googleLinkedinURL(`${goal} professor ${school}`),
       cta: 'Find on LinkedIn →',
     },
   ];
