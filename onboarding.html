@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="./styles.css?v=38" />
+    <link rel="stylesheet" href="./styles.css?v=52" />
   </head>
   <body>
     <div class="onboarding-shell">
@@ -194,6 +194,22 @@
               <span class="ob-hint">One per line</span>
               <textarea class="ob-input ob-textarea" id="skills" placeholder="Excel&#10;Public speaking&#10;Project management&#10;Python" rows="4"></textarea>
             </label>
+
+            <div class="ob-about">
+              <p class="ob-about-title">A bit about you <span>(optional, but it makes your trajectory a lot sharper)</span></p>
+              <label class="ob-label">
+                What kind of work makes you lose track of time?
+                <input class="ob-input" type="text" id="enjoys" placeholder="e.g. digging into data, designing things, helping people one-on-one" />
+              </label>
+              <label class="ob-label">
+                What do people come to you for, or compliment you on?
+                <input class="ob-input" type="text" id="strengths" placeholder="e.g. explaining hard things simply, staying calm under pressure" />
+              </label>
+              <label class="ob-label">
+                What kind of work drains you?
+                <input class="ob-input" type="text" id="drains" placeholder="e.g. repetitive admin, lots of cold calls, working totally alone" />
+              </label>
+            </div>
             <label class="ob-label hs-only" hidden>
               College preferences
               <span class="ob-hint">What would make a school feel right?</span>
@@ -251,9 +267,9 @@
       </div>
     </div>
 
-    <script src="./ai.js?v=27"></script>
+    <script src="./ai.js?v=31"></script>
     <script src="./schools.js?v=2"></script>
     <script src="./majors.js?v=1"></script>
-    <script src="./onboarding.js?v=26"></script>
+    <script src="./onboarding.js?v=27"></script>
   </body>
 </html>

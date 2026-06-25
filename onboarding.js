@@ -309,6 +309,9 @@ const requestedStage = searchParams.get('stage');
   fill('experience', existing.experience);
   fill('goal', existing.goal === 'your goal' ? '' : existing.goal);
   fill('skills', existing.skills);
+  fill('enjoys', existing.enjoys);
+  fill('strengths', existing.strengths);
+  fill('drains', existing.drains);
   fill('classesLiked', existing.classesLiked);
   fill('collegeInterest', existing.collegeInterest);
   fill('priorityConcern', existing.priorityConcern);
@@ -378,6 +381,9 @@ nextBtn.addEventListener('click', () => {
     experience: document.getElementById('experience').value.trim(),
     goal: document.getElementById('goal').value.trim() || 'your goal',
     skills: document.getElementById('skills').value.trim(),
+    enjoys: document.getElementById('enjoys')?.value.trim() || '',
+    strengths: document.getElementById('strengths')?.value.trim() || '',
+    drains: document.getElementById('drains')?.value.trim() || '',
     classesLiked: document.getElementById('classesLiked')?.value.trim() || '',
     collegeInterest: document.getElementById('collegeInterest')?.value || '',
     priorityConcern: document.getElementById('priorityConcern')?.value || '',
