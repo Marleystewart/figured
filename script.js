@@ -1216,6 +1216,11 @@ function initTracksRefresh() {
 // clean keyword a job board can actually search ("Investment Banking").
 const GOAL_ACRONYMS = { nba: 'NBA', nfl: 'NFL', wnba: 'WNBA', mlb: 'MLB', nhl: 'NHL', ux: 'UX', ui: 'UI', hr: 'HR', pm: 'PM', vc: 'VC', ai: 'AI', it: 'IT', qa: 'QA', ceo: 'CEO', cfo: 'CFO', cto: 'CTO' };
 
+// Correct "a" vs "an" for a word, so card copy reads right whatever the goal is.
+function articleFor(word) {
+  return /^[aeiou]/i.test(String(word || '').trim()) ? 'an' : 'a';
+}
+
 function searchTerm(goal) {
   // Empty or placeholder goals fall back to a generic job search instead of
   // leaking strings like "your goal" into LinkedIn / Indeed / Handshake URLs.
@@ -1232,6 +1237,12 @@ function searchTerm(goal) {
   // a sentence with several goals — take the first clear one
   g = g.split(/\s*(?:,|\/|;|·| and | or | then | but )\s*/)[0];
   g = g.replace(/[.!?]+$/, '').trim();
+  // strip hedge words students often type ("animation maybe", "hopefully finance",
+  // "marketing i guess") so the goal always reads as a clean job title.
+  g = g.replace(/\b(maybe|perhaps|possibly|probably|hopefully|ideally|honestly|kinda|sorta|prob)\b/g, ' ');
+  g = g.replace(/\bi\s+(think|guess|hope|feel|mean|dunno)\b/g, ' ');
+  g = g.replace(/\bor\s+(something|so|whatever)\b/g, ' ');
+  g = g.replace(/\s+/g, ' ').trim();
   if (!g) return 'Internships';
   // title-case, then fix known acronyms
   g = g.replace(/\b[\w']+/g, (w) => GOAL_ACRONYMS[w] || (w.charAt(0).toUpperCase() + w.slice(1)));
@@ -1534,11 +1545,13 @@ function renderMentors(term) {
 // ---------------------------------------------------------------------------
 // Networking — "Who to meet" archetypes.
 // We never invent a named person. Instead we describe the KIND of person worth
-// meeting on this path, why they matter, what to ask, and a message to send —
-// then link out to a real LinkedIn search so the student finds the actual human.
+// meeting on this path, why they matter, what to ask, and a message to send.
+// The cards are a self-contained reference, not a directory of real people.
 // ---------------------------------------------------------------------------
 function networkArchetypes(term, p) {
-  const goal = term || 'your field';
+  // Always run the goal through the cleaner so hedge words ("maybe") and odd
+  // grammar never reach the cards, no matter how this is called.
+  const goal = searchTerm(term) || 'your field';
   const hasSchool = Boolean(p && p.school);
   const school = hasSchool ? p.school : 'your school';
   const first = (p && p.firstName) ? p.firstName : 'a student';
@@ -1559,7 +1572,7 @@ function networkArchetypes(term, p) {
     },
     {
       tag: 'Upperclassman',
-      role: `A senior who landed a ${goal} internship`,
+      role: `A senior who landed ${articleFor(goal)} ${goal} internship`,
       sub: `One or two years ahead of you on campus`,
       why: `They just went through the exact recruiting cycle you're about to face. The timelines, the deadlines, the people who interviewed them. All still fresh.`,
       questions: [
