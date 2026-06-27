@@ -152,8 +152,37 @@ const FigAI = (() => {
           additionalProperties: false,
         },
       },
+      explore: {
+        type: 'object',
+        properties: {
+          field: { type: 'string' },
+          branches: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: {
+                name: { type: 'string' },
+                leaves: { type: 'array', items: { type: 'string' } },
+              },
+              required: ['name', 'leaves'],
+              additionalProperties: false,
+            },
+          },
+        },
+        required: ['field', 'branches'],
+        additionalProperties: false,
+      },
+      pay: {
+        type: 'object',
+        properties: {
+          entry: { type: 'string' },
+          note: { type: 'string' },
+        },
+        required: ['entry', 'note'],
+        additionalProperties: false,
+      },
     },
-    required: ['headline', 'body', 'tracks', 'gaps', 'actions', 'plan', 'bridge', 'focus', 'timeline'],
+    required: ['headline', 'body', 'tracks', 'gaps', 'actions', 'plan', 'bridge', 'focus', 'timeline', 'explore', 'pay'],
     additionalProperties: false,
   };
 
@@ -174,6 +203,8 @@ Hard rules:
 11. bridge: "now" = one honest sentence about where they are today using their real details. "destination" = one sentence about where they want to go. "bridge" = one sentence naming what connects the two.
 12. focus: exactly 4 items, one per area, with area named exactly "Academic Progress", "Relevant Experience", "In-Demand Skills", and "Network Strength". status is a PRIORITY, never a grade: "focus" = highest-leverage area to work on next, "building" = in progress, keep going, "strength" = already working for them. At least one area must be "focus" so there is always a next move; do not mark everything a strength. note = one short, specific sentence (max 8 words) on why it has that status for THIS student. This replaces any numeric score — never imply a number or rating.
 13. timeline: 4-5 entries tracing their real arc, oldest to newest. "when" = a short phase label, NOT a fabricated date (e.g. "The start", "What you've built", "Right now", "This term", "By graduation"). "text" = one sentence per phase using their actual major, school, activities, experience, and goal. The earliest entries reflect what they have genuinely done; the later ones are forward-looking. Never invent specific events or months they didn't tell you.
+13b. explore: a discovery map of how THEIR field branches. "field" = the broad field name (from their major/goal, e.g. "Economics", "Psychology", "Sports"). "branches" = exactly 3 sub-areas within that field, each with "leaves" = 3-4 specific niche roles. ACCURACY IS CRITICAL: branches and leaves must realistically fit this student's actual major, interests, and goal. An Economics major must branch into economics-adjacent areas (e.g. Finance, Data & Analytics, Policy & Research, Consulting), NEVER into Law, Medicine, or Software unless their stated goal clearly points there. A Psychology major branches into psychology-adjacent areas (e.g. Clinical & Counseling, Research, HR & People, UX Research), NEVER into unrelated fields. When unsure, stay broad and field-true rather than guessing a specific unrelated career.
+13c. pay: realistic entry pay for THIS student's actual goal and field. "entry" = a starting salary range like "$55k–$75k" (use the en dash in the range). "note" = one honest sentence of context. The range must match their real target field, never a default or an unrelated field's pay. If the goal is genuinely too varied to estimate, set entry to "varies by path" and explain in the note.
 14. US college context. Plain language. No emoji, no markdown.
 15. Never use corporate jargon or generic filler: no "in today's competitive landscape", no "leverage your strengths", no "synergy", no "robust", no "holistic approach", no "fast-paced environment." Speak like a real mentor talking to a real student. Direct, warm, specific to them.
 16. NEVER use em dashes ("—") or any dash as punctuation in any text field. They read as AI-written and break the human voice. Use periods, commas, colons, semicolons, or two short sentences. The ONLY acceptable dash is the en dash inside numeric ranges like "$110k–$130k". Apply this to every text field: headline, body, gaps, actions, plan, bridge, focus notes, timeline. Re-read every sentence and replace any em dash before responding.`;

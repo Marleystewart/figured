@@ -211,6 +211,8 @@ const COMP = {
   sports:     { entry: '$40k–$52k',        note: 'Entry front-office and ops roles pay low, roughly $40–52k. The path up is through relationships and results. Pay climbs at the director level and above.' },
   product:    { entry: '$75k–$110k',       note: 'Associate PM base runs about $75–110k. Top-tech APM programs reach $120k+, but most PMs enter through ops, data, or engineering first.' },
   finance:    { entry: '$65k–$160k',       note: 'Investment banking analysts start ~$110k base + bonus. Corporate finance and financial planning roles run $65–85k to start.' },
+  economics:  { entry: '$55k–$80k',        note: 'Economics grads spread across finance, consulting, analytics, and policy. Pay depends heavily on the path you pick, with finance and consulting at the higher end.' },
+  psychology: { entry: '$40k–$55k',        note: 'Entry counseling, research, and HR roles start here. Clinical paths require grad school but raise pay a lot. The major is versatile across people-focused fields.' },
   software:   { entry: '$80k–$120k',       note: 'New-grad software median is about $85k (NACE). Big Tech starts $130–150k+; startups vary widely and often add equity.' },
   marketing:  { entry: '$55k–$75k',        note: 'Marketing coordinators start $50–60k. Brand and growth roles at tech companies run higher. Agency pay is lower to start but builds fast.' },
   consulting: { entry: '$90k–$112k',       note: 'MBB (McKinsey, BCG, Bain) starts ~$112k base for undergrad. Big 4 management consulting runs $75–95k.' },
@@ -249,8 +251,9 @@ const ENTRY_TITLE = {
   generic:    '',
 };
 
-function renderComp(p) {
-  const c = COMP[detectDomain(p)] || COMP.generic;
+function renderComp(p, aiPay) {
+  // Prefer the AI-generated, goal-accurate pay; fall back to the static table.
+  const c = (aiPay && aiPay.entry) ? aiPay : (COMP[detectDomain(p)] || COMP.generic);
   const entryEl = document.getElementById('compEntry');
   const noteEl  = document.getElementById('compNote');
   const srcEl   = document.getElementById('compSource');
@@ -328,6 +331,8 @@ function detectDomain(p) {
   if (/(basketball|nba|wnba|sport|athlet|football|nfl|soccer|baseball|mlb|hockey|nhl|coach|front office|player development)/.test(g)) return 'sports';
   if (/product/.test(g)) return 'product';
   if (/(invest|bank|financ|equity|trading|wealth)/.test(g)) return 'finance';
+  if (/(econ|economics|economist)/.test(g)) return 'economics';
+  if (/(psycholog|\bpsych\b)/.test(g)) return 'psychology';
   if (/(software|engineer|develop|coding|programmer|computer science)/.test(g)) return 'software';
   if (/(market|brand|advertis)/.test(g)) return 'marketing';
   if (/consult/.test(g)) return 'consulting';
@@ -1060,6 +1065,8 @@ function applyContent(c, opts = {}) {
   renderCurrentPath(c.bridge);
   renderFocus(c.focus);
   renderTimeline(c.timeline);
+  renderExploreTree(currentProfile || DEMO_PROFILE, c.explore);
+  renderComp(currentProfile || DEMO_PROFILE, c.pay);
   // When the detailed Claude version replaces the instant draft, fade the hero
   // cards in so the upgrade lands smoothly instead of snapping.
   if (opts.refined) {
@@ -1905,6 +1912,16 @@ const EXPLORE_TREES = {
     { name: 'Investing', leaves: ['Asset Management', 'Private Equity', 'Venture Capital'] },
     { name: 'Inside Companies', leaves: ['Corporate Finance', 'FP&A', 'Treasury'] },
   ]},
+  economics: { field: 'Economics', branches: [
+    { name: 'Finance & Markets', leaves: ['Investment Banking', 'Asset Management', 'Corporate Finance'] },
+    { name: 'Data & Analytics', leaves: ['Economic Analyst', 'Data Analyst', 'Business Intelligence'] },
+    { name: 'Policy & Research', leaves: ['Economic Consulting', 'Policy Analyst', 'Research Associate'] },
+  ]},
+  psychology: { field: 'Psychology', branches: [
+    { name: 'Clinical & Counseling', leaves: ['Counselor', 'Clinical Psychologist', 'Social Worker'] },
+    { name: 'Research & Academia', leaves: ['Research Assistant', 'Behavioral Researcher', 'Grad School'] },
+    { name: 'People & Product', leaves: ['HR / People Ops', 'UX Research', 'Talent & Recruiting'] },
+  ]},
   software: { field: 'Software', branches: [
     { name: 'Building', leaves: ['Frontend', 'Backend', 'Mobile', 'Full-Stack'] },
     { name: 'Data & AI', leaves: ['Data Engineering', 'Data Science', 'ML Engineering'] },
@@ -1956,11 +1973,12 @@ function buildGenericExplore(p) {
   ]};
 }
 
-function renderExploreTree(p) {
+function renderExploreTree(p, aiExplore) {
   const wrap = document.getElementById('exploreTree');
   if (!wrap) return;
-  const domain = detectDomain(p || {});
-  const tree = EXPLORE_TREES[domain] || buildGenericExplore(p);
+  // Prefer the AI-generated, profile-accurate tree; fall back to the static map.
+  const valid = aiExplore && aiExplore.field && Array.isArray(aiExplore.branches) && aiExplore.branches.length;
+  const tree = valid ? aiExplore : (EXPLORE_TREES[detectDomain(p || {})] || buildGenericExplore(p));
   const titleEl = document.getElementById('exploreTitle');
   if (titleEl) titleEl.textContent = `${tree.field} is bigger than one job.`;
 
