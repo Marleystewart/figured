@@ -1033,22 +1033,40 @@ function renderFocus(focus) {
 
 let activeTimeline = [];
 
+// Classify a phase label so the timeline can mark past / now / upcoming nodes.
+function timelinePhase(when) {
+  const w = (when || '').toLowerCase();
+  if (/(right now|now|today|this term|currently)/.test(w)) return 'now';
+  if (/(next|by |future|eventually|graduation|long term|ahead|will|goal)/.test(w)) return 'future';
+  return 'past';
+}
+
 function renderTimeline(timeline) {
   const el = document.getElementById('growthTimeline');
   if (!el) return;
   if (timeline) activeTimeline = timeline;
   const wins = loadWins();
   if (!wins.length && !activeTimeline.length) return; // keep static fallback
-  let html = '';
-  if (wins.length) {
-    html += wins.map((w) => `
-      <p class="timeline-win"><strong>${esc(w.date)}</strong> ${esc(w.text)}</p>`).join('');
+
+  const items = [];
+  // The AI arc is the backbone (oldest to newest).
+  activeTimeline.forEach((t) => {
+    items.push({ when: t.when, text: t.text, cls: 'tl-' + timelinePhase(t.when) });
+  });
+  // Logged wins are real, recent milestones — show them as their own marked nodes.
+  wins.forEach((w) => {
+    items.push({ when: w.date, text: w.text, cls: 'tl-win' });
+  });
+
+  if (!items.length) {
+    el.innerHTML = '<div class="tl-item tl-now"><span class="tl-marker"></span><div class="tl-body"><span class="tl-when">Right now</span><p>Your path starts here. Log your first win to begin the record.</p></div></div>';
+    return;
   }
-  if (activeTimeline.length) {
-    html += activeTimeline.map((t) => `
-      <p><strong>${esc(t.when)}</strong> ${esc(t.text)}</p>`).join('');
-  }
-  el.innerHTML = html || '<p><strong>Right now</strong> Your path starts here. Log your first win to begin the record.</p>';
+  el.innerHTML = items.map((it) => `
+    <div class="tl-item ${it.cls}">
+      <span class="tl-marker"></span>
+      <div class="tl-body"><span class="tl-when">${esc(it.when)}</span><p>${esc(it.text)}</p></div>
+    </div>`).join('');
 }
 
 function applyContent(c, opts = {}) {
@@ -2111,15 +2129,16 @@ function renderResumeAnalysis(a) {
         guidelines: guidelinesEl ? guidelinesEl.value.trim() : '',
         template: resumeTemplate,
       };
-      setStatus('Reading your résumé. This takes about 15 seconds…', 'loading');
-      // Try once, and on a transient hiccup retry automatically before giving up.
+      // Opus does a deep review, so this runs in the background. Tell the student
+      // they can keep using the app; the result renders here whenever it finishes.
+      setStatus('Analyzing your résumé in depth. Keep using the app, your breakdown appears here when it is ready (about a minute).', 'loading');
       let a = null;
       for (let attempt = 0; attempt < 2 && !a; attempt++) {
         try {
           a = await FigAI.parseResume(data, mediaType, opts);
         } catch (e) {
           if (attempt === 0) {
-            setStatus('That took a moment. Trying once more…', 'loading');
+            setStatus('Still working on it, trying once more…', 'loading');
           } else {
             setStatus('That did not go through. Tap "Upload résumé" to try again.', 'error');
           }
@@ -2548,22 +2567,36 @@ function applyProfile(p) {
   // Per-domain real entry-level title (e.g., "Editorial Assistant" for publishing).
   // Falls back to the cleaned goal when no override exists.
   const entryTitle = ENTRY_TITLE[domain] || '';
-  const internKw = entryTitle ? entryTitle : `${term} Intern`;
-  const entryKw  = entryTitle || term;
   const setHref = (id, url) => { const el = document.getElementById(id); if (el) el.href = url; };
 
-  // Card titles + subtitles follow the real goal, not "Product Intern".
-  setText('#oppTitle1', `${term} Internships`);
-  setText('#oppTitle2', entryTitle ? `Entry-level: ${entryTitle}` : `Entry-level ${term}`);
-  setText('#oppTitle3', `${term} Fellowships & Programs`);
-  setText('#oppTitle4', `${term} mentors & alumni`);
+  // Title the cards by the clean FIELD, not the raw goal. This keeps them broad
+  // and useful (per student feedback) and avoids echoing a messy goal verbatim,
+  // which read like spelling errors (e.g. "Animation Maybe Internships").
+  const FIELD_LABEL = {
+    sports: 'Sports', product: 'Product', finance: 'Finance', economics: 'Economics',
+    psychology: 'Psychology', software: 'Software', marketing: 'Marketing', consulting: 'Consulting',
+    creative: 'Creative', design: 'Design', founder: 'Startup', medicine: 'Healthcare',
+    law: 'Legal', publishing: 'Publishing', journalism: 'Journalism', academia: 'Research',
+    nonprofit: 'Nonprofit', government: 'Government',
+  };
+  const titleCase = (s) => (s || '').replace(/\b\w/g, (c) => c.toUpperCase());
+  const field = FIELD_LABEL[domain] || titleCase(term) || 'Your field';
+  // Broad, clean search keywords (avoid jamming a messy goal into the query).
+  const internKw = entryTitle || `${field} intern`;
+  const entryKw  = entryTitle || field;
+
+  // Card titles + subtitles follow the clean field, broad and readable.
+  setText('#oppTitle1', `${field} internships`);
+  setText('#oppTitle2', `Entry-level ${field} roles`);
+  setText('#oppTitle3', `${field} fellowships & programs`);
+  setText('#oppTitle4', `${field} mentors & alumni`);
 
   // Internship — LinkedIn f_E=1 filter strips out full-time roles that share
   // the keyword (e.g., senior Assistant Editor jobs polluting "Publishing Intern").
   setHref('oppLink1', linkedinJobsURL(internKw, 1));
-  setHref('oppLink1b', indeedURL(`${term} Intern`));
-  setHref('oppLink1c', googleJobsURL(`${term} intern`));
-  setHref('oppLink1d', handshakeURL(`${term} intern`, p));
+  setHref('oppLink1b', indeedURL(`${field} Intern`));
+  setHref('oppLink1c', googleJobsURL(`${field} intern`));
+  setHref('oppLink1d', handshakeURL(`${field} intern`, p));
   // Entry-level — f_E=2 limits to entry-level postings; use the real role
   // title when we know it so we get actual entry roles, not adjacent ones.
   setHref('oppLink2', linkedinJobsURL(entryKw, 2));
@@ -2571,13 +2604,13 @@ function applyProfile(p) {
   setHref('oppLink2c', googleJobsURL(`entry level ${entryKw}`));
   setHref('oppLink2d', handshakeURL(entryKw, p));
   // Fellowship / programs
-  setHref('oppLink3', linkedinJobsURL(`${term} Fellowship`));
-  setHref('oppLink3b', indeedURL(`${term} Fellowship student`));
-  setHref('oppLink3c', googleJobsURL(`${term} fellowship program`));
-  setHref('oppLink3d', handshakeURL(`${term} fellowship`, p));
+  setHref('oppLink3', linkedinJobsURL(`${field} Fellowship`));
+  setHref('oppLink3b', indeedURL(`${field} Fellowship student`));
+  setHref('oppLink3c', googleJobsURL(`${field} fellowship program`));
+  setHref('oppLink3d', handshakeURL(`${field} fellowship`, p));
   // Networking — Google surfaces real people better than logged-out LI search
-  setHref('oppLink4', googleLinkedinURL(`${term} professional`));
-  setHref('oppHandshake4', handshakeURL(term, p));
+  setHref('oppLink4', googleLinkedinURL(`${field} professional`));
+  setHref('oppHandshake4', handshakeURL(field, p));
 
   // Connections tab
   setHref('connLinkedinLink', googleLinkedinURL(term));
@@ -2637,7 +2670,7 @@ function initWinModal() {
     // Take them to the Timeline so they see it land
     const tab = document.querySelector('[data-product-section="timeline"]');
     if (tab) { tab.click(); tab.scrollIntoView({ inline: 'center', block: 'nearest' }); }
-    const first = document.querySelector('#growthTimeline .timeline-win');
+    const first = document.querySelector('#growthTimeline .tl-win');
     if (first) first.classList.add('just-added');
   });
 

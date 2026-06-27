@@ -404,11 +404,11 @@ Voice rules: honest and encouraging, never harsh, no numeric scores or letter gr
     }
     content.push({ type: 'text', text: "Extract this student's résumé into the schema and give the full analysis." + extra });
     const body = {
-      // Haiku 4.5 — structured extraction plus a few lines of feedback. ~2x
-      // faster than Sonnet on this task, far more capacity headroom, and
-      // dramatically cheaper. Voice rules still apply via the system prompt.
-      model: HAIKU,
-      max_tokens: 3500,
+      // Opus 4.8 — the résumé review is the highest-value, most-scrutinized AI
+      // output, and it runs in the background while the student browses, so we
+      // trade speed for accuracy and depth. Voice rules apply via the system prompt.
+      model: MODEL,
+      max_tokens: 5000,
       system: [{ type: 'text', text: RESUME_SYSTEM, cache_control: { type: 'ephemeral' } }],
       messages: [{ role: 'user', content }],
       output_config: { format: { type: 'json_schema', schema: RESUME_SCHEMA } },
