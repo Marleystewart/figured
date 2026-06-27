@@ -420,6 +420,25 @@ nextBtn.addEventListener('click', () => {
     overlay.hidden = false;
     requestAnimationFrame(() => overlay.classList.add('show'));
     startBuildGame();
+    // Rotate reassuring status messages so it's clear personalization is happening,
+    // not just a blank wait (student feedback).
+    const sub = document.getElementById('buildingSub');
+    if (sub) {
+      const steps = [
+        'Analyzing your background…',
+        'Mapping career paths that fit you…',
+        'Building your personalized trajectory…',
+        'Finding gaps and next steps…',
+        'Almost there, putting it together…',
+      ];
+      let i = 0;
+      sub.textContent = steps[0];
+      const stepTimer = setInterval(() => {
+        i = (i + 1) % steps.length;
+        sub.textContent = steps[i];
+      }, 1400);
+      setTimeout(() => clearInterval(stepTimer), 9000);
+    }
   }
 
   // Overlap the AI generation with this interstitial: generate the trajectory

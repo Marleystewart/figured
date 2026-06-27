@@ -1122,9 +1122,26 @@ function showRefiningCue() {
   const cue = document.createElement('div');
   cue.className = 'refining-cue';
   cue.innerHTML =
-    '<div class="refining-lede"><span class="refining-dot"></span> Personalizing your trajectory…</div>' +
+    '<div class="refining-lede"><span class="refining-dot"></span> <span class="refining-phrase">Analyzing your background…</span></div>' +
     '<div class="refining-stat"></div>';
   snap.appendChild(cue);
+
+  // Rotate explicit build-step phrases so it's clear personalization is happening.
+  const phraseEl = cue.querySelector('.refining-phrase');
+  const BUILD_PHRASES = [
+    'Analyzing your background…',
+    'Mapping career paths that fit you…',
+    'Building your personalized trajectory…',
+    'Finding your gaps and next steps…',
+    'Tailoring your action plan…',
+  ];
+  let pi = 0;
+  const phraseTimer = setInterval(() => {
+    pi = (pi + 1) % BUILD_PHRASES.length;
+    if (phraseEl) phraseEl.textContent = BUILD_PHRASES[pi];
+  }, 2200);
+  cue.dataset.phraseTimer = '1';
+  cue._phraseTimer = phraseTimer;
 
   const statEl = cue.querySelector('.refining-stat');
   const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -1155,7 +1172,10 @@ function hideRefiningCue() {
     clearInterval(refiningStatTimer);
     refiningStatTimer = null;
   }
-  document.querySelectorAll('.refining-cue').forEach((el) => el.remove());
+  document.querySelectorAll('.refining-cue').forEach((el) => {
+    if (el._phraseTimer) clearInterval(el._phraseTimer);
+    el.remove();
+  });
 }
 
 // When the AI personalization fails, replace the silent fallback with a clear
