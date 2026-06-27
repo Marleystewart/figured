@@ -4314,22 +4314,73 @@ h1 {
   50% { opacity: 1; }
 }
 
-/* --- "Personalizing your trajectory" cue + smooth swap to the real analysis --- */
+/* --- "Building your full trajectory" cue + smooth swap to the real analysis --- */
+/* A prominent in-progress panel, not a quiet status line. The instant draft
+   looks finished, so this has to clearly say "still working, wait a moment." */
 .refining-cue {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
   margin-top: 18px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: rgba(255, 253, 248, 0.12);
+  border: 1px solid rgba(255, 253, 248, 0.22);
   font-size: 13px;
   letter-spacing: 0.01em;
-  color: rgba(255, 253, 248, 0.82);
+  color: rgba(255, 253, 248, 0.92);
+  animation: refineCueIn 0.4s ease both;
 }
 
-.refining-lede {
+@keyframes refineCueIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.refining-top {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  font-weight: 750;
+  gap: 9px;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.refining-time {
+  margin-left: auto;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: rgba(255, 253, 248, 0.18);
+  color: rgba(255, 253, 248, 0.9);
+  white-space: nowrap;
+}
+
+/* Determinate-feeling bar that creeps over the call length so the wait reads as
+   real progress, not a frozen screen. */
+.refining-bar {
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(255, 253, 248, 0.16);
+  overflow: hidden;
+}
+
+.refining-bar-fill {
+  height: 100%;
+  width: 6%;
+  border-radius: 999px;
+  background: rgba(255, 253, 248, 0.92);
+  transition: width 26s cubic-bezier(0.16, 0.84, 0.3, 1);
+}
+
+.refining-note {
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: rgba(255, 253, 248, 0.78);
+  max-width: 52ch;
 }
 
 /* Rotating stat line. Lighter weight than the lede so it reads as supporting
@@ -4424,6 +4475,8 @@ h1 {
 @media (prefers-reduced-motion: reduce) {
   .refining-dot { animation: none; }
   .refining-stat { transition: none; }
+  .refining-cue { animation: none; }
+  .refining-bar-fill { transition: none; }
   .snapshot-wide.just-refined h2,
   .snapshot-wide.just-refined p,
   .tracks-list.just-refined .track-item { animation: none; }

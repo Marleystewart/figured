@@ -1121,30 +1121,52 @@ function showRefiningCue() {
   if (!snap || snap.querySelector('.refining-cue')) return;
   const cue = document.createElement('div');
   cue.className = 'refining-cue';
+  // A loud, unmistakable "still working" panel. The instant draft below looks
+  // finished, so without this people think the dashboard is done and miss that
+  // the real, personalized trajectory is still ~20-30s out. Explicit wait copy
+  // + a visibly creeping progress bar make the wait obvious so no one has to be
+  // told "hang on, it's still building."
   cue.innerHTML =
-    '<div class="refining-lede"><span class="refining-dot"></span> <span class="refining-phrase">Analyzing your background…</span></div>' +
+    '<div class="refining-top">' +
+      '<span class="refining-dot"></span>' +
+      '<span class="refining-phrase">Building your full trajectory…</span>' +
+      '<span class="refining-time">~30 sec</span>' +
+    '</div>' +
+    '<div class="refining-bar"><div class="refining-bar-fill"></div></div>' +
+    '<div class="refining-note">Hang tight — the draft below is a quick first pass. We\'re personalizing it into your real trajectory right now. It\'ll update the moment it\'s ready.</div>' +
     '<div class="refining-stat"></div>';
   snap.appendChild(cue);
+
+  // Visibly creep the bar from near-empty toward (but not to) full over the
+  // expected call length, so it reads as honest in-progress work, not a fake
+  // instant load. It gets removed on completion; the creep is the signal.
+  const barFill = cue.querySelector('.refining-bar-fill');
+  const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (barFill && !reduceMotion) {
+    requestAnimationFrame(() => { barFill.style.width = '93%'; });
+  } else if (barFill) {
+    barFill.style.width = '60%';
+  }
 
   // Rotate explicit build-step phrases so it's clear personalization is happening.
   const phraseEl = cue.querySelector('.refining-phrase');
   const BUILD_PHRASES = [
+    'Building your full trajectory…',
     'Analyzing your background…',
     'Mapping career paths that fit you…',
-    'Building your personalized trajectory…',
-    'Finding your gaps and next steps…',
+    'Pressure-testing your next steps…',
     'Tailoring your action plan…',
+    'Almost there — putting it together…',
   ];
   let pi = 0;
   const phraseTimer = setInterval(() => {
     pi = (pi + 1) % BUILD_PHRASES.length;
     if (phraseEl) phraseEl.textContent = BUILD_PHRASES[pi];
-  }, 2200);
+  }, 2600);
   cue.dataset.phraseTimer = '1';
   cue._phraseTimer = phraseTimer;
 
   const statEl = cue.querySelector('.refining-stat');
-  const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   // Randomize the start so repeat runs do not always open on the same line.
   let i = Math.floor(Math.random() * REFINING_STATS.length);
