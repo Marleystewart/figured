@@ -176,32 +176,144 @@ function applyStage(stage) {
   setPlaceholder('skills', c.skillsPlaceholder);
   setOptions('year', c.yearOptions, document.getElementById('year')?.value || '');
   setOptions('timeLeft', c.timeLeftOptions, document.getElementById('timeLeft')?.value || '');
-  const major = document.getElementById('major');
-  const school = document.getElementById('school');
-  if (major) major.setAttribute('list', isHighSchool() ? 'subjectList' : 'majorList');
-  if (school) {
-    if (isHighSchool()) school.removeAttribute('list');
-    else school.setAttribute('list', 'schoolList');
-  }
+  // The school + major fields use a custom combobox (attachCombobox) whose
+  // getItems is stage-aware, so there's no native `list` attribute to toggle here.
   document.querySelectorAll('.hs-only').forEach((el) => { el.hidden = !isHighSchool(); });
   if (current === steps.length) nextBtn.textContent = c.buildText;
   personalize();
 }
 
-// Populate the school + major autocomplete dropdowns from schools.js / majors.js.
-(function fillDatalists() {
-  const escape = (s) => s.replace(/"/g, '&quot;');
-  const fill = (id, source, sort) => {
-    const list = document.getElementById(id);
-    if (!list || !Array.isArray(source)) return;
-    // Source files keep their category grouping for maintenance. Sort a copy
-    // here so the dropdown shows A to Z. localeCompare keeps it case-insensitive.
-    const items = sort ? [...source].sort((a, b) => a.localeCompare(b)) : source;
-    list.innerHTML = items.map((s) => `<option value="${escape(s)}"></option>`).join('');
+// Custom autocomplete dropdown for the school + major fields, anchored directly
+// under the input. Replaces the native <datalist>, which Chrome renders pinned
+// to the side of the viewport and can't be styled. Substring match (prefix
+// matches first), keyboard navigation, and click-to-select.
+function attachCombobox(input, getItems, opts = {}) {
+  if (!input || input.dataset.comboReady === '1') return;
+  input.dataset.comboReady = '1';
+  input.removeAttribute('list'); // kill the native datalist popup
+  input.setAttribute('autocomplete', 'off');
+  input.setAttribute('role', 'combobox');
+  input.setAttribute('aria-autocomplete', 'list');
+  input.setAttribute('aria-expanded', 'false');
+
+  // Positioned wrapper so the list anchors to the input, not the page.
+  const wrap = document.createElement('div');
+  wrap.className = 'ob-combo';
+  input.parentNode.insertBefore(wrap, input);
+  wrap.appendChild(input);
+
+  const list = document.createElement('ul');
+  list.className = 'ob-combo-list';
+  list.hidden = true;
+  list.setAttribute('role', 'listbox');
+  wrap.appendChild(list);
+
+  const MAX = opts.max || 8;
+  let rows = [];
+  let active = -1;
+
+  const esc = (s) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const highlight = (text, q) => {
+    if (!q) return esc(text);
+    const i = text.toLowerCase().indexOf(q.toLowerCase());
+    if (i < 0) return esc(text);
+    return esc(text.slice(0, i)) + '<mark>' + esc(text.slice(i, i + q.length)) + '</mark>' + esc(text.slice(i + q.length));
   };
-  fill('schoolList', window.SCHOOLS, true);
-  fill('majorList', window.MAJORS, true);
-  fill('subjectList', HIGH_SCHOOL_SUBJECTS);
+
+  const close = () => {
+    list.hidden = true;
+    input.setAttribute('aria-expanded', 'false');
+    active = -1;
+  };
+
+  const render = () => {
+    const q = input.value.trim();
+    const ql = q.toLowerCase();
+    const items = getItems() || [];
+    let matched;
+    if (!ql) {
+      matched = items.slice(0, MAX);
+    } else {
+      // Prefix matches read most relevant, so list them before substring hits.
+      const starts = [];
+      const contains = [];
+      for (const it of items) {
+        const l = it.toLowerCase();
+        if (l.startsWith(ql)) starts.push(it);
+        else if (l.includes(ql)) contains.push(it);
+      }
+      matched = starts.concat(contains).slice(0, MAX);
+    }
+    rows = matched;
+    active = -1;
+    if (!matched.length) { close(); return; }
+    list.innerHTML = matched
+      .map((it, i) => `<li class="ob-combo-item" role="option" data-i="${i}">${highlight(it, q)}</li>`)
+      .join('');
+    list.hidden = false;
+    input.setAttribute('aria-expanded', 'true');
+  };
+
+  const setActive = (i) => {
+    const items = list.querySelectorAll('.ob-combo-item');
+    items.forEach((el) => el.classList.remove('is-active'));
+    if (i < 0 || i >= items.length) { active = -1; return; }
+    active = i;
+    items[i].classList.add('is-active');
+    items[i].scrollIntoView({ block: 'nearest' });
+  };
+
+  const choose = (i) => {
+    if (i < 0 || i >= rows.length) return;
+    input.value = rows[i];
+    close();
+    input.dispatchEvent(new Event('change', { bubbles: true }));
+  };
+
+  input.addEventListener('input', render);
+  input.addEventListener('focus', render);
+  input.addEventListener('blur', () => setTimeout(close, 120));
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (list.hidden) { render(); return; }
+      setActive(Math.min(active + 1, rows.length - 1));
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setActive(Math.max(active - 1, 0));
+    } else if (e.key === 'Enter') {
+      if (!list.hidden && active >= 0) { e.preventDefault(); choose(active); }
+    } else if (e.key === 'Escape') {
+      close();
+    }
+  });
+  // mousedown (not click) so the selection lands before the input's blur fires.
+  list.addEventListener('mousedown', (e) => {
+    const li = e.target.closest('.ob-combo-item');
+    if (!li) return;
+    e.preventDefault();
+    choose(Number(li.dataset.i));
+  });
+}
+
+// Wire the school + major fields. We read the source arrays live (not snapshotted
+// at startup — schools.js/majors.js may not have populated the globals yet) and
+// memoize the A-to-Z sort per array, so each keystroke filters a ready list.
+// getItems is stage-aware: high school swaps majors for subjects, no school list.
+(function initComboboxes() {
+  const sortedMemo = new Map();
+  const sortedOf = (arr) => {
+    if (!arr || !arr.length) return [];
+    let s = sortedMemo.get(arr);
+    if (!s) {
+      // Dedupe (the source lists have a few repeats) then sort A to Z.
+      s = [...new Set(arr)].sort((a, b) => a.localeCompare(b));
+      sortedMemo.set(arr, s);
+    }
+    return s;
+  };
+  attachCombobox(document.getElementById('school'), () => (isHighSchool() ? [] : sortedOf(window.SCHOOLS)));
+  attachCombobox(document.getElementById('major'), () => sortedOf(isHighSchool() ? HIGH_SCHOOL_SUBJECTS : window.MAJORS));
 })();
 
 // Capitalize a name no matter how it's typed: "marley"/"MARLEY" -> "Marley".
