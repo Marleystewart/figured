@@ -513,11 +513,17 @@ nextBtn.addEventListener('click', () => {
   // A changed profile means stale insights — clear so the app regenerates.
   localStorage.removeItem('figuredAiContent');
   // A fresh "Build My Path" is a clean slate — don't inherit the last
-  // person's logged wins, checked actions, or résumé feedback.
+  // person's logged wins, checked actions, or résumé data. The résumé tab
+  // renders from figuredResumeAnalysis, so that must be cleared too (clearing
+  // only ...Feedback left stale feedback showing for a student who never
+  // uploaded a résumé); figuredResumeGuidelines is the last person's school
+  // template and shouldn't carry over either.
   if (ONBOARD_MODE !== 'edit') {
     localStorage.removeItem('figuredWins');
     localStorage.removeItem('figuredChecked');
     localStorage.removeItem('figuredResumeFeedback');
+    localStorage.removeItem('figuredResumeAnalysis');
+    localStorage.removeItem('figuredResumeGuidelines');
   }
 
   // A short, personal "building your trajectory" moment before the handoff
