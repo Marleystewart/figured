@@ -15,8 +15,10 @@ Triage of findings from the June 28 case-study run (12 profiles). Status legend:
   Ambiguous: cache returning same content for same profile (by design) vs. checklist/
   checked-state persisting across regen vs. Opus deterministically re-suggesting sales.
   NEEDS Darius before/after trajectory screenshots to pin down.
-- ❓ **Extra bubble under Trajectories** (Wei) — possible UI regression on Trajectory tab.
-  NEEDS screenshot of Wei's Trajectory tab.
+- ✅ **Extra bubble under Trajectories** (Wei) — same root cause as Jordan's JUNK card:
+  the AI emitted a 4th malformed/empty track that rendered as a blank bubble.
+  `sanitizeTracks()` drops empty/junk rows, so this is covered by the same fix.
+  (Re-test to confirm; if it persists it's specific to the Trajectory tab.)
 
 ## Content quality (prompt tuning)
 - 🔧 **Opportunities too generic** (Ethan, Marcus, Tyler, Olivia — most-repeated note).
