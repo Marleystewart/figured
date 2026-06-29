@@ -2502,26 +2502,45 @@ async function maybeRunAI(profile, force = false) {
   // so the upgrade reads as the analysis getting sharper, not a glitchy reload.
   hideRefiningError();
   showRefiningCue();
-  try {
-    const data = await FigAI.generateInsights(genProfile);
-    aiContent = data;
-    putCachedAi(h, data);
-    applyContent(data, { refined: true });
-    setAiPill('live');
-    hideRefiningCue();
-  } catch (e) {
-    console.error('4ward AI:', e);
-    // AI failed. Keep the rule-based draft on screen but tell the user clearly
-    // and give them a retry button so they're never stuck wondering what
-    // happened. Silent fallbacks were leaving people confused.
-    if (currentProfile && currentScores) applyContent(fallbackContent(currentProfile, currentScores));
-    setAiPill('error', e.message);
-    hideRefiningCue();
-    showRefiningError(e && (e.message || e.toString()));
-  } finally {
-    aiInFlight = false;
-    setRebuildBusy(false);
+  // One silent auto-retry on a transient failure (timeout / overload). On Hobby
+  // these come from a brief Anthropic load spike that usually clears in seconds,
+  // so a quiet second attempt turns a "did not finish" error into a success
+  // instead of making the student tap "Try again" themselves.
+  const MAX_ATTEMPTS = 2;
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    try {
+      const data = await FigAI.generateInsights(genProfile);
+      aiContent = data;
+      putCachedAi(h, data);
+      applyContent(data, { refined: true });
+      setAiPill('live');
+      hideRefiningCue();
+      break;
+    } catch (e) {
+      console.error('4ward AI:', e);
+      if (attempt < MAX_ATTEMPTS && isTransientAiError(e)) {
+        await new Promise((r) => setTimeout(r, 2500));
+        continue; // keep the loading cue up and try once more
+      }
+      // Out of retries (or a non-transient error). Keep the rule-based draft on
+      // screen, tell the user clearly, and give them a manual retry button.
+      if (currentProfile && currentScores) applyContent(fallbackContent(currentProfile, currentScores));
+      setAiPill('error', e.message);
+      hideRefiningCue();
+      showRefiningError(e && (e.message || e.toString()));
+    }
   }
+  aiInFlight = false;
+  setRebuildBusy(false);
+}
+
+// Transient = worth an automatic retry: gateway timeouts and overload/5xx, which
+// typically clear within seconds. A 4xx (bad key, bad request) is not retried.
+function isTransientAiError(e) {
+  const s = e && e.status;
+  if ([429, 500, 502, 503, 504, 529].includes(s)) return true;
+  const m = String((e && e.message) || '').toLowerCase();
+  return /overload|did not finish|temporarily unavailable|timed out|timeout/.test(m);
 }
 
 // Disable the rebuild button(s) while a generation runs so a kid can't queue up

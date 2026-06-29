@@ -227,9 +227,11 @@ Hard rules:
           highSchoolContext +
           '\n\nGenerate this student\'s trajectory insights as JSON.',
       }],
-      // Keep this at high for the strongest possible trajectory quality.
-      // The onboarding interstitial gives students something useful to do
-      // while the fuller structured analysis finishes.
+      // Keep this at high for the strongest possible trajectory quality (matters
+      // most for advisor demos). Reliability under the Vercel Hobby 60s limit is
+      // handled WITHOUT dropping quality: a silent client-side auto-retry on
+      // transient timeouts/overload (see maybeRunAI) plus the proxy's Sonnet
+      // safety net. The onboarding interstitial covers the wait.
       output_config: { effort: 'high', format: { type: 'json_schema', schema: INSIGHTS_SCHEMA } },
     };
     const res = await fetch(endpoint(), { method: 'POST', headers: headers(), body: JSON.stringify(body) });
