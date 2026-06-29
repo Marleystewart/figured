@@ -1549,6 +1549,27 @@ function searchTerm(goal) {
   return g.length > 48 ? g.slice(0, 48).trim() : g;
 }
 
+// Lighter cleaner for an AI-generated track ROLE (already a crisp title), used to
+// build the Opportunities keyword. Unlike searchTerm (tuned for messy raw goals),
+// it keeps the specific role instead of chopping it at the first "/" — that's why
+// "Government / Public Sector Auditor" was searching the broad "Government". For a
+// "A / B" label we take the more specific second part; we drop trailing
+// qualifiers ("...at a studio", "...in-house") and "or X" alternates that hurt a
+// job-board search.
+function cleanRoleTitle(role) {
+  let r = String(role || '').trim();
+  if (!r) return '';
+  r = r.replace(/\s+(at|in|for)\s+.*$/i, '');     // "Brand designer at a studio" -> "Brand designer"
+  if (r.includes('/')) {
+    const parts = r.split('/').map((s) => s.trim()).filter(Boolean);
+    r = parts[parts.length - 1] || r;             // "Government / Public Sector Auditor" -> "Public Sector Auditor"
+  }
+  r = r.split(/\s+or\s+/i)[0];                     // drop "... or in-house"
+  r = r.replace(/[.!?]+$/, '').trim();
+  r = r.replace(/\b[\w']+/g, (w) => GOAL_ACRONYMS[w] || (w.charAt(0).toUpperCase() + w.slice(1)));
+  return r.length > 48 ? r.slice(0, 48).trim() : r;
+}
+
 // LinkedIn experience-level codes: 1=Internship, 2=Entry, 3=Associate, 4=Mid-Senior
 function linkedinJobsURL(keyword, expLevel) {
   let url = 'https://www.linkedin.com/jobs/search/?keywords=' + encodeURIComponent(keyword) + '&location=United%20States';
@@ -2925,8 +2946,9 @@ function trajectoryDirection(p) {
 function renderOpportunities(p) {
   const dir = trajectoryDirection(p);
   const hasDir = Boolean(dir && dir.trim());
-  // searchTerm('') returns a generic placeholder, so pick the source explicitly.
-  const term = hasDir ? searchTerm(dir) : searchTerm(p.goal);
+  // With a trajectory direction, clean the ROLE lightly (keep it specific);
+  // pre-AI, run the messy goal through the heavier searchTerm cleaner.
+  const term = hasDir ? cleanRoleTitle(dir) : searchTerm(p.goal);
   const domain = detectDomain(p, dir);
   // Per-domain real entry-level title (e.g., "Editorial Assistant" for publishing).
   const entryTitle = ENTRY_TITLE[domain] || '';
