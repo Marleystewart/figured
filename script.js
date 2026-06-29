@@ -843,9 +843,23 @@ function setText(sel, text) {
   if (el && text) el.textContent = text;
 }
 
+// Drop malformed/placeholder track rows the AI sometimes emits (e.g. a card
+// labeled "Junk" with role "X" showed up for one profile). A real track needs a
+// substantive role and reason; anything that looks like a placeholder is cut,
+// and we never show more than three.
+function sanitizeTracks(tracks) {
+  if (!Array.isArray(tracks)) return [];
+  const junky = (s) => {
+    const v = String(s || '').trim();
+    return v.length < 3 || /^(junk|n\/a|none|tbd|x+|placeholder|\W+)$/i.test(v);
+  };
+  return tracks.filter((t) => t && !junky(t.role) && !junky(t.reason) && !/junk/i.test(t.label || '')).slice(0, 3);
+}
+
 function renderTracks(tracks) {
   const list = document.getElementById('tracksList');
   if (!list || !tracks) return;
+  tracks = sanitizeTracks(tracks);
   list.innerHTML = tracks.map((t, i) => `
     <div class="track-item${t.primary || i === 0 ? ' primary' : ''}">
       <div class="track-label">${esc(t.label)}</div>
@@ -1130,10 +1144,10 @@ function showRefiningCue() {
     '<div class="refining-top">' +
       '<span class="refining-dot"></span>' +
       '<span class="refining-phrase">Building your full trajectory…</span>' +
-      '<span class="refining-time">~30 sec</span>' +
+      '<span class="refining-time">up to a min</span>' +
     '</div>' +
     '<div class="refining-bar"><div class="refining-bar-fill"></div></div>' +
-    '<div class="refining-note">Hang tight — the draft below is a quick first pass. We\'re personalizing it into your real trajectory right now. It\'ll update the moment it\'s ready.</div>' +
+    '<div class="refining-note">Hang tight — the draft below is a quick first pass. We\'re personalizing it into your real trajectory right now (this usually takes 30 to 60 seconds). It\'ll update the moment it\'s ready.</div>' +
     '<div class="refining-stat"></div>';
   snap.appendChild(cue);
 

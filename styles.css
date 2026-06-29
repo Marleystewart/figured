@@ -4421,7 +4421,7 @@ h1 {
   width: 6%;
   border-radius: 999px;
   background: rgba(255, 253, 248, 0.92);
-  transition: width 26s cubic-bezier(0.16, 0.84, 0.3, 1);
+  transition: width 55s cubic-bezier(0.12, 0.86, 0.2, 1);
 }
 
 .refining-note {
