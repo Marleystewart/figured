@@ -21,10 +21,15 @@ Triage of findings from the June 28 case-study run (12 profiles). Status legend:
   (Re-test to confirm; if it persists it's specific to the Trajectory tab.)
 
 ## Content quality (prompt tuning)
-- 🔧 **Opportunities too generic** (Ethan, Marcus, Tyler, Olivia — most-repeated note).
-- 🔧 **Vague goal breaks Opportunities** (Darius "something that pays well", Tyler) —
-  need a guard for too-vague goals.
+- ✅ **Opportunities too generic + vague goal breaks them** (Ethan, Marcus, Tyler,
+  Olivia, Darius) — Opportunities + networking now derive from the trajectory's
+  primary track (`trajectoryDirection` → `renderOpportunities`), re-rendered when
+  the AI lands. Specific even from a vague goal ("something that pays well" →
+  "Sales Development Representative internships"); neutral "Your field" pre-AI
+  instead of echoing the messy goal. Also fixed coarse domain mis-bucketing
+  (e.g. "Sales Development" no longer maps to Software via /develop/).
 - 🔧 **Output collapses to one direction** (Priya: only consulting, not biotech too).
+  Related to the parked Sofia "pick active track" feature.
 
 ## Bigger / parked
 - 🅿️ **Which trajectory drives checklist/opportunities?** (Sofia) — when multiple paths

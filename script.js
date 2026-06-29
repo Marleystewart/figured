@@ -319,8 +319,10 @@ const NICHE_DOMAIN_MAP = [
   [/(data scientist|data analyst|machine learning|ml engineer|ai engineer|analytics)/, 'software'],
 ];
 
-function detectDomain(p) {
-  const g = ((p.goal || '') + ' ' + (p.major || '') + ' ' + (p.skills || '')).toLowerCase();
+function detectDomain(p, extra = '') {
+  // `extra` lets callers fold in where the generated trajectory is leaning (its
+  // primary track) so the domain is right even when the typed goal is vague.
+  const g = ((extra || '') + ' ' + (p.goal || '') + ' ' + (p.major || '') + ' ' + (p.skills || '')).toLowerCase();
 
   // Check niche roles first — more specific wins over broad patterns
   for (const [rx, domain] of NICHE_DOMAIN_MAP) {
@@ -1099,6 +1101,10 @@ function applyContent(c, opts = {}) {
   renderTimeline(c.timeline);
   renderExploreTree(currentProfile || DEMO_PROFILE, c.explore);
   renderComp(currentProfile || DEMO_PROFILE, c.pay);
+  // The AI trajectory just landed — re-point Opportunities + networking at where
+  // it actually leans (its primary track), so they get specific and stay useful
+  // even when the typed goal was vague.
+  if (opts.refined && currentProfile) renderOpportunities(currentProfile);
   // When the detailed Claude version replaces the instant draft, fade the hero
   // cards in so the upgrade lands smoothly instead of snapping.
   if (opts.refined) {
@@ -2674,30 +2680,64 @@ function applyProfile(p) {
 
   applyContent(fallbackContent(p, s));
   renderComp(p);
+  renderOpportunities(p);
+  renderPeers();
+  renderExploreTree(p);
 
-  // Distil the free-text goal into a clean keyword the job boards can search.
-  const term = searchTerm(p.goal);
-  const domain = detectDomain(p);
+  maybeRunAI(p);
+}
+
+// The job-board search keyword the field maps to. Kept module-level so both the
+// initial paint and the post-AI refresh derive identical card titles + links.
+const FIELD_LABEL = {
+  sports: 'Sports', product: 'Product', finance: 'Finance', economics: 'Economics',
+  psychology: 'Psychology', software: 'Software', marketing: 'Marketing', consulting: 'Consulting',
+  creative: 'Creative', design: 'Design', founder: 'Startup', medicine: 'Healthcare',
+  law: 'Legal', publishing: 'Publishing', journalism: 'Journalism', academia: 'Research',
+  nonprofit: 'Nonprofit', government: 'Government',
+};
+
+// Where the trajectory is actually leaning: the generated primary track. This is
+// far more specific than the typed goal and, crucially, still concrete when the
+// goal is vague ("something that pays well") — so Opportunities are never junk.
+// Falls back to the raw goal when no AI trajectory exists yet.
+function trajectoryDirection(p) {
+  try {
+    const tracks = (typeof aiContent !== 'undefined' && aiContent && aiContent.tracks) || [];
+    const primary = tracks.find((t) => t && (t.primary || /your goal/i.test(t.label || ''))) || tracks[0];
+    if (primary && primary.role && String(primary.role).trim().length >= 3) return primary.role;
+  } catch (e) { /* ignore */ }
+  // No AI trajectory yet: return empty so the caller uses the pre-AI domain path
+  // (and stays neutral on a vague goal) rather than echoing the raw goal text.
+  return '';
+}
+
+// Opportunities + networking, derived from the trajectory direction (above).
+// Called at first paint and again when the AI trajectory lands so the cards
+// follow where the path actually leads, not the raw goal text.
+function renderOpportunities(p) {
+  const dir = trajectoryDirection(p);
+  const hasDir = Boolean(dir && dir.trim());
+  // searchTerm('') returns a generic placeholder, so pick the source explicitly.
+  const term = hasDir ? searchTerm(dir) : searchTerm(p.goal);
+  const domain = detectDomain(p, dir);
   // Per-domain real entry-level title (e.g., "Editorial Assistant" for publishing).
-  // Falls back to the cleaned goal when no override exists.
   const entryTitle = ENTRY_TITLE[domain] || '';
   const setHref = (id, url) => { const el = document.getElementById(id); if (el) el.href = url; };
 
-  // Title the cards by the clean FIELD, not the raw goal. This keeps them broad
-  // and useful (per student feedback) and avoids echoing a messy goal verbatim,
-  // which read like spelling errors (e.g. "Animation Maybe Internships").
-  const FIELD_LABEL = {
-    sports: 'Sports', product: 'Product', finance: 'Finance', economics: 'Economics',
-    psychology: 'Psychology', software: 'Software', marketing: 'Marketing', consulting: 'Consulting',
-    creative: 'Creative', design: 'Design', founder: 'Startup', medicine: 'Healthcare',
-    law: 'Legal', publishing: 'Publishing', journalism: 'Journalism', academia: 'Research',
-    nonprofit: 'Nonprofit', government: 'Government',
-  };
   const titleCase = (s) => (s || '').replace(/\b\w/g, (c) => c.toUpperCase());
-  const field = FIELD_LABEL[domain] || titleCase(term) || 'Your field';
-  // Broad, clean search keywords (avoid jamming a messy goal into the query).
-  const internKw = entryTitle || `${field} intern`;
-  const entryKw  = entryTitle || field;
+  // When we know where the trajectory leans, title the cards by that specific
+  // role — it's more useful and sidesteps the coarse domain map mis-bucketing it
+  // (e.g. "Sales Development Rep" matching the /develop/ -> software pattern).
+  // Pre-AI we fall back to the broad domain label, and avoid echoing a messy
+  // vague goal ("something that pays well") by going neutral on a generic domain.
+  const field = hasDir
+    ? (titleCase(term) || FIELD_LABEL[domain] || 'Your field')
+    : (FIELD_LABEL[domain] || (domain === 'generic' ? 'Your field' : titleCase(term)) || 'Your field');
+  // Search keywords: trust the specific role when we have it; otherwise lean on
+  // the per-domain entry title.
+  const internKw = hasDir ? `${field} intern` : (entryTitle || `${field} intern`);
+  const entryKw  = hasDir ? field : (entryTitle || field);
 
   // Card titles + subtitles follow the clean field, broad and readable.
   setText('#oppTitle1', `${field} internships`);
@@ -2726,14 +2766,10 @@ function applyProfile(p) {
   setHref('oppLink4', googleLinkedinURL(`${field} professional`));
   setHref('oppHandshake4', handshakeURL(field, p));
 
-  // Connections tab
+  // Connections tab — same direction-aware term so networking matches.
   setHref('connLinkedinLink', googleLinkedinURL(term));
   renderMentors(term);
-  renderPeers();
   renderNetwork(term, p);
-  renderExploreTree(p);
-
-  maybeRunAI(p);
 }
 
 // Connections tab switching
