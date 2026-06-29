@@ -534,7 +534,13 @@ nextBtn.addEventListener('click', () => {
   };
   localStorage.setItem('figuredProfile', JSON.stringify(profile));
   // A changed profile means stale insights — clear so the app regenerates.
+  // figuredAiCacheMap holds the multi-slot direction cache; drop it too so a new
+  // build never serves a previous student's explored directions. figuredActiveDirection
+  // is the "rebuilt around this path" state, which must not carry into a new profile.
   localStorage.removeItem('figuredAiContent');
+  localStorage.removeItem('figuredAiCacheMap');
+  localStorage.removeItem('figuredActiveDirection');
+  localStorage.removeItem('figuredSelectedTrack');
   // A fresh "Build My Path" is a clean slate — don't inherit the last
   // person's logged wins, checked actions, or résumé data. The résumé tab
   // renders from figuredResumeAnalysis, so that must be cleared too (clearing

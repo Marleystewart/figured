@@ -942,26 +942,28 @@ function selectTrack(i, tracks) {
 
 // Deep switch: regenerate the entire trajectory around the focused path.
 function rebuildAroundSelected() {
-  if (!selectedTrackRole || !currentProfile) return;
+  if (!selectedTrackRole || !currentProfile || aiInFlight) return;
   activeDirection = selectedTrackRole;
   try {
     localStorage.setItem('figuredActiveDirection', activeDirection);
     localStorage.removeItem('figuredSelectedTrack');
   } catch (e) { /* ignore */ }
   selectedTrackRole = null; // the rebuilt plan's primary becomes the new focus
-  maybeRunAI(currentProfile, true);
+  // force = false: if they've already built this direction, it's a free cache hit.
+  maybeRunAI(currentProfile, false);
 }
 
 // Drop the explored direction and rebuild around the student's stated goal.
 function resetDirection() {
-  if (!activeDirection) return;
+  if (!activeDirection || aiInFlight) return;
   activeDirection = '';
   try {
     localStorage.removeItem('figuredActiveDirection');
     localStorage.removeItem('figuredSelectedTrack');
   } catch (e) { /* ignore */ }
   selectedTrackRole = null;
-  maybeRunAI(currentProfile, true);
+  // The original goal was cached on first load, so this is normally free.
+  maybeRunAI(currentProfile, false);
 }
 
 // Re-point everything that should follow the focused path (cheap, no AI).
@@ -2444,21 +2446,58 @@ function setAiPill(state, detail) {
   if (dot) dot.dataset.state = state;
 }
 
+// Multi-slot trajectory cache. Each direction the student rebuilds around is a
+// separate Opus call, so we keep the last few keyed by profile hash. Re-visiting
+// a direction they've already built (toggling between path cards, or hitting
+// "Back to my goal") is then a free, instant cache hit instead of a new call.
+// figuredAiContent is kept as the single "latest" entry other code reads.
+const AI_CACHE_SLOTS = 4;
+function readAiCacheMap() {
+  const m = readJSON('figuredAiCacheMap');
+  return (m && typeof m === 'object' && !Array.isArray(m)) ? m : {};
+}
+function getCachedAi(h) {
+  const map = readAiCacheMap();
+  if (map[h]) return map[h];
+  const single = readJSON('figuredAiContent');
+  return (single && single.hash === h && single.data) ? single.data : null;
+}
+function putCachedAi(h, data) {
+  try { localStorage.setItem('figuredAiContent', JSON.stringify({ hash: h, data })); } catch (e) { /* ignore */ }
+  const map = readAiCacheMap();
+  delete map[h];            // re-insert so it counts as most-recently used
+  map[h] = data;
+  const keys = Object.keys(map); // insertion order = recency
+  for (const k of keys.slice(0, Math.max(0, keys.length - AI_CACHE_SLOTS))) delete map[k];
+  try { localStorage.setItem('figuredAiCacheMap', JSON.stringify(map)); } catch (e) { /* ignore */ }
+}
+
+// Guard against overlapping generations (double-tapping Rebuild, impatient
+// clicks). A second call while one is in flight is ignored, so we never fire
+// two Opus calls at once.
+let aiInFlight = false;
+
 async function maybeRunAI(profile, force = false) {
   if (!aiAvailable() || !FigAI.hasKey()) { setAiPill('off'); return; }
+  if (aiInFlight) return; // a generation is already running
   // When the student has rebuilt around a path, generate for that direction
   // (overriding the goal) and cache it under its own hash, so reloads are stable.
   const genProfile = activeDirection ? Object.assign({}, profile, { goal: activeDirection }) : profile;
   const h = hashProfile(genProfile);
-  const cached = readJSON('figuredAiContent');
-  if (!force && cached && cached.hash === h && cached.data) {
-    aiContent = cached.data;
-    applyContent(cached.data);
-    setAiPill('live');
-    return;
+  if (!force) {
+    const data = getCachedAi(h);
+    if (data) {
+      aiContent = data;
+      applyContent(data);
+      setAiPill('live');
+      setRebuildBusy(false);
+      return;
+    }
   }
 
+  aiInFlight = true;
   setAiPill('loading');
+  setRebuildBusy(true);
   // The instant rule-based draft is already on screen. Mark it as "personalizing"
   // so the upgrade reads as the analysis getting sharper, not a glitchy reload.
   hideRefiningError();
@@ -2466,7 +2505,7 @@ async function maybeRunAI(profile, force = false) {
   try {
     const data = await FigAI.generateInsights(genProfile);
     aiContent = data;
-    localStorage.setItem('figuredAiContent', JSON.stringify({ hash: h, data }));
+    putCachedAi(h, data);
     applyContent(data, { refined: true });
     setAiPill('live');
     hideRefiningCue();
@@ -2479,7 +2518,19 @@ async function maybeRunAI(profile, force = false) {
     setAiPill('error', e.message);
     hideRefiningCue();
     showRefiningError(e && (e.message || e.toString()));
+  } finally {
+    aiInFlight = false;
+    setRebuildBusy(false);
   }
+}
+
+// Disable the rebuild button(s) while a generation runs so a kid can't queue up
+// multiple ~$0.20 calls with rapid taps.
+function setRebuildBusy(busy) {
+  document.querySelectorAll('.track-rebuild').forEach((btn) => {
+    btn.disabled = busy;
+    btn.textContent = busy ? 'Rebuilding…' : 'Rebuild my plan around this →';
+  });
 }
 
 // ---------------------------------------------------------------------------
