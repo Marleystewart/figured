@@ -73,9 +73,107 @@ function fallbackBodyFor(bodyObj, model) {
   return JSON.stringify(copy);
 }
 
+// --- Abuse protection --------------------------------------------------------
+// This proxy carries our server-side ANTHROPIC_API_KEY, so anything that can
+// reach /api/claude can spend our Anthropic credits. 4ward is a public static
+// site, so we can't hide the endpoint. Two cheap, backend-free guards cut off
+// the easy abuse without a database:
+//
+//   1. Origin allowlist — a real 4ward page always sends an Origin header on
+//      its POSTs (browsers attach Origin to every non-GET fetch, same-origin
+//      included). Requests from another site, or from curl/scripts that send
+//      no Origin, are rejected. This stops someone pointing their own page or
+//      a script loop at our endpoint.
+//   2. Per-IP rate limit — a sliding in-memory window throttles a single
+//      client hammering the endpoint. It is BEST-EFFORT: Vercel runs many
+//      serverless instances and recycles them, so the counter is per-instance
+//      and resets on cold starts. It still meaningfully slows one abuser on a
+//      warm instance and costs nothing.
+//
+// A hard, GLOBAL daily spend cap needs shared state (Vercel KV / Upstash) —
+// in-memory can't enforce a real ceiling across instances. That's the next
+// step if the app is widely distributed; origin + per-IP covers the casual
+// abuse these guards target.
+
+// Read a header in a way that works for both the Node serverless req (plain
+// lowercase-keyed object) and the Edge/Fetch Request (Headers with .get()),
+// mirroring the dual-runtime support the rest of this file already has.
+function header(req, name) {
+  const h = req && req.headers;
+  if (!h) return '';
+  if (typeof h.get === 'function') return h.get(name) || '';
+  return h[name] || h[name.toLowerCase()] || '';
+}
+
+// Comma-separated hostnames allowed to call the proxy, overridable via the
+// ALLOWED_ORIGIN_HOSTS Vercel env var. Same-host requests (Origin host ===
+// request Host) are always allowed too, which covers the production custom
+// domain and every *.vercel.app preview deploy automatically — so this list
+// only needs the custom domain(s) and localhost.
+const ALLOWED_ORIGIN_HOSTS = (process.env.ALLOWED_ORIGIN_HOSTS ||
+  'getfwrd.co,www.getfwrd.co,localhost,127.0.0.1')
+  .split(',').map((h) => h.trim().toLowerCase()).filter(Boolean);
+
+function hostFromUrl(value) {
+  if (!value) return '';
+  try { return new URL(value).hostname.toLowerCase(); } catch { return ''; }
+}
+
+function isAllowedOrigin(req) {
+  const originHost = hostFromUrl(header(req, 'origin')) ||
+    hostFromUrl(header(req, 'referer'));
+  // No Origin/Referer at all → not a browser page load. Reject.
+  if (!originHost) return false;
+  if (ALLOWED_ORIGIN_HOSTS.includes(originHost)) return true;
+  // Allow first-party requests where the page's origin matches the host the
+  // function is served from (covers preview deployments without hardcoding).
+  const requestHost = String(header(req, 'host')).toLowerCase().split(':')[0];
+  return Boolean(requestHost) && originHost === requestHost;
+}
+
+// Per-IP sliding-window limiter. In-memory and per-instance by design — see
+// the note above. Map<ip, number[]> of recent request timestamps. Limits are
+// deliberately generous: a full onboarding→dashboard flow fires several calls
+// (trajectory, résumé, extra paths, chat), so this only trips on flooding.
+const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000; // 10 minutes
+const RATE_LIMIT_MAX = 60;                    // requests per window per IP
+const ipHits = new Map();
+
+function clientIp(req) {
+  const fwd = header(req, 'x-forwarded-for');
+  if (fwd) return String(fwd).split(',')[0].trim();
+  return header(req, 'x-real-ip') || 'unknown';
+}
+
+function rateLimited(req) {
+  const ip = clientIp(req);
+  const now = Date.now();
+  const windowStart = now - RATE_LIMIT_WINDOW_MS;
+  const hits = (ipHits.get(ip) || []).filter((t) => t > windowStart);
+  hits.push(now);
+  ipHits.set(ip, hits);
+  // Opportunistic cleanup so the Map can't grow unbounded on a warm instance:
+  // drop any IP whose newest hit has aged out of the window.
+  if (ipHits.size > 5000) {
+    for (const [key, times] of ipHits) {
+      if (!times.length || times[times.length - 1] <= windowStart) ipHits.delete(key);
+    }
+  }
+  return hits.length > RATE_LIMIT_MAX;
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return json(res, { error: { message: 'Method not allowed' } }, 405);
+  }
+
+  // Abuse guards run before any upstream call so a rejected request never
+  // spends credits. Applies to both streaming (chat) and non-streaming paths.
+  if (!isAllowedOrigin(req)) {
+    return json(res, { error: { message: 'Forbidden.' } }, 403);
+  }
+  if (rateLimited(req)) {
+    return json(res, { error: { message: 'Too many requests. Please wait a moment and try again.' } }, 429);
   }
 
   const apiKey = process.env.ANTHROPIC_API_KEY;
